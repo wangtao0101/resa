@@ -4,7 +4,8 @@
   "description": "A simple framework based on redux, redux-saga, redux-action.",
   "main": "lib/index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production babel src -d lib --ignore test",
+    "build": "babel src -d lib --ignore test",
+    "buildlib": "cross-env NODE_ENV=production babel src -d dist --ignore src/test",
     "lint": "eslint src/*.js src/test/*.js",
     "test": "jest",
     "prepublish": "npm run lint && npm run build"
