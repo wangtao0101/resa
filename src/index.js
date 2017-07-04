@@ -40,14 +40,15 @@ const injectReducer = (key, red) => {
 // https://github.com/ReactTraining/react-router/blob/v3.0.5/modules/withRouter.js
 const app = {
     namespace: '_',
+    reducer: 'xxx',
     effects: {
-        * add(model, action, { fulfilled, reject }) {
+        * add(action, { fulfilled, reject }) {
             console.log(action);
             yield call(fulfilled, { a: 'a' });
             yield call(reject, { b: 'b' });
-            yield call(model.effects.minus, { c: ' c ' });
+            yield call(this.effects.minus, { c: ' c ' });
         },
-        * minus(_model, action, { fulfilled, _reject }) {
+        * minus(action, { fulfilled, _reject }) {
             console.log(action);
             yield call(fulfilled, { d: 'd' });
         },
@@ -57,7 +58,7 @@ const app = {
 function getSaga(sagax, model, dispatch) {
     return function* (action) { // eslint-disable-line
         try {
-            yield call(sagax, model, action, dispatch);
+            yield call([model, sagax], action, dispatch);
         } catch (error) {
             console.error(error); // eslint-disable-line
         }
@@ -105,7 +106,7 @@ function* saga() {
         }
     }
 
-    // 查找已有的reducer，如果存在相同namespace的模型，可以提出一个警告，并合并两个namespace到同一个reducer中
+    // 查找已有的reducer，如果存在相同reducer的模型，可以提出一个警告，并合并两个reducer到同一个reducer中
     injectReducer(app.namespace, handleActions(actions, {}));
 
     app.effects = Object.assign(app.effects, newEffect);
