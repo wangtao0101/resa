@@ -3,39 +3,49 @@ import createSagaMiddleware, { takeEvery } from 'redux-saga';
 import { call, put } from 'redux-saga/effects';
 import { createAction, handleActions } from './action';
 
-export default function createResa(options) {
+export default function createResa(options = {}) {
     const {
-        defaultHistory, // eslint-disable-line
+        defaultHistory = null, // eslint-disable-line
         reducers = [],
         middlewares = [],
-        initialState,
+        initialState = {},
     } = options;
+
+    function emptyReducer(state = {}, _action) {
+        return state;
+    }
 
     function makeRootReducer(asyncReducers) {
         return combineReducers({
-            ...reducers,
+            ...reducers.concat(emptyReducer),
             ...asyncReducers,
         });
     }
 
-    function getEffectSaga(sagax, model, dispatch) {
+    function getEffectSaga(app, saga, namespace, dispatch) {
         return function* (action) { // eslint-disable-line
             try {
-                yield call([model, sagax], action, dispatch);
+                yield call([app.model[namespace], saga], action, dispatch);
             } catch (error) {
                 console.error(error); // eslint-disable-line
             }
         };
     }
 
-    function* getSaga(action, effect, app, dispatch) {
-        yield takeEvery(action.pending, getEffectSaga(effect, app, dispatch));
+    function getSaga(app, action, effect, model, dispatch) {
+        return function* () {
+            yield takeEvery(
+                action.pending,
+                getEffectSaga(app, effect, model.namespace, dispatch)
+            );
+        };
     }
 
     function registerModel(model) {
+        const app = this;
         const newEffect = {};
         const actions = {};
-        for (const key in app.effects) { // eslint-disable-line
+        for (const key in model.effects) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(model.effects, key)) {
                 const action = createAction(key);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
@@ -60,10 +70,13 @@ export default function createResa(options) {
                 const effect = model.effects[key];
 
                 newEffect[key] = function* (obj) { // eslint-disable-line
-                    yield call(getEffectSaga(effect, model, dispatch), action.pending(obj));
+                    yield call(
+                        getEffectSaga(app, effect, model, dispatch),
+                        action.pending(obj)
+                    );
                 };
 
-                this.store.sagaMiddleware.run(getSaga(action, effect, model, dispatch));
+                this.runSaga(getSaga(app, action, effect, model, dispatch));
             }
         }
 
@@ -80,9 +93,9 @@ export default function createResa(options) {
          */
         store: null,
         /**
-         * redux-saga middleware
+         * redux-saga middleware.run
          */
-        sagaMiddleware: null,
+        runSaga: null,
         /**
          * model list
          */
@@ -103,6 +116,7 @@ export default function createResa(options) {
     app.store.asyncReducers = {};
 
     app.registerModel = registerModel.bind(app);
+    app.runSaga = sagaMiddleware.run;
 
     return app;
 }
