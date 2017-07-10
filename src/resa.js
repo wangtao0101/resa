@@ -71,7 +71,7 @@ export default function createResa(options = {}) {
 
                 newEffect[key] = function* (obj) { // eslint-disable-line
                     yield call(
-                        getEffectSaga(app, effect, model, dispatch),
+                        getEffectSaga(app, effect, model.namespace, dispatch),
                         action.pending(obj)
                     );
                 };

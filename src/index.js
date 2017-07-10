@@ -45,14 +45,14 @@ const model = {
     reducer: 'xxx',
     effects: {
         * add(action, { fulfilled, reject }) {
-            // console.log(action);
-            // yield call(fulfilled, { a: 'a' });
+            console.log(action);
+            yield call(fulfilled, { a: 'a' });
             // yield call(reject, { b: 'b' });
             yield call(this.effects.minus, { c: ' c ' });
         },
-        * minus(action, dispatch) {
+        * minus(action, { fulfilled, reject }) {
             console.log(action);
-            // yield call(fulfilled, { d: 'd' });
+            yield call(fulfilled, { d: 'd' });
         },
     },
 };
