@@ -1,7 +1,11 @@
 
 import createResa from './resa';
+import Provider from './Provider';
 
 export default createResa;
+export {
+    Provider
+};
 
 // import Immutable from 'immutable';
 // import { call } from 'redux-saga/effects';

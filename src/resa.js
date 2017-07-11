@@ -106,7 +106,7 @@ export default function createResa(options = {}) {
         const newEffect = {};
         const actions = {};
 
-        if (this.model[model.namespace] == null) {
+        if (this.model[model.namespace] != null) {
             return;
         }
 
