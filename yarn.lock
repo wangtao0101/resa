@@ -2967,6 +2967,10 @@ redux-mock-store@^1.2.2:
   version "1.2.3"
   resolved "http://registry.npm.taobao.org/redux-mock-store/download/redux-mock-store-1.2.3.tgz#1b3ad299da91cb41ba30d68e3b6f024475fb9e1b"
 
+redux-saga-middleware@^1.0.3:
+  version "1.0.3"
+  resolved "http://registry.npm.taobao.org/redux-saga-middleware/download/redux-saga-middleware-1.0.3.tgz#c1937a116387ddd6da12bea7e4666dc20871aea3"
+
 redux-saga@^0.15.4:
   version "0.15.4"
   resolved "http://registry.npm.taobao.org/redux-saga/download/redux-saga-0.15.4.tgz#27982a947280053b7ecbb5d3170c837a5fe6b261"
