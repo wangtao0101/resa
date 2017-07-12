@@ -5,8 +5,6 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
 
-const window = window || {}; // eslint-disable-line
-
 const ActionTypes = {
     INIT: '@@redux/INIT',
 };

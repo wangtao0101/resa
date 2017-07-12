@@ -1,6 +1,6 @@
 {
   "name": "resa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple framework based on redux, redux-saga, redux-action.",
   "main": "lib/index.js",
   "scripts": {
