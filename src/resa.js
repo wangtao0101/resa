@@ -162,6 +162,13 @@ export default function createResa(options = {}) {
 
         // replace original effects
         this.model[model.namespace] = Object.assign({}, model, { effects: newEffect });
+
+        this.model[model.namespace].getState = () => {
+            if (!immutable) {
+                return app.store.getState()[model.reducer];
+            }
+            return app.store.getState().get(model.reducer);
+        };
     }
 
     const app = {

@@ -124,6 +124,22 @@ describe('dispatch action success', () => {
             });
         });
     });
+
+    test('model getState success', () => {
+        const app = createResa();
+        app.registerModel(callSelfModel);
+        app.model.callSelfModel.effects.add({ a: 'a' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.model.callSelfModel.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                a: 'a',
+                loading: false,
+            });
+        });
+    });
 });
 
 const model1 = {
