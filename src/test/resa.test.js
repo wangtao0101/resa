@@ -1,3 +1,4 @@
+import Immutable from 'immutable';
 import createResa from '../resa';
 
 function myReducer(state = {}, _action) {
@@ -87,6 +88,25 @@ describe('dispatch action success', () => {
         });
     });
 
+    test('dispatch fulfilled success when immutable', () => {
+        const app = createResa({ immutable: Immutable });
+        app.registerModel(model);
+        app.model.model.effects.add({ a: 'a' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual(Immutable.Map({
+                resaReducer: {},
+                model: Immutable.Map({
+                    loading: false,
+                    a: 'a',
+                }),
+            }));
+        });
+    });
+
     test('dispatch reject success', () => {
         const app = createResa();
         app.registerModel(model);
@@ -138,6 +158,22 @@ describe('dispatch action success', () => {
                 a: 'a',
                 loading: false,
             });
+        });
+    });
+
+    test('model getState success when use immutable', () => {
+        const app = createResa({ immutable: Immutable });
+        app.registerModel(callSelfModel);
+        app.model.callSelfModel.effects.add({ a: 'a' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.model.callSelfModel.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual(Immutable.Map({
+                loading: false,
+                a: 'a',
+            }));
         });
     });
 });

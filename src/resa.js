@@ -44,7 +44,7 @@ export default function createResa(options = {}) {
             });
         }
         return combineImmutableReducers({
-            ...reducers.concat(resaReducer),
+            ...initReducer,
             ...asyncReducers,
         });
     }
