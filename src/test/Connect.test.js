@@ -26,17 +26,15 @@ describe('Connect', () => {
     test('should pass state and props to the given component', () => {
         const app = createResa();
 
-        const mapStateToProps = (app, state) => {
-            return {
-                a: 'a',
-            }
-        }
+        const mapStateToProps = (_app, _state) => ({
+            a: 'a',
+        });
 
-        const func = () => {};
+        const func = () => { };
 
-        const mapDispatchToProps = (app, dispatch) => ({
-            func: func,
-        })
+        const mapDispatchToProps = (_app, _dispatch) => ({
+            func,
+        });
 
         const ConnectedChild = connect(mapStateToProps, mapDispatchToProps)(Child);
 
@@ -56,12 +54,10 @@ describe('Connect', () => {
         app.registerModel(model);
         app.model.model.effects.add({ a: 'a' });
 
-        const mapStateToProps = (app, state) => {
-            return {
-                a: state.model.a,
-                loading: app.store.getState().model.loading,
-            }
-        }
+        const mapStateToProps = (resa, state) => ({
+            a: state.model.a,
+            loading: resa.model.model.getState().loading,
+        });
 
         const ConnectedChild = connect(mapStateToProps)(Child);
 
@@ -78,14 +74,12 @@ describe('Connect', () => {
 
     test('mapDispatchToProps can get app and dispatch', () => {
         const app = createResa();
-        const mapDispatchToProps = (app, dispatch) => ({
-            func: () => {
-                return {
-                    app,
-                    dispatch,
-                };
-            },
-        })
+        const mapDispatchToProps = (resa, dispatch) => ({
+            func: () => ({
+                app: resa,
+                dispatch,
+            }),
+        });
 
         const ConnectedChild = connect(null, mapDispatchToProps)(Child);
 
