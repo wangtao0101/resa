@@ -1,6 +1,6 @@
 {
   "name": "resa",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple framework based on redux, redux-saga, redux-action.",
   "main": "lib/index.js",
   "scripts": {
@@ -30,8 +30,8 @@
     "redux-saga": "^0.15.0"
   },
   "dependencies": {
-    "react-redux": "^4.0.0",
-    "redux-actions": "^2.2.0",
+    "react-redux": "^5.0.0",
+    "redux-actions": "^2.0.0",
     "redux-immutable": "^4.0.0",
     "redux-saga-middleware": "^1.0.3"
   },
