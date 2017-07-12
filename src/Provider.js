@@ -15,7 +15,7 @@ export const storeShape = PropTypes.shape({
     getState: PropTypes.func.isRequired,
 });
 
-const resaShape = PropTypes.shape({
+export const resaShape = PropTypes.shape({
     store: PropTypes.object.isRequired,
     runSaga: PropTypes.func.isRequired,
     model: PropTypes.object.isRequired,
