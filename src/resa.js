@@ -110,7 +110,7 @@ export default function createResa(options = {}) {
 
         for (const key in model.effects) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(model.effects, key)) {
-                const action = createAction(key);
+                const action = createAction(`${model.namespace}/${key}`);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
                     if (immutable) {
                         return mergeImmutablePayload(state, action.payload, true);
@@ -151,7 +151,8 @@ export default function createResa(options = {}) {
 
         // find reducer and merge reducer
         if (store.reducerList[model.reducer] == null) {
-            store.asyncReducers[model.reducer] = handleActions(actions, model.state || getEmptyObject());
+            store.reducerList[model.reducer] = [handleActions(actions, model.state || getEmptyObject())];
+            store.asyncReducers[model.reducer] = store.reducerList[model.reducer][0];
         } else {
             store.reducerList[model.reducer].push(handleActions(actions, model.state || getEmptyObject()));
             store.asyncReducers[model.reducer] = composeHandleActions(store.reducerList[model.reducer]);

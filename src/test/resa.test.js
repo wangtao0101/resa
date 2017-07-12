@@ -222,8 +222,8 @@ describe('tow model use same reducer', () => {
     test('tow model use same reducer', () => {
         const app = createResa();
         app.registerModel(model1);
-        app.model.model1.effects.add({ a: 'a' });
         app.registerModel(model2);
+        app.model.model1.effects.add({ a: 'a' });
         app.model.model2.effects.add({ b: 'b' });
         return new Promise((resolve) => {
             setTimeout(() => {
