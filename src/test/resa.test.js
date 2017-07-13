@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import { call } from 'redux-saga/effects';
 import createResa from '../resa';
 
 function myReducer(state = {}, _action) {
@@ -10,11 +11,11 @@ const model = {
     reducer: 'model',
     effects: {
         * add(_app, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+            yield call(fulfilled, action.payload);
         },
 
         * minus(_app, action, { _fulfilled, reject }) {
-            yield reject(action.payload);
+            yield call(reject, action.payload);
         },
     },
 };
@@ -24,11 +25,11 @@ const callSelfModel = {
     reducer: 'callSelfModel',
     effects: {
         * add(_app, action, { _fulfilled, _reject }) {
-            yield this.effects.minus(action.payload);
+            yield call(this.effects.minus, action.payload);
         },
 
         * minus(_app, action, { _fulfilled, reject }) {
-            yield reject(action.payload);
+            yield call(reject, action.payload);
         },
     },
 };
