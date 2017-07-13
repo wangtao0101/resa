@@ -142,7 +142,7 @@ export default function createResa(options = {}) {
                 const effect = model.effects[key];
 
                 newEffect[key] = function (obj) { // eslint-disable-line
-                    store.dispatch(action.pending(obj));
+                    return store.dispatch(action.pending(obj));
                 };
 
                 this.runSaga(getSaga(app, action, effect, model, dispatch));

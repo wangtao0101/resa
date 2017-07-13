@@ -89,6 +89,13 @@ describe('dispatch action success', () => {
         });
     });
 
+    test('dispatch return promise success', () => {
+        const app = createResa();
+        app.registerModel(model);
+        const result = app.model.model.effects.add({ a: 'a' });
+        expect(Object.prototype.toString.call(result.then)).toEqual('[object Function]');
+    });
+
     test('dispatch fulfilled success when immutable', () => {
         const app = createResa({ immutable: Immutable });
         app.registerModel(model);
