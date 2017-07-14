@@ -1,6 +1,8 @@
 import Immutable from 'immutable';
+import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import createResa from '../resa';
+
 
 function myReducer(state = {}, _action) {
     return state;
@@ -17,6 +19,20 @@ const model = {
         * minus(_app, action, { _fulfilled, reject }) {
             yield call(reject, action.payload);
         },
+    },
+};
+
+const effectModel = {
+    namespace: 'effectModel',
+    reducer: 'effectModel',
+    state: {
+        count: 0,
+    },
+    effects: {
+        add: [function* (_app, _action, { fulfilled, _reject }) {
+            yield delay(10);
+            yield call(fulfilled, { count: _app.model.effectModel.getState().count + 1 });
+        }, 'takeLatest'],
     },
 };
 
@@ -182,6 +198,23 @@ describe('dispatch action success', () => {
                 loading: false,
                 a: 'a',
             }));
+        });
+    });
+
+    test('takeLatest', () => {
+        const app = createResa();
+        app.registerModel(effectModel);
+        app.model.effectModel.effects.add({ a: 'a' });
+        app.model.effectModel.effects.add({ a: 'c' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.model.effectModel.getState());
+            }, 20);
+        }).then((data) => {
+            expect(data).toEqual({
+                loading: false,
+                count: 1,
+            });
         });
     });
 });

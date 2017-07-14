@@ -1,7 +1,8 @@
 import { applyMiddleware, createStore, combineReducers, compose } from 'redux';
 import { combineReducers as combineImmutableReducers } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
-import { call, put, takeEvery } from 'redux-saga/effects';
+import invariant from 'invariant';
+import { call, put, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
 
@@ -79,12 +80,49 @@ export default function createResa(options = {}) {
     }
 
     function getSaga(app, action, effect, model, dispatch) {
-        return function* () { // eslint-disable-line
-            yield takeEvery(
-                action.pending,
-                getEffectSaga(app, effect, model.namespace, dispatch)
+        let type = 'takeEvery';
+        let trueEffect = effect;
+        if (Array.isArray(effect)) {
+            type = effect[1];
+            trueEffect = effect[0];
+
+            invariant(
+                ['takeEvery', 'takeLatest', 'throttle'].indexOf(type) > -1,
+                'effect type should be takeEvery, takeLatest or throttle.'
             );
-        };
+
+            if (type === 'throttle') {
+                invariant(
+                    Number.isInteger(effect[2]) === true && effect[2] > 0,
+                    'ms of throttle should be positive integer.'
+                );
+            }
+        }
+
+        switch (type) {
+        case 'takeLatest':
+                return function* () { // eslint-disable-line
+                    yield takeLatest(
+                        action.pending,
+                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                    );
+                };
+        case 'throttle':
+                return function* () { // eslint-disable-line
+                    yield throttle(
+                        effect[2],
+                        action.pending,
+                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                    );
+                };
+        default:
+                return function* () { // eslint-disable-line
+                    yield takeEvery(
+                        action.pending,
+                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                    );
+                };
+        }
     }
 
     function mergeImmutablePayload(state, payload = {}, loading) {
@@ -113,9 +151,9 @@ export default function createResa(options = {}) {
                 const action = createAction(`${model.namespace}/${key}`);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
                     if (immutable) {
-                        return mergeImmutablePayload(state, action.payload, true);
+                        return mergeImmutablePayload(state, {}, true);
                     }
-                    return Object.assign(state, action.payload, { loading: true });
+                    return Object.assign({}, state, { loading: true });
                 };
                 actions[action.fulfilled] = (state, action) => { // eslint-disable-line
                     if (immutable) {
@@ -139,13 +177,10 @@ export default function createResa(options = {}) {
                     },
                 };
 
-                const effect = model.effects[key];
-
                 newEffect[key] = function (obj) { // eslint-disable-line
                     return store.dispatch(action.pending(obj));
                 };
-
-                this.runSaga(getSaga(app, action, effect, model, dispatch));
+                this.runSaga(getSaga(app, action, model.effects[key], model, dispatch));
             }
         }
 
