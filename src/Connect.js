@@ -15,6 +15,24 @@ const contextTypes = {
 
 export default function resaConnect(mapStateToProps, mapDispatchToProps, mergeProps, extraOptions) {
     return function wrapWithConnect(WrappedComponent) {
+        const newMapStateToProps = (() => {
+            if (mapStateToProps == null) {
+                return null;
+            }
+            return args => mapStateToProps(this.resa, args);
+        })();
+        const newMapDispatchToProps = (() => {
+            if (mapDispatchToProps == null) {
+                return null;
+            }
+            return dispatch => mapDispatchToProps(this.resa, dispatch);
+        })();
+        const ConnectedComponent = reactReduxConnect(
+            newMapStateToProps,
+            newMapDispatchToProps,
+            mergeProps,
+            extraOptions)(WrappedComponent);
+
         class Connect extends React.Component {
             constructor(props, context) {
                 super(props, context);
@@ -31,23 +49,6 @@ export default function resaConnect(mapStateToProps, mapDispatchToProps, mergePr
             }
 
             render() {
-                const newMapStateToProps = (() => {
-                    if (mapStateToProps == null) {
-                        return null;
-                    }
-                    return args => mapStateToProps(this.resa, args);
-                })();
-                const newMapDispatchToProps = (() => {
-                    if (mapDispatchToProps == null) {
-                        return null;
-                    }
-                    return dispatch => mapDispatchToProps(this.resa, dispatch);
-                })();
-                const ConnectedComponent = reactReduxConnect(
-                    newMapStateToProps,
-                    newMapDispatchToProps,
-                    mergeProps,
-                    extraOptions)(WrappedComponent);
                 return <ConnectedComponent {...this.props} />;
             }
         }
