@@ -15,29 +15,29 @@ const contextTypes = {
 
 export default function resaConnect(mapStateToProps, mapDispatchToProps, mergeProps, extraOptions) {
     return function wrapWithConnect(WrappedComponent) {
-        const newMapStateToProps = (() => {
-            if (mapStateToProps == null) {
-                return null;
-            }
-            return args => mapStateToProps(this.resa, args);
-        })();
-        const newMapDispatchToProps = (() => {
-            if (mapDispatchToProps == null) {
-                return null;
-            }
-            return dispatch => mapDispatchToProps(this.resa, dispatch);
-        })();
-        const ConnectedComponent = reactReduxConnect(
-            newMapStateToProps,
-            newMapDispatchToProps,
-            mergeProps,
-            extraOptions)(WrappedComponent);
-
         class Connect extends React.Component {
             constructor(props, context) {
                 super(props, context);
                 this.resa = context[resaKey];
                 this.wrappedInstance = WrappedComponent;
+
+                const newMapStateToProps = (() => {
+                    if (mapStateToProps == null) {
+                        return null;
+                    }
+                    return args => mapStateToProps(this.resa, args);
+                })();
+                const newMapDispatchToProps = (() => {
+                    if (mapDispatchToProps == null) {
+                        return null;
+                    }
+                    return dispatch => mapDispatchToProps(this.resa, dispatch);
+                })();
+                this.ConnectedComponent = reactReduxConnect(
+                    newMapStateToProps,
+                    newMapDispatchToProps,
+                    mergeProps,
+                    extraOptions)(WrappedComponent);
             }
 
             getChildContext() {
@@ -49,6 +49,7 @@ export default function resaConnect(mapStateToProps, mapDispatchToProps, mergePr
             }
 
             render() {
+                const ConnectedComponent = this.ConnectedComponent;
                 return <ConnectedComponent {...this.props} />;
             }
         }
