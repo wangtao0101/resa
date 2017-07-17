@@ -29,7 +29,7 @@ const effectModel = {
         count: 0,
     },
     effects: {
-        add: [function* (_app, _action, { fulfilled, _reject }) {
+        add: [function* (_app, _action, { fulfilled, _reject }) { // eslint-disable-line
             yield delay(10);
             yield call(fulfilled, { count: _app.models.effectModel.getState().count + 1 });
         }, 'takeLatest'],
