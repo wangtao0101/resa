@@ -72,7 +72,7 @@ export default function createResa(options = {}) {
     function getEffectSaga(app, saga, namespace, dispatch) {
         return function* (action) { // eslint-disable-line
             try {
-                yield call([app.model[namespace], saga], app, action, dispatch);
+                yield call([app.models[namespace], saga], app, action, dispatch);
             } catch (error) {
                 console.error(error); // eslint-disable-line
             }
@@ -142,7 +142,7 @@ export default function createResa(options = {}) {
         const newEffect = {};
         const actions = {};
 
-        if (this.model[model.namespace] != null) {
+        if (this.models[model.namespace] != null) {
             return;
         }
 
@@ -195,9 +195,9 @@ export default function createResa(options = {}) {
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
         // replace original effects
-        this.model[model.namespace] = Object.assign({}, model, { effects: newEffect });
+        this.models[model.namespace] = Object.assign({}, model, { effects: newEffect });
 
-        this.model[model.namespace].getState = () => {
+        this.models[model.namespace].getState = () => {
             if (!immutable) {
                 return app.store.getState()[model.reducer];
             }
@@ -217,7 +217,7 @@ export default function createResa(options = {}) {
         /**
          * model list
          */
-        model: {},
+        models: {},
         /**
          * register a model
          */

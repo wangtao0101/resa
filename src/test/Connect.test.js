@@ -16,6 +16,20 @@ const model = {
     },
 };
 
+const model1 = {
+    namespace: 'model1',
+    reducer: 'model1',
+    effects: {
+        * add(_app, action, { fulfilled, _reject }) {
+            yield fulfilled(action.payload);
+        },
+
+        * minus(_app, action, { _fulfilled, reject }) {
+            yield reject(action.payload);
+        },
+    },
+};
+
 describe('Connect', () => {
     class Child extends Component { // eslint-disable-line
         render() {
@@ -52,31 +66,33 @@ describe('Connect', () => {
     test('mapStateToProps can get app and state', () => {
         const app = createResa();
         app.registerModel(model);
-        app.model.model.effects.add({ a: 'a' });
+        app.models.model.effects.add({ a: 'a' });
 
-        const mapStateToProps = (resa, state) => ({
+        const mapStateToProps = ({ model }, state, ownProps) => ({ // eslint-disable-line
             a: state.model.a,
-            loading: resa.model.model.getState().loading,
+            loading: model.getState().loading,
+            ownProps,
         });
 
         const ConnectedChild = connect(mapStateToProps)(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <ConnectedChild />
+                <ConnectedChild c={'c'} />
             </Provider>
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
         expect(container.props.loading).toEqual(false);
+        expect(container.props.ownProps).toEqual({ c: 'c' });
     });
 
-    test('mapDispatchToProps can get app and dispatch', () => {
+    test('mapDispatchToProps can get models and dispatch', () => {
         const app = createResa();
-        const mapDispatchToProps = (resa, dispatch) => ({
+        const mapDispatchToProps = (models, dispatch) => ({
             func: () => ({
-                app: resa,
+                models,
                 dispatch,
             }),
         });
@@ -91,8 +107,36 @@ describe('Connect', () => {
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.func()).toEqual({
-            app,
+            models: app.models,
             dispatch: app.store.dispatch,
+        });
+    });
+
+    test('mapDispatchToProps can bind app namespace and get model in mapdispathtoprops', () => {
+        const app = createResa();
+        app.registerModel(model);
+        app.registerModel(model1);
+        const mapDispatchToProps = ({ model, model1 }, dispatch) => ({ // eslint-disable-line
+            func: () => ({
+                dispatch,
+                model,
+                model1,
+            }),
+        });
+
+        const ConnectedChild = connect(null, mapDispatchToProps)(Child, 'model', 'model1');
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <ConnectedChild />
+            </Provider>
+        );
+
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        expect(container.props.func()).toEqual({
+            dispatch: app.store.dispatch,
+            model: app.models.model,
+            model1: app.models.model1,
         });
     });
 });

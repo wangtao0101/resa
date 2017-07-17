@@ -25,13 +25,13 @@ export default function resaConnect(mapStateToProps, mapDispatchToProps, mergePr
                     if (mapStateToProps == null) {
                         return null;
                     }
-                    return args => mapStateToProps(this.resa, args);
+                    return (state, ownProps) => mapStateToProps(this.resa.models, state, ownProps);
                 })();
                 const newMapDispatchToProps = (() => {
                     if (mapDispatchToProps == null) {
                         return null;
                     }
-                    return dispatch => mapDispatchToProps(this.resa, dispatch);
+                    return dispatch => mapDispatchToProps(this.resa.models, dispatch);
                 })();
                 this.ConnectedComponent = reactReduxConnect(
                     newMapStateToProps,

@@ -18,7 +18,7 @@ export const storeShape = PropTypes.shape({
 export const resaShape = PropTypes.shape({
     store: PropTypes.object.isRequired,
     runSaga: PropTypes.func.isRequired,
-    model: PropTypes.object.isRequired,
+    models: PropTypes.object.isRequired,
     registerModel: PropTypes.func.isRequired,
 });
 

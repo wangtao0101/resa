@@ -31,7 +31,7 @@ const effectModel = {
     effects: {
         add: [function* (_app, _action, { fulfilled, _reject }) {
             yield delay(10);
-            yield call(fulfilled, { count: _app.model.effectModel.getState().count + 1 });
+            yield call(fulfilled, { count: _app.models.effectModel.getState().count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -56,7 +56,7 @@ describe('createResa', () => {
         expect(app).toEqual(expect.objectContaining({
             store: expect.anything(),
             runSaga: expect.anything(),
-            model: expect.anything(),
+            models: expect.anything(),
             registerModel: expect.anything(),
         }));
     });
@@ -74,7 +74,7 @@ describe('registerModel', () => {
     test('register model success', () => {
         const app = createResa();
         app.registerModel(model);
-        expect(app.model.model).toEqual(expect.objectContaining({
+        expect(app.models.model).toEqual(expect.objectContaining({
             namespace: 'model',
             reducer: 'model',
             effects: {
@@ -89,7 +89,7 @@ describe('dispatch action success', () => {
     test('dispatch fulfilled success', () => {
         const app = createResa();
         app.registerModel(model);
-        app.model.model.effects.add({ a: 'a' });
+        app.models.model.effects.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -108,14 +108,14 @@ describe('dispatch action success', () => {
     test('dispatch return promise success', () => {
         const app = createResa();
         app.registerModel(model);
-        const result = app.model.model.effects.add({ a: 'a' });
+        const result = app.models.model.effects.add({ a: 'a' });
         expect(Object.prototype.toString.call(result.then)).toEqual('[object Function]');
     });
 
     test('dispatch fulfilled success when immutable', () => {
         const app = createResa({ immutable: Immutable });
         app.registerModel(model);
-        app.model.model.effects.add({ a: 'a' });
+        app.models.model.effects.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -134,7 +134,7 @@ describe('dispatch action success', () => {
     test('dispatch reject success', () => {
         const app = createResa();
         app.registerModel(model);
-        app.model.model.effects.minus({ a: 'a' });
+        app.models.model.effects.minus({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -153,7 +153,7 @@ describe('dispatch action success', () => {
     test('dispatch action in saga', () => {
         const app = createResa();
         app.registerModel(callSelfModel);
-        app.model.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.effects.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -172,10 +172,10 @@ describe('dispatch action success', () => {
     test('model getState success', () => {
         const app = createResa();
         app.registerModel(callSelfModel);
-        app.model.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.effects.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.model.callSelfModel.getState());
+                resolve(app.models.callSelfModel.getState());
             }, 5);
         }).then((data) => {
             expect(data).toEqual({
@@ -188,10 +188,10 @@ describe('dispatch action success', () => {
     test('model getState success when use immutable', () => {
         const app = createResa({ immutable: Immutable });
         app.registerModel(callSelfModel);
-        app.model.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.effects.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.model.callSelfModel.getState());
+                resolve(app.models.callSelfModel.getState());
             }, 5);
         }).then((data) => {
             expect(data).toEqual(Immutable.Map({
@@ -204,11 +204,11 @@ describe('dispatch action success', () => {
     test('takeLatest', () => {
         const app = createResa();
         app.registerModel(effectModel);
-        app.model.effectModel.effects.add({ a: 'a' });
-        app.model.effectModel.effects.add({ a: 'c' });
+        app.models.effectModel.effects.add({ a: 'a' });
+        app.models.effectModel.effects.add({ a: 'c' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.model.effectModel.getState());
+                resolve(app.models.effectModel.getState());
             }, 20);
         }).then((data) => {
             expect(data).toEqual({
@@ -243,7 +243,7 @@ describe('tow model use same reducer', () => {
     test('reserve state after add new model in same reducer', () => {
         const app = createResa();
         app.registerModel(model1);
-        app.model.model1.effects.add({ a: 'a' });
+        app.models.model1.effects.add({ a: 'a' });
         app.registerModel(model2);
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -264,8 +264,8 @@ describe('tow model use same reducer', () => {
         const app = createResa();
         app.registerModel(model1);
         app.registerModel(model2);
-        app.model.model1.effects.add({ a: 'a' });
-        app.model.model2.effects.add({ b: 'b' });
+        app.models.model1.effects.add({ a: 'a' });
+        app.models.model2.effects.add({ b: 'b' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
