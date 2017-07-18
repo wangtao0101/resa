@@ -4,3 +4,4 @@ npm-debug.*
 .idea
 .DS_Store
 lib/
+coverage

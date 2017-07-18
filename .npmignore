@@ -11,3 +11,4 @@ src
 .travis.yml
 jsconfig.json
 yarn.lock
+coverage
