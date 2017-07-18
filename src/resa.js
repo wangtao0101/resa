@@ -139,15 +139,16 @@ export default function createResa(options = {}) {
     function registerModel(model) {
         const app = this;
         const store = this.store;
-        const newEffect = {};
         const actions = {};
 
         if (this.models[model.namespace] != null) {
             return;
         }
 
-        for (const key in model.effects) { // eslint-disable-line
-            if (Object.prototype.hasOwnProperty.call(model.effects, key)) {
+        const newEffects = {};
+        const oldEffects = model.effects || {};
+        for (const key in oldEffects) { // eslint-disable-line
+            if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
                 const action = createAction(`${model.namespace}/${key}`);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
                     if (immutable) {
@@ -177,10 +178,25 @@ export default function createResa(options = {}) {
                     },
                 };
 
-                newEffect[key] = function (obj) { // eslint-disable-line
-                    return store.dispatch(action.pending(obj));
+                /**
+                 * action creaters
+                 */
+                newEffects[key] = obj => store.dispatch(action.pending(obj));
+                this.runSaga(getSaga(app, action, oldEffects[key], model, dispatch));
+            }
+        }
+
+        const newReducers = {};
+        const oldReducers = model.reducers || {};
+        for (const key in oldReducers) { // eslint-disable-line
+            if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
+                actions[`${model.namespace}/${key}`] = oldReducers[key];
+                newReducers[key] = (obj) => {
+                    store.dispatch({
+                        type: `${model.namespace}/${key}`,
+                        payload: obj,
+                    });
                 };
-                this.runSaga(getSaga(app, action, model.effects[key], model, dispatch));
             }
         }
 
@@ -194,8 +210,8 @@ export default function createResa(options = {}) {
         }
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
-        // replace original effects
-        this.models[model.namespace] = Object.assign({}, model, { effects: newEffect });
+        // replace original effects and reducers with action creaters
+        this.models[model.namespace] = Object.assign({}, model, { effects: newEffects, reducers: newReducers });
 
         this.models[model.namespace].getState = () => {
             if (!immutable) {

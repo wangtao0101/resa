@@ -282,3 +282,32 @@ describe('tow model use same reducer', () => {
         });
     });
 });
+
+const modelReducer = {
+    namespace: 'modelReducer',
+    reducerName: 'modelReducer',
+    effects: {
+        * add(_models, action, { fulfilled, _reject }) {
+            yield fulfilled(action.payload);
+        },
+    },
+    reducers: {
+        xxx(state, { payload }) {
+            return Object.assign(state, payload);
+        },
+    },
+};
+
+describe('reducers', () => {
+    test('handle reducers success', () => {
+        const app = createResa();
+        app.registerModel(modelReducer);
+        app.models.modelReducer.reducers.xxx({ a: 'dd' });
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            modelReducer: {
+                a: 'dd',
+            },
+        });
+    });
+});
