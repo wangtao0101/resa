@@ -185,12 +185,12 @@ export default function createResa(options = {}) {
         }
 
         // find reducer and merge reducer
-        if (store.reducerList[model.reducer] == null) {
-            store.reducerList[model.reducer] = [handleActions(actions, model.state || getEmptyObject())];
-            store.asyncReducers[model.reducer] = store.reducerList[model.reducer][0];
+        if (store.reducerList[model.reducerName] == null) {
+            store.reducerList[model.reducerName] = [handleActions(actions, model.state || getEmptyObject())];
+            store.asyncReducers[model.reducerName] = store.reducerList[model.reducerName][0];
         } else {
-            store.reducerList[model.reducer].push(handleActions(actions, model.state || getEmptyObject()));
-            store.asyncReducers[model.reducer] = composeHandleActions(store.reducerList[model.reducer]);
+            store.reducerList[model.reducerName].push(handleActions(actions, model.state || getEmptyObject()));
+            store.asyncReducers[model.reducerName] = composeHandleActions(store.reducerList[model.reducerName]);
         }
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
@@ -199,9 +199,9 @@ export default function createResa(options = {}) {
 
         this.models[model.namespace].getState = () => {
             if (!immutable) {
-                return app.store.getState()[model.reducer];
+                return app.store.getState()[model.reducerName];
             }
-            return app.store.getState().get(model.reducer);
+            return app.store.getState().get(model.reducerName);
         };
     }
 

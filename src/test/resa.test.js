@@ -10,7 +10,7 @@ function myReducer(state = {}, _action) {
 
 const model = {
     namespace: 'model',
-    reducer: 'model',
+    reducerName: 'model',
     effects: {
         * add(_models, action, { fulfilled, _reject }) {
             yield call(fulfilled, action.payload);
@@ -24,7 +24,7 @@ const model = {
 
 const effectModel = {
     namespace: 'effectModel',
-    reducer: 'effectModel',
+    reducerName: 'effectModel',
     state: {
         count: 0,
     },
@@ -38,7 +38,7 @@ const effectModel = {
 
 const callSelfModel = {
     namespace: 'callSelfModel',
-    reducer: 'callSelfModel',
+    reducerName: 'callSelfModel',
     effects: {
         * add(_models, action, { _fulfilled, _reject }) {
             yield call(this.effects.minus, action.payload);
@@ -76,7 +76,7 @@ describe('registerModel', () => {
         app.registerModel(model);
         expect(app.models.model).toEqual(expect.objectContaining({
             namespace: 'model',
-            reducer: 'model',
+            reducerName: 'model',
             effects: {
                 add: expect.anything(),
                 minus: expect.anything(),
@@ -221,7 +221,7 @@ describe('dispatch action success', () => {
 
 const model1 = {
     namespace: 'model1',
-    reducer: 'model',
+    reducerName: 'model',
     effects: {
         * add(_models, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);
@@ -231,7 +231,7 @@ const model1 = {
 
 const model2 = {
     namespace: 'model2',
-    reducer: 'model',
+    reducerName: 'model',
     effects: {
         * add(_models, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);

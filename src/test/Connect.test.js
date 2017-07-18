@@ -4,7 +4,7 @@ import createResa, { Provider, connect } from './..';
 
 const model = {
     namespace: 'model',
-    reducer: 'model',
+    reducerName: 'model',
     effects: {
         * add(_app, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);
@@ -18,7 +18,7 @@ const model = {
 
 const model1 = {
     namespace: 'model1',
-    reducer: 'model1',
+    reducerName: 'model1',
     effects: {
         * add(_app, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);
