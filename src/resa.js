@@ -69,10 +69,10 @@ export default function createResa(options = {}) {
         return reducer;
     }
 
-    function getEffectSaga(app, saga, namespace, dispatch) {
+    function getEffectSaga(models, saga, namespace, dispatch) {
         return function* (action) { // eslint-disable-line
             try {
-                yield call([app.models[namespace], saga], app, action, dispatch);
+                yield call([models[namespace], saga], models, action, dispatch);
             } catch (error) {
                 console.error(error); // eslint-disable-line
             }
@@ -81,10 +81,10 @@ export default function createResa(options = {}) {
 
     function getSaga(app, action, effect, model, dispatch) {
         let type = 'takeEvery';
-        let trueEffect = effect;
+        let actualEffect = effect;
         if (Array.isArray(effect)) {
             type = effect[1];
-            trueEffect = effect[0];
+            actualEffect = effect[0];
 
             invariant(
                 ['takeEvery', 'takeLatest', 'throttle'].indexOf(type) > -1,
@@ -104,7 +104,7 @@ export default function createResa(options = {}) {
                 return function* () { // eslint-disable-line
                     yield takeLatest(
                         action.pending,
-                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
                     );
                 };
         case 'throttle':
@@ -112,14 +112,14 @@ export default function createResa(options = {}) {
                     yield throttle(
                         effect[2],
                         action.pending,
-                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
                     );
                 };
         default:
                 return function* () { // eslint-disable-line
                     yield takeEvery(
                         action.pending,
-                        getEffectSaga(app, trueEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
                     );
                 };
         }

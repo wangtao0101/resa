@@ -12,11 +12,11 @@ const model = {
     namespace: 'model',
     reducer: 'model',
     effects: {
-        * add(_app, action, { fulfilled, _reject }) {
+        * add(_models, action, { fulfilled, _reject }) {
             yield call(fulfilled, action.payload);
         },
 
-        * minus(_app, action, { _fulfilled, reject }) {
+        * minus(_models, action, { _fulfilled, reject }) {
             yield call(reject, action.payload);
         },
     },
@@ -29,9 +29,9 @@ const effectModel = {
         count: 0,
     },
     effects: {
-        add: [function* (_app, _action, { fulfilled, _reject }) { // eslint-disable-line
+        add: [function* ({ effectModel }, _action, { fulfilled, _reject }) { // eslint-disable-line
             yield delay(10);
-            yield call(fulfilled, { count: _app.models.effectModel.getState().count + 1 });
+            yield call(fulfilled, { count: effectModel.getState().count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -40,11 +40,11 @@ const callSelfModel = {
     namespace: 'callSelfModel',
     reducer: 'callSelfModel',
     effects: {
-        * add(_app, action, { _fulfilled, _reject }) {
+        * add(_models, action, { _fulfilled, _reject }) {
             yield call(this.effects.minus, action.payload);
         },
 
-        * minus(_app, action, { _fulfilled, reject }) {
+        * minus(_models, action, { _fulfilled, reject }) {
             yield call(reject, action.payload);
         },
     },
@@ -223,7 +223,7 @@ const model1 = {
     namespace: 'model1',
     reducer: 'model',
     effects: {
-        * add(_app, action, { fulfilled, _reject }) {
+        * add(_models, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);
         },
     },
@@ -233,7 +233,7 @@ const model2 = {
     namespace: 'model2',
     reducer: 'model',
     effects: {
-        * add(_app, action, { fulfilled, _reject }) {
+        * add(_models, action, { fulfilled, _reject }) {
             yield fulfilled(action.payload);
         },
     },
