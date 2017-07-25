@@ -311,3 +311,88 @@ describe('reducers', () => {
         });
     });
 });
+
+const unModel = {
+    namespace: 'unModel',
+    reducerName: 'unModel',
+    effects: {
+        * add(_models, action, { fulfilled, _reject }) {
+            yield delay(5);
+            yield fulfilled(action.payload);
+        },
+    },
+    reducers: {
+        xxx(state, { payload }) {
+            return Object.assign(state, payload);
+        },
+    },
+};
+
+const unModel1 = {
+    namespace: 'unModel1',
+    reducerName: 'unModel',
+    effects: {
+        * add(_models, action, { fulfilled, _reject }) {
+            yield delay(5);
+            yield fulfilled(action.payload);
+        },
+    },
+    reducers: {
+        xxx(state, { payload }) {
+            return Object.assign(state, payload);
+        },
+    },
+};
+
+describe('unRegisterModel', () => {
+    test('unRegisterModel model success', () => {
+        const app = createResa();
+        app.registerModel(unModel);
+        app.models.unModel.reducers.xxx({ a: 'dd' });
+        app.models.unModel.effects.add({ b: 'cc' });
+        app.unRegisterModel(unModel);
+        expect(app.models).toEqual({});
+        expect(app.store.asyncReducers).toEqual({});
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                unModel: {
+                    a: 'dd',
+                    loading: true,
+                },
+            });
+        });
+    });
+
+    test('unRegisterModel model success when two models using same reducerName', () => {
+        const app = createResa();
+        app.registerModel(unModel);
+        app.registerModel(unModel1);
+        app.models.unModel.reducers.xxx({ a: 'dd' });
+        app.models.unModel.effects.add({ b: 'cc' });
+        app.unRegisterModel(unModel);
+        expect(app.models).toEqual(expect.objectContaining({
+            unModel1: expect.anything(),
+        }));
+        expect(app.store.asyncReducers).toEqual(expect.objectContaining({
+            unModel: expect.anything(),
+        }));
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                unModel: {
+                    a: 'dd',
+                    loading: true,
+                },
+            });
+        });
+    });
+});
