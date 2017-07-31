@@ -249,6 +249,16 @@ export default function createResa(options = {}) {
             }
             return app.store.getState().get(model.reducerName);
         };
+
+        if (model.setup) {
+            this.runSaga(function* () { // eslint-disable-line
+                const task = yield fork([app.models[model.namespace], model.setup]);
+                yield fork(function* () { // eslint-disable-line
+                    yield take(`${model.namespace}/${ActionTypes.CANCEL_EFFECTS}`);
+                    yield cancel(task);
+                });
+            });
+        }
     }
 
     /**

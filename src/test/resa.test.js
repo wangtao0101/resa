@@ -396,3 +396,64 @@ describe('unRegisterModel', () => {
         });
     });
 });
+
+const setupModel = {
+    namespace: 'setupModel',
+    reducerName: 'setupModel',
+    effects: {
+        * add(_models, { resolve, reject, payload }, { fulfilled, _reject }) {
+            try {
+                yield fulfilled(payload);
+                resolve();
+            } catch (error) {
+                reject();
+            }
+        },
+    },
+    * setup() {
+        yield call(this.effects.add, { aa: 'bbc' });
+        yield delay(10);
+        yield call(this.effects.add, { aa: 'bbb' });
+    },
+};
+
+describe('test setup', () => {
+    test('setup success', () => {
+        const app = createResa();
+        app.registerModel(setupModel);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                setupModel: {
+                    aa: 'bbc',
+                    loading: false,
+                },
+            });
+        });
+    });
+
+    test('cancel setup success', () => {
+        const app = createResa();
+        app.registerModel(setupModel);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                app.unRegisterModel(setupModel);
+            }, 5);
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 15);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                setupModel: {
+                    aa: 'bbc',
+                    loading: false,
+                },
+            });
+        });
+    });
+});
