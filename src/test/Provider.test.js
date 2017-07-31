@@ -4,7 +4,8 @@ import TestUtils from 'react-dom/test-utils';
 import createResa, { Provider } from '../';
 
 describe('Provider', () => {
-    const createChild = (storeKey = 'store', resaKey = 'resa') => {
+    const createChild = (storeKey = 'store') => {
+        const resaKey = `${storeKey}Resa`;
         class Child extends Component { // eslint-disable-line
             render() {
                 return <div />;
@@ -30,6 +31,6 @@ describe('Provider', () => {
 
         const child = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(child.context.store).toBe(app.store);
-        expect(child.context.resa).toBe(app);
+        expect(child.context.storeResa).toBe(app);
     });
 });

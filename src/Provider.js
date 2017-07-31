@@ -38,7 +38,8 @@ function warnAboutReceivingStore() {
     );
 }
 
-export function createProvider(storeKey = 'store', subKey, resaKey = 'resa') {
+export function createProvider(storeKey = 'store', subKey) {
+    const resaKey = `${storeKey}Resa`;
     const subscriptionKey = subKey || `${storeKey}Subscription`;
 
     class Provider extends Component {

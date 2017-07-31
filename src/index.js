@@ -1,7 +1,9 @@
 
 import createResa from './resa';
 import Provider from './Provider';
-import connect from './Connect';
+import createConnect from './Connect';
+
+const connect = createConnect();
 
 export default createResa;
 export {
