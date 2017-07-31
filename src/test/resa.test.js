@@ -14,10 +14,12 @@ const model = {
     effects: {
         * add(_models, action, { fulfilled, _reject }) {
             yield call(fulfilled, action.payload);
+            return 5;
         },
 
         * minus(_models, action, { _fulfilled, reject }) {
             yield call(reject, action.payload);
+            throw new Error('error');
         },
     },
 };
@@ -105,11 +107,22 @@ describe('dispatch action success', () => {
         });
     });
 
-    test('dispatch return promise success', () => {
+    test('dispatch return promise resolve success', () => {
         const app = createResa();
         app.registerModel(model);
-        const result = app.models.model.effects.add({ a: 'a' });
-        expect(Object.prototype.toString.call(result.then)).toEqual('[object Function]');
+        return app.models.model.effects.add({ a: 'a' })
+            .then((data) => {
+                expect(data).toEqual(5);
+            });
+    });
+
+    test('dispatch return promise reject success', () => {
+        const app = createResa();
+        app.registerModel(model);
+        return app.models.model.effects.minus({ a: 'a' })
+            .catch((data) => {
+                expect(data.message).toEqual('error');
+            });
     });
 
     test('dispatch fulfilled success when immutable', () => {
@@ -239,7 +252,7 @@ const model2 = {
     },
 };
 
-describe('tow model use same reducer', () => {
+describe('two model use same reducer', () => {
     test('reserve state after add new model in same reducer', () => {
         const app = createResa();
         app.registerModel(model1);
@@ -401,12 +414,11 @@ const setupModel = {
     namespace: 'setupModel',
     reducerName: 'setupModel',
     effects: {
-        * add(_models, { resolve, reject, payload }, { fulfilled, _reject }) {
+        * add(_models, { payload }, { fulfilled, _reject }) {
             try {
                 yield fulfilled(payload);
-                resolve();
             } catch (error) {
-                reject();
+                //
             }
         },
     },

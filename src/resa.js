@@ -11,6 +11,8 @@ const ActionTypes = {
     CANCEL_EFFECTS: '@@CANCEL_EFFECTS',
 };
 
+const noop = () => {};
+
 export default function createResa(options = {}) {
     const {
         reducers = {},
@@ -86,17 +88,20 @@ export default function createResa(options = {}) {
         return composeHandleActions(reducerList);
     }
 
-    function getEffectSaga(models, saga, namespace, dispatch) {
+    function getEffectSaga(models, saga, namespace, dispatch, errorHandle = noop) {
         return function* (action) { // eslint-disable-line
+            const { resolve, reject, ...rest } = action;
             try {
-                yield call([models[namespace], saga], models, action, dispatch);
+                const result = yield call([models[namespace], saga], models, rest, dispatch);
+                resolve(result);
             } catch (error) {
-                console.error(error); // eslint-disable-line
+                errorHandle(error);
+                reject(error);
             }
         };
     }
 
-    function getSaga(app, action, effect, model, dispatch) {
+    function getSaga(app, action, effect, model, dispatch, errorHandle) {
         let type = 'takeEvery';
         let actualEffect = effect;
         if (Array.isArray(effect)) {
@@ -121,7 +126,7 @@ export default function createResa(options = {}) {
                 return function* () { // eslint-disable-line
                     yield takeLatest(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
                     );
                 };
             case 'throttle': // eslint-disable-line
@@ -129,14 +134,14 @@ export default function createResa(options = {}) {
                     yield throttle(
                         effect[2],
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
                     );
                 };
             default: // eslint-disable-line
                 return function* () { // eslint-disable-line
                     yield takeEvery(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch)
+                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
                     );
                 };
         }
@@ -204,7 +209,7 @@ export default function createResa(options = {}) {
                  * run watcher
                  */
                 this.runSaga(function* () { // eslint-disable-line
-                    const saga = getSaga(app, action, oldEffects[key], model, dispatch);
+                    const saga = getSaga(app, action, oldEffects[key], model, dispatch, model.errorHandle);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
                         yield take(`${model.namespace}/${ActionTypes.CANCEL_EFFECTS}`);
