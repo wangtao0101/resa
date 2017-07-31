@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider, connect } from './..';
+import createResa, { Provider, connect, connectModel } from './..';
 
 const model = {
     namespace: 'model',
@@ -30,13 +30,13 @@ const model1 = {
     },
 };
 
-describe('Connect', () => {
-    class Child extends Component { // eslint-disable-line
-        render() {
-            return <div />;
-        }
+class Child extends Component { // eslint-disable-line
+    render() {
+        return <div />;
     }
+}
 
+describe('Connect', () => {
     test('should pass state and props to the given component', () => {
         const app = createResa();
 
@@ -138,5 +138,34 @@ describe('Connect', () => {
             model: app.models.model,
             model1: app.models.model1,
         });
+    });
+});
+
+
+describe('connectModel', () => {
+    test('conncet model success', () => {
+        const app = createResa();
+        app.registerModel(model);
+
+        const mapStateToProps = (_app, _state) => ({
+            a: 'a',
+        });
+
+        const ConnectedChild = connectModel(mapStateToProps, ['model'])(Child);
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <ConnectedChild />
+            </Provider>
+        );
+
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        expect(container.props.a).toEqual('a');
+
+        const newModel = Object.assign({}, {
+            effects: app.models.model.effects,
+            reducers: app.models.model.reducers,
+        });
+        expect(container.props.model).toEqual(newModel);
     });
 });

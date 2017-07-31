@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
 import hoistNonReactStatic from 'hoist-non-react-statics';
+import invariant from 'invariant';
 import { storeShape, subscriptionShape, resaShape } from './Provider';
 
-export default function createConnect() {
+export default function createConnect(isConnectModel = false) {
     return (mapStateToProps, mapDispatchToProps, mergeProps, extraOptions = {}) => {
         const storeKey = extraOptions.storeKey || 'store';
         const resaKey = `${storeKey}Resa`;
@@ -31,6 +32,19 @@ export default function createConnect() {
                     const newMapDispatchToProps = (() => {
                         if (mapDispatchToProps == null) {
                             return null;
+                        }
+                        if (isConnectModel) {
+                            invariant(Array.isArray(mapDispatchToProps),
+                                "The second args of connectModel should be an array of model's namespace!");
+                            const models = {};
+                            mapDispatchToProps.forEach((namespace) => {
+                                const model = this.resa.models[namespace];
+                                models[namespace] = Object.assign({}, {
+                                    effects: model.effects,
+                                    reducers: model.reducers,
+                                });
+                            });
+                            return () => models;
                         }
                         return dispatch => mapDispatchToProps(this.resa.models, dispatch);
                     })();
