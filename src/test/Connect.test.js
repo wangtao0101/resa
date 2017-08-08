@@ -112,6 +112,22 @@ describe('Connect', () => {
         });
     });
 
+    test('mapDispatchToProps can get wapperInstance by setting connectOptions withref', () => {
+        const app = createResa();
+
+        const ConnectedChild = connect(null, null, null, { withRef: true })(Child);
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <ConnectedChild />
+            </Provider>
+        );
+
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        const wapper = TestUtils.findRenderedComponentWithType(tree, ConnectedChild);
+        expect(wapper.getWrappedInstance()).toEqual(container);
+    });
+
     test('mapDispatchToProps can bind app namespace and get model in mapdispathtoprops', () => {
         const app = createResa();
         app.registerModel(model);

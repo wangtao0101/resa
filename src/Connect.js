@@ -21,7 +21,10 @@ export default function createConnect(isConnectModel = false) {
                 constructor(props, context) {
                     super(props, context);
                     this.resa = context[resaKey];
-                    this.wrappedInstance = WrappedComponent;
+                    this.wrappedInstance = null;
+
+                    this.setWappedInstance = this.setWappedInstance.bind(this);
+                    this.getWrappedInstance = this.getWrappedInstance.bind(this);
 
                     const newMapStateToProps = (() => {
                         if (mapStateToProps == null) {
@@ -63,9 +66,17 @@ export default function createConnect(isConnectModel = false) {
                     };
                 }
 
+                getWrappedInstance() {
+                    return this.wrappedInstance.getWrappedInstance();
+                }
+
+                setWappedInstance(ref) {
+                    this.wrappedInstance = ref;
+                }
+
                 render() {
                     const ConnectedComponent = this.ConnectedComponent;
-                    return <ConnectedComponent {...this.props} />;
+                    return <ConnectedComponent {...this.props} ref={this.setWappedInstance} />;
                 }
             }
 
