@@ -209,7 +209,7 @@ export default function createResa(options = {}) {
                  * run watcher
                  */
                 this.runSaga(function* () { // eslint-disable-line
-                    const saga = getSaga(app, action, oldEffects[key], model, dispatch, model.errorHandle);
+                    const saga = getSaga(app, action, oldEffects[key], model, dispatch, options.errorHandle);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
                         yield take(`${model.namespace}/${ActionTypes.CANCEL_EFFECTS}`);
