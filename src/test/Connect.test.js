@@ -6,12 +6,12 @@ const model = {
     namespace: 'model',
     reducerName: 'model',
     effects: {
-        * add(_app, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+        * add(payload) {
+            yield this.fulfilled(payload);
         },
 
-        * minus(_app, action, { _fulfilled, reject }) {
-            yield reject(action.payload);
+        * minus(payload) {
+            yield this.reject(payload);
         },
     },
 };
@@ -20,12 +20,12 @@ const model1 = {
     namespace: 'model1',
     reducerName: 'model1',
     effects: {
-        * add(_app, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+        * add(payload) {
+            yield this.fulfilled(payload);
         },
 
-        * minus(_app, action, { _fulfilled, reject }) {
-            yield reject(action.payload);
+        * minus(payload) {
+            yield this.reject(payload);
         },
     },
 };

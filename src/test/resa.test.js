@@ -12,13 +12,13 @@ const model = {
     namespace: 'model',
     reducerName: 'model',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
-            yield call(fulfilled, action.payload);
+        * add(payload) {
+            yield call(this.fulfilled, payload);
             return 5;
         },
 
-        * minus(_models, action, { _fulfilled, reject }) {
-            yield call(reject, action.payload);
+        * minus(payload) {
+            yield call(this.reject, payload);
             throw new Error('error');
         },
     },
@@ -31,9 +31,9 @@ const effectModel = {
         count: 0,
     },
     effects: {
-        add: [function* ({ effectModel }, _action, { fulfilled, _reject }) { // eslint-disable-line
+        add: [function* (payload, { effectModel }) { // eslint-disable-line
             yield delay(10);
-            yield call(fulfilled, { count: effectModel.getState().count + 1 });
+            yield call(this.fulfilled, { count: effectModel.getState().count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -42,12 +42,12 @@ const callSelfModel = {
     namespace: 'callSelfModel',
     reducerName: 'callSelfModel',
     effects: {
-        * add(_models, action, { _fulfilled, _reject }) {
-            yield call(this.effects.minus, action.payload);
+        * add(payload) {
+            yield call(this.effects.minus, payload);
         },
 
-        * minus(_models, action, { _fulfilled, reject }) {
-            yield call(reject, action.payload);
+        * minus(payload) {
+            yield call(this.reject, payload);
         },
     },
 };
@@ -236,8 +236,8 @@ const model1 = {
     namespace: 'model1',
     reducerName: 'model',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+        * add(payload) {
+            yield this.fulfilled(payload);
         },
     },
 };
@@ -246,8 +246,8 @@ const model2 = {
     namespace: 'model2',
     reducerName: 'model',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+        * add(payload) {
+            yield this.fulfilled(payload);
         },
     },
 };
@@ -300,8 +300,8 @@ const modelReducer = {
     namespace: 'modelReducer',
     reducerName: 'modelReducer',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
-            yield fulfilled(action.payload);
+        * add(payload) {
+            yield this.fulfilled(payload);
         },
     },
     reducers: {
@@ -329,9 +329,9 @@ const unModel = {
     namespace: 'unModel',
     reducerName: 'unModel',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
+        * add(payload) {
             yield delay(5);
-            yield fulfilled(action.payload);
+            yield this.fulfilled(payload);
         },
     },
     reducers: {
@@ -345,9 +345,9 @@ const unModel1 = {
     namespace: 'unModel1',
     reducerName: 'unModel',
     effects: {
-        * add(_models, action, { fulfilled, _reject }) {
+        * add(payload) {
             yield delay(5);
-            yield fulfilled(action.payload);
+            yield this.fulfilled(payload);
         },
     },
     reducers: {
@@ -414,9 +414,9 @@ const setupModel = {
     namespace: 'setupModel',
     reducerName: 'setupModel',
     effects: {
-        * add(_models, { payload }, { fulfilled, _reject }) {
+        * add(payload) {
             try {
-                yield fulfilled(payload);
+                yield this.fulfilled(payload);
             } catch (error) {
                 //
             }
