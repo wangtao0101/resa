@@ -92,7 +92,8 @@ export default function createResa(options = {}) {
         return function* (action) { // eslint-disable-line
             const { resolve, reject, ...rest } = action;
             try {
-                const result = yield call([models[namespace], saga], models, rest, dispatch);
+                const that = Object.assign({}, models[namespace], dispatch);
+                const result = yield call([that, saga], rest.payload, models);
                 resolve(result);
             } catch (error) {
                 errorHandle(error);

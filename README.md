@@ -92,9 +92,9 @@ const model = {
     namespace: 'model',
     reducerName: 'model', // Support different namespace using the same reducer name.
     effects: {
-        * query({ model }, action, { fulfilled, reject }) {
+        * query(payload) {
             const data = yield call(xxxApi) // fetch data
-            yield fulfilled({ data }); // the fulfilled will merge data into state automatic.
+            yield this.fulfilled({ data }); // the fulfilled will merge data into state automatic.
         },
     },
 };
