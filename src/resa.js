@@ -88,11 +88,11 @@ export default function createResa(options = {}) {
         return composeHandleActions(reducerList);
     }
 
-    function getEffectSaga(models, saga, namespace, dispatch, errorHandle = noop) {
+    function getEffectSaga(models, saga, name, dispatch, errorHandle = noop) {
         return function* (action) { // eslint-disable-line
             const { resolve, reject, ...rest } = action;
             try {
-                const that = Object.assign({}, models[namespace], dispatch);
+                const that = Object.assign({}, models[name], dispatch);
                 const result = yield call([that, saga], rest.payload, models);
                 resolve(result);
             } catch (error) {
@@ -127,7 +127,7 @@ export default function createResa(options = {}) {
                 return function* () { // eslint-disable-line
                     yield takeLatest(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
                     );
                 };
             case 'throttle': // eslint-disable-line
@@ -135,14 +135,14 @@ export default function createResa(options = {}) {
                     yield throttle(
                         effect[2],
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
                     );
                 };
             default: // eslint-disable-line
                 return function* () { // eslint-disable-line
                     yield takeEvery(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.namespace, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
                     );
                 };
         }
@@ -159,20 +159,25 @@ export default function createResa(options = {}) {
         return newState;
     }
 
-    function registerModel(model) {
+    function registerModel(model, reducerName) {
         const app = this;
         const store = this.store;
         const actions = {};
 
-        if (this.models[model.namespace] != null) {
+        if (this.models[model.name] != null) {
             return;
+        }
+
+        // use model.name for default reducer name
+        if (reducerName == null) {
+            reducerName = model.name; // eslint-disable-line
         }
 
         const newEffects = {};
         const oldEffects = model.effects || {};
         for (const key in oldEffects) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
-                const action = createAction(`${model.namespace}/${key}`);
+                const action = createAction(`${model.name}/${key}`);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
                     if (immutable) {
                         return mergeImmutablePayload(state, {}, true);
@@ -213,7 +218,7 @@ export default function createResa(options = {}) {
                     const saga = getSaga(app, action, oldEffects[key], model, dispatch, options.errorHandle);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
-                        yield take(`${model.namespace}/${ActionTypes.CANCEL_EFFECTS}`);
+                        yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
                         yield cancel(task);
                     });
                 });
@@ -224,10 +229,10 @@ export default function createResa(options = {}) {
         const oldReducers = model.reducers || {};
         for (const key in oldReducers) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
-                actions[`${model.namespace}/${key}`] = oldReducers[key];
+                actions[`${model.name}/${key}`] = oldReducers[key];
                 newReducers[key] = (obj) => {
                     store.dispatch({
-                        type: `${model.namespace}/${key}`,
+                        type: `${model.name}/${key}`,
                         payload: obj,
                     });
                 };
@@ -235,32 +240,36 @@ export default function createResa(options = {}) {
         }
 
         // find reducer and merge reducer
-        if (store.reducerList[model.reducerName] == null) {
-            store.reducerList[model.reducerName] = {};
-            store.reducerList[model.reducerName][model.namespace] =
+        if (store.reducerList[reducerName] == null) {
+            store.reducerList[reducerName] = {};
+            store.reducerList[reducerName][model.name] =
                 handleActions(actions, model.state || getEmptyObject());
         } else {
-            store.reducerList[model.reducerName][model.namespace] =
+            store.reducerList[reducerName][model.name] =
                 handleActions(actions, model.state || getEmptyObject());
         }
-        store.asyncReducers[model.reducerName] = mergeReducer(store.reducerList[model.reducerName]);
+        store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName]);
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
         // replace original effects and reducers with action creaters
-        this.models[model.namespace] = Object.assign({}, model, { effects: newEffects, reducers: newReducers });
+        this.models[model.name] = Object.assign({}, model, {
+            effects: newEffects,
+            reducers: newReducers,
+            reducerName,
+        });
 
-        this.models[model.namespace].getState = () => {
+        this.models[model.name].getState = () => {
             if (!immutable) {
-                return app.store.getState()[model.reducerName];
+                return app.store.getState()[reducerName];
             }
-            return app.store.getState().get(model.reducerName);
+            return app.store.getState().get(reducerName);
         };
 
         if (model.setup) {
             this.runSaga(function* () { // eslint-disable-line
-                const task = yield fork([app.models[model.namespace], model.setup]);
+                const task = yield fork([app.models[model.name], model.setup]);
                 yield fork(function* () { // eslint-disable-line
-                    yield take(`${model.namespace}/${ActionTypes.CANCEL_EFFECTS}`);
+                    yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
                     yield cancel(task);
                 });
             });
@@ -271,12 +280,17 @@ export default function createResa(options = {}) {
      * unregister model, including delete reducer, delete asyncReducers ,cancle saga, delete model
      * @param {*} model
      */
-    function unRegisterModel(model) {
+    function unRegisterModel(name) {
         const store = this.store;
 
-        store.dispatch({ type: `${model.namespace}/${ActionTypes.CANCEL_EFFECTS}` });
-        if (store.reducerList[model.reducerName] && store.reducerList[model.reducerName][model.namespace]) {
-            delete store.reducerList[model.reducerName][model.namespace];
+        const model = this.models[name];
+        if (model == null) {
+            return;
+        }
+
+        store.dispatch({ type: `${model.name}/${ActionTypes.CANCEL_EFFECTS}` });
+        if (store.reducerList[model.reducerName] && store.reducerList[model.reducerName][model.name]) {
+            delete store.reducerList[model.reducerName][model.name];
             const mergedReducer = mergeReducer(store.reducerList[model.reducerName]);
             if (mergedReducer) {
                 store.asyncReducers[model.reducerName] = mergedReducer;
@@ -287,7 +301,7 @@ export default function createResa(options = {}) {
             }
         }
 
-        delete this.models[model.namespace];
+        delete this.models[name];
     }
 
     const app = {

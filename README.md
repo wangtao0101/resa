@@ -89,8 +89,7 @@ The code looks like this if using resa:
 ```
 // define model
 const model = {
-    namespace: 'model',
-    reducerName: 'model', // Support different namespace using the same reducer name.
+    name: 'model',
     effects: {
         * query(payload) {
             const data = yield call(xxxApi) // fetch data
