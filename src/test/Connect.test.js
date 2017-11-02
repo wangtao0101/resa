@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider, connect, connectModel } from './..';
+import createResa, { Provider, connect } from './..';
+import DecoratorChild from './decoratorChild';
 
 const model = {
     name: 'model',
@@ -165,7 +166,7 @@ describe('connectModel', () => {
             a: 'a',
         });
 
-        const ConnectedChild = connectModel(mapStateToProps, ['model'])(Child);
+        const ConnectedChild = connect(mapStateToProps, ['model'])(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
@@ -174,6 +175,26 @@ describe('connectModel', () => {
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        expect(container.props.a).toEqual('a');
+
+        const newModel = Object.assign({}, {
+            effects: app.models.model.effects,
+            reducers: app.models.model.reducers,
+        });
+        expect(container.props.model).toEqual(newModel);
+    });
+
+    test('conncet model decorator success', () => {
+        const app = createResa();
+        app.registerModel(model, 'model1');
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <DecoratorChild />
+            </Provider>
+        );
+
+        const container = TestUtils.findRenderedComponentWithType(tree, DecoratorChild).getWrappedInstance();
         expect(container.props.a).toEqual('a');
 
         const newModel = Object.assign({}, {
