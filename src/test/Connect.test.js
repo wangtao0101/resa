@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider, connect, connectModel } from './..';
+import createResa, { Provider, connect } from './..';
+import DecoratorChild from './decoratorChild';
 
 const model = {
-    namespace: 'model',
-    reducerName: 'model',
+    name: 'model',
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -17,8 +17,7 @@ const model = {
 };
 
 const model1 = {
-    namespace: 'model1',
-    reducerName: 'model1',
+    name: 'model1',
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -65,8 +64,8 @@ describe('Connect', () => {
 
     test('mapStateToProps can get app and state', () => {
         const app = createResa();
-        app.registerModel(model);
-        app.models.model.effects.add({ a: 'a' });
+        app.registerModel(model, 'model');
+        app.models.model.add({ a: 'a' });
 
         const mapStateToProps = ({ model }, state, ownProps) => ({ // eslint-disable-line
             a: state.model.a,
@@ -128,10 +127,10 @@ describe('Connect', () => {
         expect(wapper.getWrappedInstance()).toEqual(container);
     });
 
-    test('mapDispatchToProps can bind app namespace and get model in mapdispathtoprops', () => {
+    test('mapDispatchToProps can bind app name and get model in mapdispathtoprops', () => {
         const app = createResa();
-        app.registerModel(model);
-        app.registerModel(model1);
+        app.registerModel(model, 'model');
+        app.registerModel(model1, 'model1');
         const mapDispatchToProps = ({ model, model1 }, dispatch) => ({ // eslint-disable-line
             func: () => ({
                 dispatch,
@@ -161,13 +160,13 @@ describe('Connect', () => {
 describe('connectModel', () => {
     test('conncet model success', () => {
         const app = createResa();
-        app.registerModel(model);
+        app.registerModel(model, 'model1');
 
         const mapStateToProps = (_app, _state) => ({
             a: 'a',
         });
 
-        const ConnectedChild = connectModel(mapStateToProps, ['model'])(Child);
+        const ConnectedChild = connect(mapStateToProps, ['model'])(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
@@ -176,6 +175,26 @@ describe('connectModel', () => {
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        expect(container.props.a).toEqual('a');
+
+        const newModel = Object.assign({}, {
+            effects: app.models.model.effects,
+            reducers: app.models.model.reducers,
+        });
+        expect(container.props.model).toEqual(newModel);
+    });
+
+    test('conncet model decorator success', () => {
+        const app = createResa();
+        app.registerModel(model, 'model1');
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <DecoratorChild />
+            </Provider>
+        );
+
+        const container = TestUtils.findRenderedComponentWithType(tree, DecoratorChild).getWrappedInstance();
         expect(container.props.a).toEqual('a');
 
         const newModel = Object.assign({}, {

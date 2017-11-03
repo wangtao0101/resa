@@ -89,8 +89,7 @@ The code looks like this if using resa:
 ```
 // define model
 const model = {
-    namespace: 'model',
-    reducerName: 'model', // Support different namespace using the same reducer name.
+    name: 'model',
     effects: {
         * query(payload) {
             const data = yield call(xxxApi) // fetch data
@@ -106,7 +105,7 @@ const mapStateToProps = ({ model }, state, ownProps) => ({ // the first args mod
 
 const mapDispatchToProps = ({ model }, dispatch) => ({ // the first args model refer to above model
     query: (id) => {
-        return model.effects.query(id) // the return object is a promise, so great!!!!
+        return model.query(id) // the return object is a promise, so great!!!!
     },
 });
 
