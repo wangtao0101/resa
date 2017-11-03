@@ -251,12 +251,12 @@ export default function createResa(options = {}) {
         store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName]);
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
-        // replace original effects and reducers with action creaters
-        this.models[model.name] = Object.assign({}, model, {
-            effects: newEffects,
-            reducers: newReducers,
+        this.models[model.name] = {
+            ...newEffects,
+            ...newReducers,
             reducerName,
-        });
+            name: model.name,
+        };
 
         this.models[model.name].getState = () => {
             if (!immutable) {

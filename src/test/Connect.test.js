@@ -65,7 +65,7 @@ describe('Connect', () => {
     test('mapStateToProps can get app and state', () => {
         const app = createResa();
         app.registerModel(model, 'model');
-        app.models.model.effects.add({ a: 'a' });
+        app.models.model.add({ a: 'a' });
 
         const mapStateToProps = ({ model }, state, ownProps) => ({ // eslint-disable-line
             a: state.model.a,

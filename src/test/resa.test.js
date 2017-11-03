@@ -40,7 +40,7 @@ const callSelfModel = {
     name: 'callSelfModel',
     effects: {
         * add(payload) {
-            yield call(this.effects.minus, payload);
+            yield call(this.minus, payload);
         },
 
         * minus(payload) {
@@ -76,10 +76,8 @@ describe('registerModel', () => {
         expect(app.models.model).toEqual(expect.objectContaining({
             name: 'model',
             reducerName: 'model',
-            effects: {
-                add: expect.anything(),
-                minus: expect.anything(),
-            },
+            add: expect.anything(),
+            minus: expect.anything(),
         }));
     });
 });
@@ -88,7 +86,7 @@ describe('dispatch action success', () => {
     test('dispatch fulfilled success', () => {
         const app = createResa();
         app.registerModel(model, 'model');
-        app.models.model.effects.add({ a: 'a' });
+        app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -107,7 +105,7 @@ describe('dispatch action success', () => {
     test('dispatch return promise resolve success', () => {
         const app = createResa();
         app.registerModel(model, 'model');
-        return app.models.model.effects.add({ a: 'a' })
+        return app.models.model.add({ a: 'a' })
             .then((data) => {
                 expect(data).toEqual(5);
             });
@@ -116,7 +114,7 @@ describe('dispatch action success', () => {
     test('dispatch return promise reject success', () => {
         const app = createResa();
         app.registerModel(model, 'model');
-        return app.models.model.effects.minus({ a: 'a' })
+        return app.models.model.minus({ a: 'a' })
             .catch((data) => {
                 expect(data.message).toEqual('error');
             });
@@ -125,7 +123,7 @@ describe('dispatch action success', () => {
     test('dispatch fulfilled success when immutable', () => {
         const app = createResa({ immutable: Immutable });
         app.registerModel(model, 'model');
-        app.models.model.effects.add({ a: 'a' });
+        app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -144,7 +142,7 @@ describe('dispatch action success', () => {
     test('dispatch reject success', () => {
         const app = createResa();
         app.registerModel(model, 'model');
-        app.models.model.effects.minus({ a: 'a' });
+        app.models.model.minus({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -163,7 +161,7 @@ describe('dispatch action success', () => {
     test('dispatch action in saga', () => {
         const app = createResa();
         app.registerModel(callSelfModel, 'callSelfModel');
-        app.models.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -182,7 +180,7 @@ describe('dispatch action success', () => {
     test('model getState success', () => {
         const app = createResa();
         app.registerModel(callSelfModel, 'callSelfModel');
-        app.models.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.models.callSelfModel.getState());
@@ -198,7 +196,7 @@ describe('dispatch action success', () => {
     test('model getState success when use immutable', () => {
         const app = createResa({ immutable: Immutable });
         app.registerModel(callSelfModel, 'callSelfModel');
-        app.models.callSelfModel.effects.add({ a: 'a' });
+        app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.models.callSelfModel.getState());
@@ -214,8 +212,8 @@ describe('dispatch action success', () => {
     test('takeLatest', () => {
         const app = createResa();
         app.registerModel(effectModel, 'effectModel');
-        app.models.effectModel.effects.add({ a: 'a' });
-        app.models.effectModel.effects.add({ a: 'c' });
+        app.models.effectModel.add({ a: 'a' });
+        app.models.effectModel.add({ a: 'c' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.models.effectModel.getState());
@@ -251,7 +249,7 @@ describe('two model use same reducer', () => {
     test('reserve state after add new model in same reducer', () => {
         const app = createResa();
         app.registerModel(model1, 'model');
-        app.models.model1.effects.add({ a: 'a' });
+        app.models.model1.add({ a: 'a' });
         app.registerModel(model2, 'model');
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -272,8 +270,8 @@ describe('two model use same reducer', () => {
         const app = createResa();
         app.registerModel(model1, 'model');
         app.registerModel(model2, 'model');
-        app.models.model1.effects.add({ a: 'a' });
-        app.models.model2.effects.add({ b: 'b' });
+        app.models.model1.add({ a: 'a' });
+        app.models.model2.add({ b: 'b' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -309,7 +307,7 @@ describe('reducers', () => {
     test('handle reducers success', () => {
         const app = createResa();
         app.registerModel(modelReducer, 'modelReducer');
-        app.models.modelReducer.reducers.xxx({ a: 'dd' });
+        app.models.modelReducer.xxx({ a: 'dd' });
         expect(app.store.getState()).toEqual({
             resaReducer: {},
             modelReducer: {
@@ -354,8 +352,8 @@ describe('unRegisterModel', () => {
     test('unRegisterModel model success', () => {
         const app = createResa();
         app.registerModel(unModel, 'unModel');
-        app.models.unModel.reducers.xxx({ a: 'dd' });
-        app.models.unModel.effects.add({ b: 'cc' });
+        app.models.unModel.xxx({ a: 'dd' });
+        app.models.unModel.add({ b: 'cc' });
         app.unRegisterModel('unModel');
         expect(app.models).toEqual({});
         expect(app.store.asyncReducers).toEqual({});
@@ -378,8 +376,8 @@ describe('unRegisterModel', () => {
         const app = createResa();
         app.registerModel(unModel, 'unModel');
         app.registerModel(unModel1, 'unModel');
-        app.models.unModel.reducers.xxx({ a: 'dd' });
-        app.models.unModel.effects.add({ b: 'cc' });
+        app.models.unModel.xxx({ a: 'dd' });
+        app.models.unModel.add({ b: 'cc' });
         app.unRegisterModel('unModel');
         expect(app.models).toEqual(expect.objectContaining({
             unModel1: expect.anything(),
@@ -415,9 +413,9 @@ const setupModel = {
         },
     },
     * setup() {
-        yield call(this.effects.add, { aa: 'bbc' });
+        yield call(this.add, { aa: 'bbc' });
         yield delay(10);
-        yield call(this.effects.add, { aa: 'bbb' });
+        yield call(this.add, { aa: 'bbb' });
     },
 };
 
