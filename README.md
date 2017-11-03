@@ -105,7 +105,7 @@ const mapStateToProps = ({ model }, state, ownProps) => ({ // the first args mod
 
 const mapDispatchToProps = ({ model }, dispatch) => ({ // the first args model refer to above model
     query: (id) => {
-        return model.effects.query(id) // the return object is a promise, so great!!!!
+        return model.query(id) // the return object is a promise, so great!!!!
     },
 });
 
