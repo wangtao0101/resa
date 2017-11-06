@@ -80,6 +80,17 @@ describe('registerModel', () => {
             minus: expect.anything(),
         }));
     });
+
+    test('register model success use reducerName in model', () => {
+        const app = createResa();
+        app.registerModel(Object.assign({}, model, { reducerName: 'model1' }));
+        expect(app.models.model).toEqual(expect.objectContaining({
+            name: 'model',
+            reducerName: 'model1',
+            add: expect.anything(),
+            minus: expect.anything(),
+        }));
+    });
 });
 
 describe('dispatch action success', () => {

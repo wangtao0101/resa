@@ -169,7 +169,7 @@ export default function createResa(options = {}) {
 
         // use model.name for default reducer name
         if (reducerName == null) {
-            reducerName = model.name; // eslint-disable-line
+            reducerName = model.reducerName || model.name; // eslint-disable-line
         }
 
         const newEffects = {};
