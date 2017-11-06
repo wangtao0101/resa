@@ -177,21 +177,17 @@ export default function createResa(options = {}) {
         for (const key in oldEffects) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
                 const action = createAction(`${model.name}/${key}`);
-                actions[action.pending] = (state, action) => { // eslint-disable-line
-                    return state;
-                };
-                actions[action.fulfilled] = (state, action) => { // eslint-disable-line
+                const innerReducer = (state, action) => { // eslint-disable-line
                     if (immutable) {
                         return mergeImmutablePayload(state, action.payload);
                     }
-                    return Object.assign(state, action.payload);
-                };
-                actions[action.reject] = (state, action) => { // eslint-disable-line
-                    if (immutable) {
-                        return mergeImmutablePayload(state, action.payload);
+                    if (Object.prototype.toString.call(state) === '[object Object]') {
+                        return Object.assign(state, action.payload);
                     }
-                    return Object.assign(state, action.payload);
+                    return action.payload;
                 };
+                actions[action.fulfilled] = innerReducer;
+                actions[action.reject] = innerReducer;
 
                 const dispatch = {
                     * fulfilled(obj) {
@@ -236,13 +232,14 @@ export default function createResa(options = {}) {
         }
 
         // find reducer and merge reducer
+        const state = model.state == null ? getEmptyObject() : model.state;
         if (store.reducerList[reducerName] == null) {
             store.reducerList[reducerName] = {};
             store.reducerList[reducerName][model.name] =
-                handleActions(actions, model.state || getEmptyObject());
+                handleActions(actions, state);
         } else {
             store.reducerList[reducerName][model.name] =
-                handleActions(actions, model.state || getEmptyObject());
+                handleActions(actions, state);
         }
         store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName]);
         store.replaceReducer(makeRootReducer(store.asyncReducers));

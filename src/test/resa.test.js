@@ -49,6 +49,21 @@ const callSelfModel = {
     },
 };
 
+const modelState = {
+    name: 'modelState',
+    state: 0,
+    effects: {
+        * add(payload) {
+            yield call(this.minus, payload);
+        },
+    },
+    reducers: {
+        minus(state, { payload }) {
+            return state + payload;
+        },
+    },
+};
+
 describe('createResa', () => {
     test('createResa return success', () => {
         const app = createResa();
@@ -226,6 +241,22 @@ describe('dispatch action success', () => {
         }).then((data) => {
             expect(data).toEqual({
                 count: 1,
+            });
+        });
+    });
+
+    test('non object state', () => {
+        const app = createResa();
+        app.registerModel(modelState, 'modelState');
+        app.models.modelState.add(10);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                modelState: 10,
             });
         });
     });
