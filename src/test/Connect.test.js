@@ -69,7 +69,6 @@ describe('Connect', () => {
 
         const mapStateToProps = ({ model }, state, ownProps) => ({ // eslint-disable-line
             a: state.model.a,
-            loading: model.getState().loading,
             ownProps,
         });
 
@@ -83,7 +82,6 @@ describe('Connect', () => {
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-        expect(container.props.loading).toEqual(false);
         expect(container.props.ownProps).toEqual({ c: 'c' });
     });
 

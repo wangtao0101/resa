@@ -148,9 +148,8 @@ export default function createResa(options = {}) {
         }
     }
 
-    function mergeImmutablePayload(state, payload = {}, loading) {
+    function mergeImmutablePayload(state, payload = {}) {
         let newState = state;
-        newState = newState.set('loading', loading);
         for (const name in payload) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(payload, name)) {
                 newState = newState.set(name, payload[name]);
@@ -179,22 +178,19 @@ export default function createResa(options = {}) {
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
                 const action = createAction(`${model.name}/${key}`);
                 actions[action.pending] = (state, action) => { // eslint-disable-line
-                    if (immutable) {
-                        return mergeImmutablePayload(state, {}, true);
-                    }
-                    return Object.assign({}, state, { loading: true });
+                    return state;
                 };
                 actions[action.fulfilled] = (state, action) => { // eslint-disable-line
                     if (immutable) {
-                        return mergeImmutablePayload(state, action.payload, false);
+                        return mergeImmutablePayload(state, action.payload);
                     }
-                    return Object.assign(state, action.payload, { loading: false });
+                    return Object.assign(state, action.payload);
                 };
                 actions[action.reject] = (state, action) => { // eslint-disable-line
                     if (immutable) {
-                        return mergeImmutablePayload(state, action.payload, false);
+                        return mergeImmutablePayload(state, action.payload);
                     }
-                    return Object.assign(state, action.payload, { loading: false });
+                    return Object.assign(state, action.payload);
                 };
 
                 const dispatch = {

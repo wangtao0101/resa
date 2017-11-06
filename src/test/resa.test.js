@@ -96,7 +96,6 @@ describe('dispatch action success', () => {
                 resaReducer: {},
                 model: {
                     a: 'a',
-                    loading: false,
                 },
             });
         });
@@ -132,7 +131,6 @@ describe('dispatch action success', () => {
             expect(data).toEqual(Immutable.Map({
                 resaReducer: {},
                 model: Immutable.Map({
-                    loading: false,
                     a: 'a',
                 }),
             }));
@@ -152,7 +150,6 @@ describe('dispatch action success', () => {
                 resaReducer: {},
                 model: {
                     a: 'a',
-                    loading: false,
                 },
             });
         });
@@ -171,7 +168,6 @@ describe('dispatch action success', () => {
                 resaReducer: {},
                 callSelfModel: {
                     a: 'a',
-                    loading: false,
                 },
             });
         });
@@ -188,7 +184,6 @@ describe('dispatch action success', () => {
         }).then((data) => {
             expect(data).toEqual({
                 a: 'a',
-                loading: false,
             });
         });
     });
@@ -203,7 +198,6 @@ describe('dispatch action success', () => {
             }, 5);
         }).then((data) => {
             expect(data).toEqual(Immutable.Map({
-                loading: false,
                 a: 'a',
             }));
         });
@@ -220,7 +214,6 @@ describe('dispatch action success', () => {
             }, 20);
         }).then((data) => {
             expect(data).toEqual({
-                loading: false,
                 count: 1,
             });
         });
@@ -260,7 +253,6 @@ describe('two model use same reducer', () => {
                 resaReducer: {},
                 model: {
                     a: 'a',
-                    loading: false,
                 },
             });
         });
@@ -282,7 +274,6 @@ describe('two model use same reducer', () => {
                 model: {
                     a: 'a',
                     b: 'b',
-                    loading: false,
                 },
             });
         });
@@ -366,7 +357,6 @@ describe('unRegisterModel', () => {
                 resaReducer: {},
                 unModel: {
                     a: 'dd',
-                    loading: true,
                 },
             });
         });
@@ -394,7 +384,6 @@ describe('unRegisterModel', () => {
                 resaReducer: {},
                 unModel: {
                     a: 'dd',
-                    loading: true,
                 },
             });
         });
@@ -432,7 +421,6 @@ describe('test setup', () => {
                 resaReducer: {},
                 setupModel: {
                     aa: 'bbc',
-                    loading: false,
                 },
             });
         });
@@ -453,7 +441,6 @@ describe('test setup', () => {
                 resaReducer: {},
                 setupModel: {
                     aa: 'bbc',
-                    loading: false,
                 },
             });
         });
