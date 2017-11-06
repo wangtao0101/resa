@@ -39,10 +39,7 @@ export default function createConnect() {
                             const models = {};
                             mapDispatchToProps.forEach((namespace) => {
                                 const model = this.resa.models[namespace];
-                                models[namespace] = Object.assign({}, {
-                                    effects: model.effects,
-                                    reducers: model.reducers,
-                                });
+                                models[namespace] = model;
                             });
                             return () => models;
                         }

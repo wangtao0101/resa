@@ -174,12 +174,7 @@ describe('connectModel', () => {
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-
-        const newModel = Object.assign({}, {
-            effects: app.models.model.effects,
-            reducers: app.models.model.reducers,
-        });
-        expect(container.props.model).toEqual(newModel);
+        expect(container.props.model.name).toEqual('model');
     });
 
     test('conncet model decorator success', () => {
@@ -195,10 +190,6 @@ describe('connectModel', () => {
         const container = TestUtils.findRenderedComponentWithType(tree, DecoratorChild).getWrappedInstance();
         expect(container.props.a).toEqual('a');
 
-        const newModel = Object.assign({}, {
-            effects: app.models.model.effects,
-            reducers: app.models.model.reducers,
-        });
-        expect(container.props.model).toEqual(newModel);
+        expect(container.props.model.name).toEqual('model');
     });
 });
