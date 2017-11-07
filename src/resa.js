@@ -13,7 +13,25 @@ const ActionTypes = {
     CANCEL_EFFECTS: '@@CANCEL_EFFECTS',
 };
 
-const noop = () => {};
+const noop = () => { };
+
+const payloadEncode = (...args) => {
+    const payload = {
+        __resa__payload__: true,
+    };
+    args.forEach((item, i) => {
+        payload[i] = item;
+    });
+    return payload;
+};
+
+const payloadDecode = (payload) => {
+    if (payload.__resa__payload__) { // eslint-disable-line
+        delete payload.__resa__payload__; // eslint-disable-line
+        return Object.keys(payload).map(k => payload[k]);
+    }
+    return payload;
+};
 
 export default function createResa(options = {}) {
     const {
@@ -95,7 +113,7 @@ export default function createResa(options = {}) {
             const { resolve, reject, ...rest } = action;
             try {
                 const that = Object.assign({}, models[name], dispatch);
-                const result = yield call([that, saga], rest.payload, models);
+                const result = yield call([that, saga], ...payloadDecode(rest.payload), models);
                 resolve(result);
             } catch (error) {
                 errorHandle(error);
@@ -204,7 +222,7 @@ export default function createResa(options = {}) {
                 /**
                  * action creaters
                  */
-                newEffects[key] = obj => store.dispatch(action.pending(obj));
+                newEffects[key] = (...args) => store.dispatch(action.pending(payloadEncode(...args)));
 
                 /**
                  * run watcher
@@ -227,12 +245,12 @@ export default function createResa(options = {}) {
                 actions[`${model.name}/${key}`] = (oldReducers[key]);
                 actions[`${model.name}/${key}`] = (_state, { payload }) => {
                     const that = Object.assign({}, { state: app.models[model.name].state });
-                    return oldReducers[key].call(that, payload);
+                    return oldReducers[key].call(that, ...payloadDecode(payload));
                 };
-                newReducers[key] = (obj) => {
+                newReducers[key] = (...args) => {
                     store.dispatch({
                         type: `${model.name}/${key}`,
-                        payload: obj,
+                        payload: payloadEncode(...args),
                     });
                 };
             }

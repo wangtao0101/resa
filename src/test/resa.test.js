@@ -20,6 +20,15 @@ const model = {
             yield call(this.reject, payload);
             throw new Error('error');
         },
+
+        * div(a, b) {
+            yield call(this.fulfilled, { result: a / b });
+        },
+    },
+    reducers: {
+        mul(a, b) {
+            return Object.assign({}, this.state, { result: a * b });
+        },
     },
 };
 
@@ -274,6 +283,42 @@ describe('dispatch action success', () => {
             expect(data).toEqual({
                 resaReducer: {},
                 modelState: 10,
+            });
+        });
+    });
+
+    test('effect multiple args', () => {
+        const app = createResa();
+        app.registerModel(model, 'model');
+        app.models.model.div(4, 2);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                model: {
+                    result: 2,
+                },
+            });
+        });
+    });
+
+    test('reducer multiple args', () => {
+        const app = createResa();
+        app.registerModel(model, 'model');
+        app.models.model.mul(4, 2);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                model: {
+                    result: 8,
+                },
             });
         });
     });
