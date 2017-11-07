@@ -100,7 +100,7 @@ const model = {
 
 import { connect } from 'resa';
 const mapStateToProps = ({ model }, state, ownProps) => ({ // the first args model refer to above model
-    data: model.getState().data, // you can use state.data as well
+    data: model.state.data, // you can use state.data as well
 });
 
 const mapDispatchToProps = ({ model }, dispatch) => ({ // the first args model refer to above model
