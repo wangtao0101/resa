@@ -221,7 +221,11 @@ export default function createResa(options = {}) {
         const oldReducers = model.reducers || {};
         for (const key in oldReducers) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
-                actions[`${model.name}/${key}`] = oldReducers[key];
+                actions[`${model.name}/${key}`] = (oldReducers[key]);
+                actions[`${model.name}/${key}`] = (_state, { payload }) => {
+                    const that = Object.assign({}, { state: app.models[model.name].state });
+                    return oldReducers[key].call(that, payload);
+                };
                 newReducers[key] = (obj) => {
                     store.dispatch({
                         type: `${model.name}/${key}`,
@@ -251,12 +255,16 @@ export default function createResa(options = {}) {
             name: model.name,
         };
 
-        this.models[model.name].getState = () => {
-            if (!immutable) {
-                return app.store.getState()[reducerName];
-            }
-            return app.store.getState().get(reducerName);
-        };
+        Object.defineProperty(this.models[model.name], 'state', {
+            enumerable: true,
+            configurable: false,
+            get: () => {
+                if (!immutable) {
+                    return app.store.getState()[reducerName];
+                }
+                return app.store.getState().get(reducerName);
+            },
+        });
 
         if (model.setup) {
             this.runSaga(function* () { // eslint-disable-line

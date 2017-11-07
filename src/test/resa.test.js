@@ -31,7 +31,7 @@ const effectModel = {
     effects: {
         add: [function* (payload, { effectModel }) { // eslint-disable-line
             yield delay(10);
-            yield call(this.fulfilled, { count: effectModel.getState().count + 1 });
+            yield call(this.fulfilled, { count: effectModel.state.count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -58,8 +58,8 @@ const modelState = {
         },
     },
     reducers: {
-        minus(state, { payload }) {
-            return state + payload;
+        minus(payload) {
+            return this.state + payload;
         },
     },
 };
@@ -205,7 +205,7 @@ describe('dispatch action success', () => {
         app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.models.callSelfModel.getState());
+                resolve(app.models.callSelfModel.state);
             }, 5);
         }).then((data) => {
             expect(data).toEqual({
@@ -220,7 +220,7 @@ describe('dispatch action success', () => {
         app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.models.callSelfModel.getState());
+                resolve(app.models.callSelfModel.state);
             }, 5);
         }).then((data) => {
             expect(data).toEqual(Immutable.Map({
@@ -236,7 +236,7 @@ describe('dispatch action success', () => {
         app.models.effectModel.add({ a: 'c' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.models.effectModel.getState());
+                resolve(app.models.effectModel.state);
             }, 20);
         }).then((data) => {
             expect(data).toEqual({
@@ -330,8 +330,8 @@ const modelReducer = {
         },
     },
     reducers: {
-        xxx(state, { payload }) {
-            return Object.assign(state, payload);
+        xxx(payload) {
+            return Object.assign(this.state, payload);
         },
     },
 };
@@ -359,8 +359,8 @@ const unModel = {
         },
     },
     reducers: {
-        xxx(state, { payload }) {
-            return Object.assign(state, payload);
+        xxx(payload) {
+            return Object.assign(this.state, payload);
         },
     },
 };
@@ -375,8 +375,8 @@ const unModel1 = {
         },
     },
     reducers: {
-        xxx(state, { payload }) {
-            return Object.assign(state, payload);
+        xxx(payload) {
+            return Object.assign(this.state, payload);
         },
     },
 };
