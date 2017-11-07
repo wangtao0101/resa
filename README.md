@@ -5,13 +5,19 @@
 [![Coverage Status](https://coveralls.io/repos/github/wangtao0101/resa/badge.svg?branch=master&dummy=no_cache_please_1)](https://coveralls.io/github/wangtao0101/resa?branch=master)
 
 
-A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.
+A simple framework based on typescript, redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.
 
 ## Installation
 ```
 npm install resa --save
 yarn add resa
 ```
+
+## New feature
+Typing Improvements!!!
+See https://github.com/wangtao0101/resa-class-model
+
+With [resa-class-model](https://github.com/wangtao0101/resa-class-model) you can get full intellisense and type check in everywhere!!!.
 
 ## Motivation
 Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project.
@@ -90,6 +96,7 @@ The code looks like this if using resa:
 // define model
 const model = {
     name: 'model',
+    state: 0,
     effects: {
         * query(payload) {
             const data = yield call(xxxApi) // fetch data
@@ -110,6 +117,18 @@ const mapDispatchToProps = ({ model }, dispatch) => ({ // the first args model r
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(View);
+```
+
+```
+// with resa-class-model
+@init({ state: 0})
+class model extends Model{
+    @effect()
+    * query(payload) {
+        const data = yield call(xxxApi) // fetch data
+        yield this.fulfilled({ data }); // the fulfilled will merge data into state automatic.
+    },
+}
 ```
 So, do you like the simplicity ?
 
