@@ -571,3 +571,26 @@ describe('emptyStateModel', () => {
         }).toThrow(/State in model should not be null or undefined./);
     });
 });
+
+const pureReducerModel = {
+    name: 'model',
+    state: 0,
+    pureReducers: {
+        add: (state, action) => state + action.payload,
+    },
+};
+
+describe('pureReducerModel', () => {
+    test('pureReducerModel', () => {
+        const app = createResa();
+        app.registerModel(pureReducerModel);
+        app.store.dispatch({
+            type: 'add',
+            payload: 1,
+        });
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            model: 1,
+        });
+    });
+});

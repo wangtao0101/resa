@@ -256,6 +256,13 @@ export default function createResa(options = {}) {
             }
         }
 
+        const oldPureReducers = model.pureReducers || {};
+        for (const key in oldPureReducers) { // eslint-disable-line
+            if (Object.prototype.hasOwnProperty.call(oldPureReducers, key)) {
+                actions[key] = oldPureReducers[key];
+            }
+        }
+
         // find reducer and merge reducer
         invariant(model.state != null, 'State in model should not be null or undefined.');
 
