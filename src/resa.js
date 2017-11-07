@@ -2,6 +2,8 @@ import { applyMiddleware, createStore, combineReducers, compose } from 'redux';
 import { combineReducers as combineImmutableReducers } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
 import invariant from 'invariant';
+import warning from 'warning';
+import clone from 'clone';
 import { call, put, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
@@ -164,6 +166,7 @@ export default function createResa(options = {}) {
         const actions = {};
 
         if (this.models[model.name] != null) {
+            warning(false, 'You want to register model twice or there have two model share same name.');
             return;
         }
 
@@ -236,7 +239,11 @@ export default function createResa(options = {}) {
         }
 
         // find reducer and merge reducer
-        const state = model.state == null ? getEmptyObject() : model.state;
+        invariant(model.state != null, 'State in model should not be null or undefined.');
+
+        // avoid bug when registerModel after unRegisterModel
+        const state = clone(model.state);
+
         if (store.reducerList[reducerName] == null) {
             store.reducerList[reducerName] = {};
             store.reducerList[reducerName][model.name] =

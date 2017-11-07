@@ -3,13 +3,29 @@ import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import createResa from '../resa';
 
-
 function myReducer(state = {}, _action) {
     return state;
 }
 
 const model = {
     name: 'model',
+    state: {},
+    effects: {
+        * add(payload) {
+            yield call(this.fulfilled, payload);
+            return 5;
+        },
+
+        * minus(payload) {
+            yield call(this.reject, payload);
+            throw new Error('error');
+        },
+    },
+};
+
+const immutableModel = {
+    name: 'model',
+    state: Immutable.Map(),
     effects: {
         * add(payload) {
             yield call(this.fulfilled, payload);
@@ -38,6 +54,7 @@ const effectModel = {
 
 const callSelfModel = {
     name: 'callSelfModel',
+    state: {},
     effects: {
         * add(payload) {
             yield call(this.minus, payload);
@@ -147,7 +164,7 @@ describe('dispatch action success', () => {
 
     test('dispatch fulfilled success when immutable', () => {
         const app = createResa({ immutable: Immutable });
-        app.registerModel(model, 'model');
+        app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -216,11 +233,11 @@ describe('dispatch action success', () => {
 
     test('model getState success when use immutable', () => {
         const app = createResa({ immutable: Immutable });
-        app.registerModel(callSelfModel, 'callSelfModel');
-        app.models.callSelfModel.add({ a: 'a' });
+        app.registerModel(immutableModel, 'model');
+        app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(app.models.callSelfModel.state);
+                resolve(app.models.model.state);
             }, 5);
         }).then((data) => {
             expect(data).toEqual(Immutable.Map({
@@ -264,6 +281,7 @@ describe('dispatch action success', () => {
 
 const model1 = {
     name: 'model1',
+    state: {},
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -273,6 +291,7 @@ const model1 = {
 
 const model2 = {
     name: 'model2',
+    state: {},
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -324,6 +343,7 @@ describe('two model use same reducer', () => {
 
 const modelReducer = {
     name: 'modelReducer',
+    state: {},
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -352,6 +372,7 @@ describe('reducers', () => {
 
 const unModel = {
     name: 'unModel',
+    state: {},
     effects: {
         * add(payload) {
             yield delay(5);
@@ -368,6 +389,7 @@ const unModel = {
 const unModel1 = {
     name: 'unModel1',
     reducerName: 'unModel',
+    state: {},
     effects: {
         * add(payload) {
             yield delay(5);
@@ -434,6 +456,7 @@ describe('unRegisterModel', () => {
 
 const setupModel = {
     name: 'setupModel',
+    state: {},
     effects: {
         * add(payload) {
             try {
@@ -471,6 +494,7 @@ describe('test setup', () => {
     test('cancel setup success', () => {
         const app = createResa();
         app.registerModel(setupModel, 'setupModel');
+
         return new Promise((resolve) => {
             setTimeout(() => {
                 app.unRegisterModel('setupModel');
@@ -486,5 +510,19 @@ describe('test setup', () => {
                 },
             });
         });
+    });
+});
+
+
+const emptyStateModel = {
+    name: 'model',
+};
+
+describe('emptyStateModel', () => {
+    test('emptyStateModel', () => {
+        expect(() => {
+            const app = createResa();
+            app.registerModel(emptyStateModel);
+        }).toThrow(/State in model should not be null or undefined./);
     });
 });

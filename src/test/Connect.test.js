@@ -5,6 +5,7 @@ import DecoratorChild from './decoratorChild';
 
 const model = {
     name: 'model',
+    state: {},
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);
@@ -18,6 +19,7 @@ const model = {
 
 const model1 = {
     name: 'model1',
+    state: {},
     effects: {
         * add(payload) {
             yield this.fulfilled(payload);

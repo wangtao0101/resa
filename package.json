@@ -1,6 +1,6 @@
 {
   "name": "resa",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.",
   "main": "lib/index.js",
   "scripts": {
@@ -31,12 +31,15 @@
     "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0"
   },
   "dependencies": {
+    "clone": "^2.1.1",
+    "invariant": "^2.2.2",
     "react-redux": "^5.0.0",
+    "redux": "^2.0.0 || ^3.0.0",
     "redux-actions": "^2.0.0",
     "redux-immutable": "^4.0.0",
+    "redux-saga": ">0.15.0",
     "redux-saga-middleware": "^1.0.3",
-    "redux": "^2.0.0 || ^3.0.0",
-    "redux-saga": ">0.15.0"
+    "warning": "^3.0.0"
   },
   "devDependencies": {
     "@types/jest": "^20.0.2",
@@ -64,8 +67,6 @@
     "nyc": "^11.0.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "react-test-renderer": "^15.6.1",
-    "redux": "^3.0.0",
-    "redux-saga": "^0.15.0"
+    "react-test-renderer": "^15.6.1"
   }
 }
