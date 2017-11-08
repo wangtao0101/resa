@@ -113,7 +113,7 @@ export default function createResa(options = {}) {
         return function* (action) { // eslint-disable-line
             const { resolve, reject, ...rest } = action;
             try {
-                const that = Object.assign({}, models[name], dispatch, { models: models } );
+                const that = Object.assign({}, models[name], dispatch, { models });
                 const result = yield call([that, saga], ...payloadDecode(rest.payload));
                 resolve(result);
             } catch (error) {

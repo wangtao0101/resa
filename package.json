@@ -11,7 +11,7 @@
     "coverage": "jest --coverage",
     "report": "nyc report --temp-directory=coverage --reporter=text-lcov | coveralls",
     "coveralls": "npm run coverage && npm run report",
-    "prepublish": "npm run lint && npm run buildlib"
+    "prepublish": "npm run lint && npm run test && npm run buildlib"
   },
   "repository": {
     "type": "git",
