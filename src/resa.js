@@ -72,6 +72,16 @@ export default function createResa(options = {}) {
         });
     }
 
+    function mergeImmutablePayload(state, payload = {}) {
+        let newState = state;
+        for (const name in payload) { // eslint-disable-line
+            if (Object.prototype.hasOwnProperty.call(payload, name)) {
+                newState = newState.set(name, payload[name]);
+            }
+        }
+        return newState;
+    }
+
     function commonReducerHandle(state, payload) {
         if (payload == null) {
             return state;
@@ -191,16 +201,6 @@ export default function createResa(options = {}) {
                     );
                 };
         }
-    }
-
-    function mergeImmutablePayload(state, payload = {}) {
-        let newState = state;
-        for (const name in payload) { // eslint-disable-line
-            if (Object.prototype.hasOwnProperty.call(payload, name)) {
-                newState = newState.set(name, payload[name]);
-            }
-        }
-        return newState;
     }
 
     function registerModel(model, reducerName) {

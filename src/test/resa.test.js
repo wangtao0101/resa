@@ -379,7 +379,7 @@ describe('two model use same reducer', () => {
         const app = createResa();
         app.registerModel(model1, 'model');
         app.models.model1.add({ a: 'a' });
-        app.registerModel(Object.assign({}, model2, { state: { a: 'b' }}), 'model');
+        app.registerModel(Object.assign({}, model2, { state: { a: 'b' } }), 'model');
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -415,22 +415,23 @@ describe('two model use same reducer', () => {
         });
     });
 
-    test('tow model use same reducer, and state is a number, last model default state should not cover current state', () => {
-        const app = createResa();
-        app.registerModel(Object.assign({}, model1, { state: 0 }), 'model');
-        app.models.model1.add(1);
-        app.registerModel(Object.assign({}, model2, { state: 0 }), 'model');
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 5);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                model: 1
+    test('tow model use same reducer,and state is a number, last model default state should not cover current state',
+        () => {
+            const app = createResa();
+            app.registerModel(Object.assign({}, model1, { state: 0 }), 'model');
+            app.models.model1.add(1);
+            app.registerModel(Object.assign({}, model2, { state: 0 }), 'model');
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(app.store.getState());
+                }, 5);
+            }).then((data) => {
+                expect(data).toEqual({
+                    resaReducer: {},
+                    model: 1,
+                });
             });
         });
-    });
 });
 
 const modelReducer = {
