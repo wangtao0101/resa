@@ -72,6 +72,21 @@ export default function createResa(options = {}) {
         });
     }
 
+    function commonReducerHandle(state, payload) {
+        if (payload == null) {
+            return state;
+        }
+        if (immutable) {
+            return mergeImmutablePayload(state, payload);
+        }
+        if (Object.prototype.toString.call(state) === '[object Object]') {
+            invariant(Object.prototype.toString.call(payload) === '[object Object]',
+            'The payload must be an object if the shape of state is object');
+            return Object.assign({}, state, payload);
+        }
+        return payload;
+    }
+
     /**
      * merge reduer in same state node, state must hava been initialized in here
      * @param reducers
@@ -82,10 +97,19 @@ export default function createResa(options = {}) {
              * handle ActionTypes.INIT action
              */
             if (action.type === ActionTypes.INIT) {
-                if (immutable) {
-                    return state.merge(defaultState);
+                if (state === undefined) {
+                    return defaultState;
                 }
-                return Object.assign({}, state, defaultState);
+                // last model default state should not cover current state;
+                if (Object.prototype.toString.call(state) === '[object Object]') {
+                    if (immutable) {
+                        return mergeImmutablePayload(defaultState, state);
+                    }
+                    invariant(Object.prototype.toString.call(defaultState) === '[object Object]',
+                        'The payload must be an object if the shape of state is object');
+                    return Object.assign({}, defaultState, state);
+                }
+                return state;
             }
             const getState = (previous, current) => current(previous, action);
             return reducerList.reduce(getState, state);
@@ -93,7 +117,7 @@ export default function createResa(options = {}) {
         return reducer;
     }
 
-    function mergeReducer(reducerMap) {
+    function mergeReducer(reducerMap, state) {
         const reducerList = [];
         for (const key in reducerMap) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(reducerMap, key)) {
@@ -106,7 +130,7 @@ export default function createResa(options = {}) {
         if (reducerList.length === 1) {
             return reducerList[0];
         }
-        return composeHandleActions(reducerList);
+        return composeHandleActions(reducerList, state);
     }
 
     function getEffectSaga(models, saga, name, dispatch) {
@@ -201,18 +225,7 @@ export default function createResa(options = {}) {
                 const action = createAction(`${model.name}/${key}`);
                 const innerReducer = (state, action) => { // eslint-disable-line
                     try {
-                        if (action.payload == null) {
-                            return state;
-                        }
-                        if (immutable) {
-                            return mergeImmutablePayload(state, action.payload);
-                        }
-                        if (Object.prototype.toString.call(state) === '[object Object]') {
-                            invariant(Object.prototype.toString.call(action.payload) === '[object Object]',
-                            'The payload must be an object if the shape of state is object');
-                            return Object.assign({}, state, action.payload);
-                        }
-                        return action.payload;
+                        return commonReducerHandle(state, action.payload);
                     } catch (error) {
                         errorHandle(error);
                     }
@@ -287,7 +300,7 @@ export default function createResa(options = {}) {
             store.reducerList[reducerName][model.name] =
                 handleActions(actions, state);
         }
-        store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName]);
+        store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName], state);
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
         this.models[model.name] = {
