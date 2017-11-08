@@ -40,6 +40,7 @@ export default function createResa(options = {}) {
          * facebook immutable object, if null, we use plain redux state
          */
         immutable = null,
+        errorHandle = noop,
     } = options;
 
     function getEmptyObject() {
@@ -108,12 +109,12 @@ export default function createResa(options = {}) {
         return composeHandleActions(reducerList);
     }
 
-    function getEffectSaga(models, saga, name, dispatch, errorHandle = noop) {
+    function getEffectSaga(models, saga, name, dispatch) {
         return function* (action) { // eslint-disable-line
             const { resolve, reject, ...rest } = action;
             try {
-                const that = Object.assign({}, models[name], dispatch);
-                const result = yield call([that, saga], ...payloadDecode(rest.payload), models);
+                const that = Object.assign({}, models[name], dispatch, { models: models } );
+                const result = yield call([that, saga], ...payloadDecode(rest.payload));
                 resolve(result);
             } catch (error) {
                 errorHandle(error);
@@ -122,7 +123,7 @@ export default function createResa(options = {}) {
         };
     }
 
-    function getSaga(app, action, effect, model, dispatch, errorHandle) {
+    function getSaga(app, action, effect, model, dispatch) {
         let type = 'takeEvery';
         let actualEffect = effect;
         if (Array.isArray(effect)) {
@@ -147,7 +148,7 @@ export default function createResa(options = {}) {
                 return function* () { // eslint-disable-line
                     yield takeLatest(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
                     );
                 };
             case 'throttle': // eslint-disable-line
@@ -155,14 +156,14 @@ export default function createResa(options = {}) {
                     yield throttle(
                         effect[2],
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
                     );
                 };
             default: // eslint-disable-line
                 return function* () { // eslint-disable-line
                     yield takeEvery(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch, errorHandle)
+                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
                     );
                 };
         }
@@ -199,13 +200,22 @@ export default function createResa(options = {}) {
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
                 const action = createAction(`${model.name}/${key}`);
                 const innerReducer = (state, action) => { // eslint-disable-line
-                    if (immutable) {
-                        return mergeImmutablePayload(state, action.payload);
+                    try {
+                        if (action.payload == null) {
+                            return state;
+                        }
+                        if (immutable) {
+                            return mergeImmutablePayload(state, action.payload);
+                        }
+                        if (Object.prototype.toString.call(state) === '[object Object]') {
+                            invariant(Object.prototype.toString.call(action.payload) === '[object Object]',
+                            'The payload must be an object if the shape of state is object');
+                            return Object.assign({}, state, action.payload);
+                        }
+                        return action.payload;
+                    } catch (error) {
+                        errorHandle(error);
                     }
-                    if (Object.prototype.toString.call(state) === '[object Object]') {
-                        return Object.assign(state, action.payload);
-                    }
-                    return action.payload;
                 };
                 actions[action.fulfilled] = innerReducer;
                 actions[action.reject] = innerReducer;
@@ -228,7 +238,7 @@ export default function createResa(options = {}) {
                  * run watcher
                  */
                 this.runSaga(function* () { // eslint-disable-line
-                    const saga = getSaga(app, action, oldEffects[key], model, dispatch, options.errorHandle);
+                    const saga = getSaga(app, action, oldEffects[key], model, dispatch);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
                         yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);

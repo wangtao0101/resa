@@ -24,6 +24,7 @@ const model = {
         * div(a, b) {
             yield call(this.fulfilled, { result: a / b });
         },
+
     },
     reducers: {
         mul(a, b) {
@@ -54,9 +55,9 @@ const effectModel = {
         count: 0,
     },
     effects: {
-        add: [function* (payload, { effectModel }) { // eslint-disable-line
+        add: [function* (payload) { // eslint-disable-line
             yield delay(10);
-            yield call(this.fulfilled, { count: effectModel.state.count + 1 });
+            yield call(this.fulfilled, { count: this.models.effectModel.state.count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -151,6 +152,35 @@ describe('dispatch action success', () => {
                 },
             });
         });
+    });
+
+    test('dispatch an empty payload success', () => {
+        const app = createResa();
+        app.registerModel(model, 'model');
+        app.models.model.add({ a: 'a' });
+        app.models.model.add();
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                model: {
+                    a: 'a',
+                },
+            });
+        });
+    });
+
+    test('should catch The payload must be an object if the shape of state is object', () => {
+        const fn = jest.fn();
+        const app = createResa({
+            errorHandle: fn,
+        });
+        app.registerModel(model, 'model');
+        app.models.model.add(1);
+        expect(fn).toHaveBeenCalledTimes(1);
     });
 
     test('dispatch return promise resolve success', () => {
