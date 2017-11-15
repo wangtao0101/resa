@@ -8,11 +8,13 @@ const model = {
     state: {},
     effects: {
         * add(payload) {
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
+            yield 1;
         },
 
         * minus(payload) {
-            yield this.reject(payload);
+            this.reject(payload);
+            yield 1;
         },
     },
 };
@@ -22,11 +24,13 @@ const model1 = {
     state: {},
     effects: {
         * add(payload) {
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
+            yield 1;
         },
 
         * minus(payload) {
-            yield this.reject(payload);
+            this.reject(payload);
+            yield 1;
         },
     },
 };

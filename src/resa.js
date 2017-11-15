@@ -4,7 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import invariant from 'invariant';
 import warning from 'warning';
 import clone from 'clone';
-import { call, put, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
+import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
 
@@ -234,11 +234,11 @@ export default function createResa(options = {}) {
                 actions[action.reject] = innerReducer;
 
                 const dispatch = {
-                    * fulfilled(obj) {
-                        yield put(action.fulfilled(obj));
+                    fulfilled(obj) {
+                        store.dispatch(action.fulfilled(obj));
                     },
-                    * reject(obj) {
-                        yield put(action.reject(obj));
+                    reject(obj) {
+                        store.dispatch(action.reject(obj));
                     },
                 };
 

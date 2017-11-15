@@ -22,7 +22,8 @@ const model = {
         },
 
         * div(a, b) {
-            yield call(this.fulfilled, { result: a / b });
+            this.fulfilled({ result: a / b });
+            yield 1;
         },
 
     },
@@ -38,7 +39,8 @@ const immutableModel = {
     state: Immutable.Map(),
     effects: {
         * add(payload) {
-            yield call(this.fulfilled, payload);
+            this.fulfilled(payload);
+            yield 1;
             return 5;
         },
 
@@ -57,7 +59,7 @@ const effectModel = {
     effects: {
         add: [function* (payload) { // eslint-disable-line
             yield delay(10);
-            yield call(this.fulfilled, { count: this.models.effectModel.state.count + 1 });
+            this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'takeLatest'],
     },
 };
@@ -71,7 +73,8 @@ const callSelfModel = {
         },
 
         * minus(payload) {
-            yield call(this.reject, payload);
+            this.reject(payload);
+            yield 1;
         },
     },
 };
@@ -359,7 +362,8 @@ const model1 = {
     state: {},
     effects: {
         * add(payload) {
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
+            yield 1;
         },
     },
 };
@@ -369,7 +373,8 @@ const model2 = {
     state: {},
     effects: {
         * add(payload) {
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
+            yield 1;
         },
     },
 };
@@ -439,7 +444,8 @@ const modelReducer = {
     state: {},
     effects: {
         * add(payload) {
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
+            yield 1;
         },
     },
     reducers: {
@@ -469,7 +475,7 @@ const unModel = {
     effects: {
         * add(payload) {
             yield delay(5);
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
         },
     },
     reducers: {
@@ -486,7 +492,7 @@ const unModel1 = {
     effects: {
         * add(payload) {
             yield delay(5);
-            yield this.fulfilled(payload);
+            this.fulfilled(payload);
         },
     },
     reducers: {
@@ -553,7 +559,8 @@ const setupModel = {
     effects: {
         * add(payload) {
             try {
-                yield this.fulfilled(payload);
+                this.fulfilled(payload);
+                yield 1;
             } catch (error) {
                 //
             }
