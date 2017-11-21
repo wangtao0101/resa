@@ -61,6 +61,11 @@ const effectModel = {
             yield delay(10);
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'takeLatest'],
+
+        throttle: [function* (payload) { // eslint-disable-line
+            yield delay(10);
+            this.fulfilled({ count: this.models.effectModel.state.count + 1 });
+        }, 'throttle', 100],
     },
 };
 
@@ -293,6 +298,22 @@ describe('dispatch action success', () => {
         app.registerModel(effectModel, 'effectModel');
         app.models.effectModel.add({ a: 'a' });
         app.models.effectModel.add({ a: 'c' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.models.effectModel.state);
+            }, 20);
+        }).then((data) => {
+            expect(data).toEqual({
+                count: 1,
+            });
+        });
+    });
+
+    test('throttle', () => {
+        const app = createResa();
+        app.registerModel(effectModel, 'effectModel');
+        app.models.effectModel.throttle({ a: 'a' });
+        app.models.effectModel.throttle({ a: 'c' });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.models.effectModel.state);
