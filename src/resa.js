@@ -2,7 +2,6 @@ import { applyMiddleware, createStore, combineReducers, compose } from 'redux';
 import { combineReducers as combineImmutableReducers } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
 import invariant from 'invariant';
-import warning from 'warning';
 import clone from 'clone';
 import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
