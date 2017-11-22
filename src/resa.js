@@ -209,7 +209,6 @@ export default function createResa(options = {}) {
         const actions = {};
 
         if (this.models[model.name] != null) {
-            warning(false, 'You want to register model twice or there have two model share same name.');
             return;
         }
 
