@@ -6,6 +6,7 @@ import clone from 'clone';
 import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
+import isImmutable from './predicates';
 
 const ActionTypes = {
     INIT: '@@redux/INIT',
@@ -37,6 +38,7 @@ export default function createResa(options = {}) {
         reducers = {},
         /**
          * facebook immutable object, if null, we use plain redux state
+         * if true, the root of redux store should be immutable object
          */
         immutable = null,
         errorHandle = noop,
@@ -72,20 +74,14 @@ export default function createResa(options = {}) {
     }
 
     function mergeImmutablePayload(state, payload = {}) {
-        let newState = state;
-        for (const name in payload) { // eslint-disable-line
-            if (Object.prototype.hasOwnProperty.call(payload, name)) {
-                newState = newState.set(name, payload[name]);
-            }
-        }
-        return newState;
+        return state.merge(payload);
     }
 
     function commonReducerHandle(state, payload) {
         if (payload == null) {
             return state;
         }
-        if (immutable) {
+        if (isImmutable(state)) {
             return mergeImmutablePayload(state, payload);
         }
         if (Object.prototype.toString.call(state) === '[object Object]') {
@@ -111,7 +107,7 @@ export default function createResa(options = {}) {
                 }
                 // last model default state should not cover current state;
                 if (Object.prototype.toString.call(state) === '[object Object]') {
-                    if (immutable) {
+                    if (isImmutable(state)) {
                         return mergeImmutablePayload(defaultState, state);
                     }
                     invariant(Object.prototype.toString.call(defaultState) === '[object Object]',
