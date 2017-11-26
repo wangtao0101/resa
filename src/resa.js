@@ -37,20 +37,13 @@ const payloadDecode = (payload) => {
 export default function createResa(options = {}) {
     const {
         reducers = {},
-        /**
-         * facebook immutable object, if null, we use plain redux state
-         * if true, the root of redux store should be immutable object
-         */
-        immutable = null,
         errorHandle = noop,
     } = options;
 
-    function getEmptyObject() {
-        if (immutable) {
-            return immutable.Map();
-        }
-        return {};
-    }
+    /**
+     * init state
+     */
+    const initialState = options.initialState || {};
 
     function resaReducer(state = {}, _action) {
         return state;
@@ -61,17 +54,22 @@ export default function createResa(options = {}) {
         resaReducer,
     };
 
-    function makeRootReducer(asyncReducers) {
-        if (!immutable) {
-            return combineReducers({
-                ...initReducer,
+    function combineReducersInner(asyncReducers, state) {
+        if (isImmutable(state)) {
+            return combineImmutableReducers({
                 ...asyncReducers,
             });
         }
-        return combineImmutableReducers({
-            ...initReducer,
+        return combineReducers({
             ...asyncReducers,
         });
+    }
+
+    function makeRootReducer(asyncReducers) {
+        return combineReducersInner({
+            ...initReducer,
+            ...asyncReducers,
+        }, initialState);
     }
 
     function mergeImmutablePayload(state, payload = {}) {
@@ -87,7 +85,7 @@ export default function createResa(options = {}) {
         }
         if (Object.prototype.toString.call(state) === '[object Object]') {
             invariant(Object.prototype.toString.call(payload) === '[object Object]',
-            'The payload must be an object if the shape of state is object');
+                'The payload must be an object if the shape of state is object');
             return Object.assign({}, state, payload);
         }
         return payload;
@@ -240,6 +238,29 @@ export default function createResa(options = {}) {
         invariant(model.state != null, 'State in model should not be null or undefined.');
     }
 
+    function mountModel(app, model, actionCreaters, getState) {
+        app.models[model.name] = { // eslint-disable-line
+            ...actionCreaters,
+            name: model.name,
+        };
+
+        Object.defineProperty(app.models[model.name], 'state', {
+            enumerable: true,
+            configurable: false,
+            get: getState,
+        });
+
+        if (model.setup) {
+            app.runSaga(function* () { // eslint-disable-line
+                const task = yield fork([app.models[model.name], model.setup]);
+                yield fork(function* () { // eslint-disable-line
+                    yield take(`${name}/${ActionTypes.CANCEL_EFFECTS}`);
+                    yield cancel(task);
+                });
+            });
+        }
+    }
+
     /**
      * return reducer
      * @param {*} model
@@ -249,7 +270,7 @@ export default function createResa(options = {}) {
 
         const rs = {};
         models.forEach((model) => {
-            // check model state
+            checkModel(model);
 
             const getModelState = getStateDelegate(model.state, getState, model.name);
 
@@ -260,20 +281,11 @@ export default function createResa(options = {}) {
 
             const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app);
 
-            app.models[model.name] = { // eslint-disable-line
-                ...actionCreaters,
-                name: model.name,
-            };
-
-            Object.defineProperty(this.models[model.name], 'state', {
-                enumerable: true,
-                configurable: false,
-                get: getModelState,
-            });
-
             rs[model.name] = handleActions(actions, cloneState(model.state));
+
+            mountModel(app, model, actionCreaters, getModelState);
         });
-        return handleActions(rs, cloneState(state));
+        return combineReducersInner(rs, cloneState(state));
     }
 
     function registerModel(model) {
@@ -298,36 +310,18 @@ export default function createResa(options = {}) {
         const getState = getStateDelegate(model.state, app.store.getState, name);
 
         if (model[COMBINED_RESA_MODEL]) {
-            registerCombineModel(model, app, getState);
+            const action = registerCombineModel(model, app, getState);
+            store.asyncReducers[name] = action;
+            store.replaceReducer(makeRootReducer(store.asyncReducers));
             return;
         }
 
         const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app, name);
 
-
         store.asyncReducers[name] = handleActions(actions, state);
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
-        this.models[model.name] = {
-            ...actionCreaters,
-            name,
-        };
-
-        Object.defineProperty(this.models[model.name], 'state', {
-            enumerable: true,
-            configurable: false,
-            get: getState,
-        });
-
-        if (model.setup) {
-            this.runSaga(function* () { // eslint-disable-line
-                const task = yield fork([app.models[model.name], model.setup]);
-                yield fork(function* () { // eslint-disable-line
-                    yield take(`${name}/${ActionTypes.CANCEL_EFFECTS}`);
-                    yield cancel(task);
-                });
-            });
-        }
+        mountModel(app, model, actionCreaters, getState);
     }
 
     /**
@@ -371,11 +365,6 @@ export default function createResa(options = {}) {
          */
         unRegisterModel,
     };
-
-    /**
-     * init state
-     */
-    const initialState = options.initialState || getEmptyObject();
 
     const sagaMiddleware = createSagaMiddleware();
 

@@ -198,7 +198,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch fulfilled success when immutable', () => {
-        const app = createResa({ immutable: Immutable });
+        const app = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -267,7 +267,7 @@ describe('dispatch action success', () => {
     });
 
     test('model getState success when use immutable', () => {
-        const app = createResa({ immutable: Immutable });
+        const app = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
