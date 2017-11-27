@@ -1,5 +1,4 @@
-import createResa from './..';
-import combineModel from '../combineModel';
+import createResa, { combineModel } from './..';
 
 const model1 = {
     name: 'model1',
