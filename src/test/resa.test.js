@@ -125,18 +125,6 @@ describe('registerModel', () => {
         app.registerModel(model);
         expect(app.models.model).toEqual(expect.objectContaining({
             name: 'model',
-            reducerName: 'model',
-            add: expect.anything(),
-            minus: expect.anything(),
-        }));
-    });
-
-    test('register model success use reducerName in model', () => {
-        const app = createResa();
-        app.registerModel(Object.assign({}, model, { reducerName: 'model1' }));
-        expect(app.models.model).toEqual(expect.objectContaining({
-            name: 'model',
-            reducerName: 'model1',
             add: expect.anything(),
             minus: expect.anything(),
         }));
@@ -210,7 +198,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch fulfilled success when immutable', () => {
-        const app = createResa({ immutable: Immutable });
+        const app = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -279,7 +267,7 @@ describe('dispatch action success', () => {
     });
 
     test('model getState success when use immutable', () => {
-        const app = createResa({ immutable: Immutable });
+        const app = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -378,88 +366,6 @@ describe('dispatch action success', () => {
     });
 });
 
-const model1 = {
-    name: 'model1',
-    state: {},
-    effects: {
-        * add(payload) {
-            this.fulfilled(payload);
-            yield 1;
-        },
-    },
-};
-
-const model2 = {
-    name: 'model2',
-    state: {},
-    effects: {
-        * add(payload) {
-            this.fulfilled(payload);
-            yield 1;
-        },
-    },
-};
-
-describe('two model use same reducer', () => {
-    test('reserve state after add new model in same reducer', () => {
-        const app = createResa();
-        app.registerModel(model1, 'model');
-        app.models.model1.add({ a: 'a' });
-        app.registerModel(Object.assign({}, model2, { state: { a: 'b' } }), 'model');
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 5);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                model: {
-                    a: 'a',
-                },
-            });
-        });
-    });
-
-    test('tow model use same reducer', () => {
-        const app = createResa();
-        app.registerModel(model1, 'model');
-        app.models.model1.add({ a: 'a' });
-        app.registerModel(model2, 'model');
-        app.models.model2.add({ b: 'b' });
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 5);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                model: {
-                    a: 'a',
-                    b: 'b',
-                },
-            });
-        });
-    });
-
-    test('tow model use same reducer,and state is a number, last model default state should not cover current state',
-        () => {
-            const app = createResa();
-            app.registerModel(Object.assign({}, model1, { state: 0 }), 'model');
-            app.models.model1.add(1);
-            app.registerModel(Object.assign({}, model2, { state: 0 }), 'model');
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(app.store.getState());
-                }, 5);
-            }).then((data) => {
-                expect(data).toEqual({
-                    resaReducer: {},
-                    model: 1,
-                });
-            });
-        });
-});
-
 const modelReducer = {
     name: 'modelReducer',
     state: {},
@@ -506,23 +412,6 @@ const unModel = {
     },
 };
 
-const unModel1 = {
-    name: 'unModel1',
-    reducerName: 'unModel',
-    state: {},
-    effects: {
-        * add(payload) {
-            yield delay(5);
-            this.fulfilled(payload);
-        },
-    },
-    reducers: {
-        xxx(payload) {
-            return Object.assign(this.state, payload);
-        },
-    },
-};
-
 describe('unRegisterModel', () => {
     test('unRegisterModel model success', () => {
         const app = createResa();
@@ -532,33 +421,6 @@ describe('unRegisterModel', () => {
         app.unRegisterModel('unModel');
         expect(app.models).toEqual({});
         expect(app.store.asyncReducers).toEqual({});
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 10);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                unModel: {
-                    a: 'dd',
-                },
-            });
-        });
-    });
-
-    test('unRegisterModel model success when two models using same reducerName', () => {
-        const app = createResa();
-        app.registerModel(unModel, 'unModel');
-        app.registerModel(unModel1, 'unModel');
-        app.models.unModel.xxx({ a: 'dd' });
-        app.models.unModel.add({ b: 'cc' });
-        app.unRegisterModel('unModel');
-        expect(app.models).toEqual(expect.objectContaining({
-            unModel1: expect.anything(),
-        }));
-        expect(app.store.asyncReducers).toEqual(expect.objectContaining({
-            unModel: expect.anything(),
-        }));
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());

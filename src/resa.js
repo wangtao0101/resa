@@ -2,11 +2,12 @@ import { applyMiddleware, createStore, combineReducers, compose } from 'redux';
 import { combineReducers as combineImmutableReducers } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
 import invariant from 'invariant';
-import clone from 'clone';
 import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './action';
 import isImmutable from './predicates';
+import { COMBINED_RESA_MODEL } from './combineModel';
+import { cloneState, getStateDelegate } from './help';
 
 const ActionTypes = {
     INIT: '@@redux/INIT',
@@ -36,20 +37,13 @@ const payloadDecode = (payload) => {
 export default function createResa(options = {}) {
     const {
         reducers = {},
-        /**
-         * facebook immutable object, if null, we use plain redux state
-         * if true, the root of redux store should be immutable object
-         */
-        immutable = null,
         errorHandle = noop,
     } = options;
 
-    function getEmptyObject() {
-        if (immutable) {
-            return immutable.Map();
-        }
-        return {};
-    }
+    /**
+     * init state
+     */
+    const initialState = options.initialState || {};
 
     function resaReducer(state = {}, _action) {
         return state;
@@ -60,17 +54,22 @@ export default function createResa(options = {}) {
         resaReducer,
     };
 
-    function makeRootReducer(asyncReducers) {
-        if (!immutable) {
-            return combineReducers({
-                ...initReducer,
+    function combineReducersInner(asyncReducers, state) {
+        if (isImmutable(state)) {
+            return combineImmutableReducers({
                 ...asyncReducers,
             });
         }
-        return combineImmutableReducers({
-            ...initReducer,
+        return combineReducers({
             ...asyncReducers,
         });
+    }
+
+    function makeRootReducer(asyncReducers) {
+        return combineReducersInner({
+            ...initReducer,
+            ...asyncReducers,
+        }, initialState);
     }
 
     function mergeImmutablePayload(state, payload = {}) {
@@ -86,56 +85,10 @@ export default function createResa(options = {}) {
         }
         if (Object.prototype.toString.call(state) === '[object Object]') {
             invariant(Object.prototype.toString.call(payload) === '[object Object]',
-            'The payload must be an object if the shape of state is object');
+                'The payload must be an object if the shape of state is object');
             return Object.assign({}, state, payload);
         }
         return payload;
-    }
-
-    /**
-     * merge reduer in same state node, state must hava been initialized in here
-     * @param reducers
-     */
-    function composeHandleActions(reducerList = [], defaultState) {
-        const reducer = (state, action) => {
-            /**
-             * handle ActionTypes.INIT action
-             */
-            if (action.type === ActionTypes.INIT) {
-                if (state === undefined) {
-                    return defaultState;
-                }
-                // last model default state should not cover current state;
-                if (Object.prototype.toString.call(state) === '[object Object]') {
-                    if (isImmutable(state)) {
-                        return mergeImmutablePayload(defaultState, state);
-                    }
-                    invariant(Object.prototype.toString.call(defaultState) === '[object Object]',
-                        'The payload must be an object if the shape of state is object');
-                    return Object.assign({}, defaultState, state);
-                }
-                return state;
-            }
-            const getState = (previous, current) => current(previous, action);
-            return reducerList.reduce(getState, state);
-        };
-        return reducer;
-    }
-
-    function mergeReducer(reducerMap, state) {
-        const reducerList = [];
-        for (const key in reducerMap) { // eslint-disable-line
-            if (Object.prototype.hasOwnProperty.call(reducerMap, key)) {
-                reducerList.push(reducerMap[key]);
-            }
-        }
-        if (reducerList.length === 0) {
-            return null;
-        }
-        if (reducerList.length === 1) {
-            return reducerList[0];
-        }
-        return composeHandleActions(reducerList, state);
     }
 
     function getEffectSaga(models, saga, name, dispatch) {
@@ -198,19 +151,9 @@ export default function createResa(options = {}) {
         }
     }
 
-    function registerModel(model, reducerName) {
-        const app = this;
-        const store = this.store;
+    function runSagaAndReturnActionCreators(model, app, unRegisterName) {
         const actions = {};
-
-        if (this.models[model.name] != null) {
-            return;
-        }
-
-        // use model.name for default reducer name
-        if (reducerName == null) {
-            reducerName = model.reducerName || model.name; // eslint-disable-line
-        }
+        const { store, runSaga } = app;
 
         const newEffects = {};
         const oldEffects = model.effects || {};
@@ -244,11 +187,11 @@ export default function createResa(options = {}) {
                 /**
                  * run watcher
                  */
-                this.runSaga(function* () { // eslint-disable-line
+                runSaga(function* () { // eslint-disable-line
                     const saga = getSaga(app, action, oldEffects[key], model, dispatch);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
-                        yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
+                        yield take(`${unRegisterName}/${ActionTypes.CANCEL_EFFECTS}`);
                         yield cancel(task);
                     });
                 });
@@ -259,9 +202,8 @@ export default function createResa(options = {}) {
         const oldReducers = model.reducers || {};
         for (const key in oldReducers) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
-                actions[`${model.name}/${key}`] = (oldReducers[key]);
-                actions[`${model.name}/${key}`] = (_state, { payload }) => {
-                    const that = Object.assign({}, { state: app.models[model.name].state });
+                actions[`${model.name}/${key}`] = (state, { payload }) => {
+                    const that = { state };
                     return oldReducers[key].call(that, ...payloadDecode(payload));
                 };
                 newReducers[key] = (...args) => {
@@ -280,50 +222,112 @@ export default function createResa(options = {}) {
             }
         }
 
-        // find reducer and merge reducer
+        return {
+            actions,
+            actionCreaters: {
+                ...newEffects,
+                ...newReducers,
+            },
+        };
+    }
+
+    function checkModel(model, app) {
+        invariant(typeof model.name === 'string' && model.name !== '',
+            'name of model should be non empty string');
+
+        if (app.models[name] != null) {
+            // avoid register twice
+            return false;
+        }
+
         invariant(model.state != null, 'State in model should not be null or undefined.');
 
-        // avoid bug when registerModel after unRegisterModel
-        const state = clone(model.state);
+        return true;
+    }
 
-        if (store.reducerList[reducerName] == null) {
-            store.reducerList[reducerName] = {};
-            store.reducerList[reducerName][model.name] =
-                handleActions(actions, state);
-        } else {
-            store.reducerList[reducerName][model.name] =
-                handleActions(actions, state);
-        }
-        store.asyncReducers[reducerName] = mergeReducer(store.reducerList[reducerName], state);
-        store.replaceReducer(makeRootReducer(store.asyncReducers));
-
-        this.models[model.name] = {
-            ...newEffects,
-            ...newReducers,
-            reducerName,
+    function mountModel(app, model, actionCreaters, getState) {
+        app.models[model.name] = { // eslint-disable-line
+            ...actionCreaters,
             name: model.name,
         };
 
-        Object.defineProperty(this.models[model.name], 'state', {
+        Object.defineProperty(app.models[model.name], 'state', {
             enumerable: true,
             configurable: false,
-            get: () => {
-                if (!immutable) {
-                    return app.store.getState()[reducerName];
-                }
-                return app.store.getState().get(reducerName);
-            },
+            get: getState,
         });
 
         if (model.setup) {
-            this.runSaga(function* () { // eslint-disable-line
+            app.runSaga(function* () { // eslint-disable-line
                 const task = yield fork([app.models[model.name], model.setup]);
                 yield fork(function* () { // eslint-disable-line
-                    yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
+                    yield take(`${name}/${ActionTypes.CANCEL_EFFECTS}`);
                     yield cancel(task);
                 });
             });
         }
+    }
+
+    /**
+     * return reducer
+     * @param {*} model
+     */
+    function registerCombineModel(combineModel, app, getState) {
+        const { models = [], state } = combineModel;
+
+        const rs = {};
+        models.forEach((model) => {
+            if (!checkModel(model, app)) {
+                return;
+            }
+
+            const getModelState = getStateDelegate(model.state, getState, model.name);
+
+            if (model[COMBINED_RESA_MODEL]) {
+                rs[model.name] = registerCombineModel(model, app, getModelState);
+                return;
+            }
+
+            const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app);
+
+            rs[model.name] = handleActions(actions, cloneState(model.state));
+
+            mountModel(app, model, actionCreaters, getModelState);
+        });
+        return combineReducersInner(rs, cloneState(state));
+    }
+
+    function registerModel(model) {
+        if (!checkModel(model, this)) {
+            return;
+        }
+
+        const app = this;
+        const store = this.store;
+
+        const { name } = model;
+
+        /**
+         * if you want to immutable state, pass Immutable.map() here.
+         * clone state avoid bug when registerModel after unRegisterModel.
+         */
+        const state = cloneState(model.state);
+
+        const getState = getStateDelegate(model.state, app.store.getState, name);
+
+        if (model[COMBINED_RESA_MODEL]) {
+            const action = registerCombineModel(model, app, getState);
+            store.asyncReducers[name] = action;
+            store.replaceReducer(makeRootReducer(store.asyncReducers));
+            return;
+        }
+
+        const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app, name);
+
+        store.asyncReducers[name] = handleActions(actions, state);
+        store.replaceReducer(makeRootReducer(store.asyncReducers));
+
+        mountModel(app, model, actionCreaters, getState);
     }
 
     /**
@@ -338,19 +342,10 @@ export default function createResa(options = {}) {
             return;
         }
 
-        store.dispatch({ type: `${model.name}/${ActionTypes.CANCEL_EFFECTS}` });
-        if (store.reducerList[model.reducerName] && store.reducerList[model.reducerName][model.name]) {
-            delete store.reducerList[model.reducerName][model.name];
-            const mergedReducer = mergeReducer(store.reducerList[model.reducerName]);
-            if (mergedReducer) {
-                store.asyncReducers[model.reducerName] = mergedReducer;
-                store.replaceReducer(makeRootReducer(store.asyncReducers));
-            } else {
-                delete store.asyncReducers[model.reducerName];
-                store.replaceReducer(makeRootReducer(store.asyncReducers));
-            }
+        if (store.asyncReducers[name]) {
+            delete store.asyncReducers[name];
+            store.replaceReducer(makeRootReducer(store.asyncReducers));
         }
-
         delete this.models[name];
     }
 
@@ -376,11 +371,6 @@ export default function createResa(options = {}) {
          */
         unRegisterModel,
     };
-
-    /**
-     * init state
-     */
-    const initialState = options.initialState || getEmptyObject();
 
     const sagaMiddleware = createSagaMiddleware();
 
