@@ -231,13 +231,29 @@ export default function createResa(options = {}) {
         };
     }
 
-    function checkModel(model, app) {
+    function checkModel(model, app, isRoot) {
         invariant(typeof model.name === 'string' && model.name !== '',
             'name of model should be non empty string');
 
         if (app.models[model.name] != null) {
             // avoid register twice
             return false;
+        }
+
+        /**
+         * avoid register top level combined model twice
+         */
+        if (isRoot) {
+            const state = app.store.getState();
+            if (isImmutable(initialState)) {
+                if (state.get(model.name) != null) {
+                    return false;
+                }
+            } else {
+                if (state[model.name] != null) { // eslint-disable-line
+                    return false;
+                }
+            }
         }
 
         invariant(model.state != null, 'State in model should not be null or undefined.');
@@ -277,7 +293,7 @@ export default function createResa(options = {}) {
 
         const rs = {};
         models.forEach((model) => {
-            if (!checkModel(model, app)) {
+            if (!checkModel(model, app, false)) {
                 return;
             }
 
@@ -298,7 +314,7 @@ export default function createResa(options = {}) {
     }
 
     function registerModel(model) {
-        if (!checkModel(model, this)) {
+        if (!checkModel(model, this, true)) {
             return;
         }
 
