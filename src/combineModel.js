@@ -1,4 +1,4 @@
-export const COMBINED_RESA_MODEL = '@IS_COMBINED_RESA_MODEL@';
+export const COMBINED_RESA_MODEL = '@@__COMBINED_RESA_MODEL__@@';
 
 export default function combineModel(name, models = [], state = {}) {
     return {

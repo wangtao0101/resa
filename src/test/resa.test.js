@@ -366,28 +366,6 @@ describe('dispatch action success', () => {
     });
 });
 
-const model1 = {
-    name: 'model1',
-    state: {},
-    effects: {
-        * add(payload) {
-            this.fulfilled(payload);
-            yield 1;
-        },
-    },
-};
-
-const model2 = {
-    name: 'model2',
-    state: {},
-    effects: {
-        * add(payload) {
-            this.fulfilled(payload);
-            yield 1;
-        },
-    },
-};
-
 const modelReducer = {
     name: 'modelReducer',
     state: {},

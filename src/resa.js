@@ -231,11 +231,18 @@ export default function createResa(options = {}) {
         };
     }
 
-    function checkModel(model) {
+    function checkModel(model, app) {
         invariant(typeof model.name === 'string' && model.name !== '',
             'name of model should be non empty string');
 
+        if (app.models[name] != null) {
+            // avoid register twice
+            return false;
+        }
+
         invariant(model.state != null, 'State in model should not be null or undefined.');
+
+        return true;
     }
 
     function mountModel(app, model, actionCreaters, getState) {
@@ -270,7 +277,9 @@ export default function createResa(options = {}) {
 
         const rs = {};
         models.forEach((model) => {
-            checkModel(model);
+            if (!checkModel(model, app)) {
+                return;
+            }
 
             const getModelState = getStateDelegate(model.state, getState, model.name);
 
@@ -289,17 +298,14 @@ export default function createResa(options = {}) {
     }
 
     function registerModel(model) {
-        checkModel(model);
+        if (!checkModel(model, this)) {
+            return;
+        }
 
         const app = this;
         const store = this.store;
 
         const { name } = model;
-
-        if (this.models[name] != null) {
-            // avoid register twice
-            return;
-        }
 
         /**
          * if you want to immutable state, pass Immutable.map() here.

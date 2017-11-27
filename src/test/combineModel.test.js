@@ -9,7 +9,7 @@ const model1 = {
     effects: {
         * add(count) {
             this.fulfilled({
-                count: this.count + count,
+                count: this.state.count + count,
             });
             yield 0;
         },
@@ -24,7 +24,7 @@ const model2 = {
     effects: {
         * add(count) {
             this.fulfilled({
-                count: this.count + count + count,
+                count: this.state.count + count + count,
             });
             yield 0;
         },
@@ -34,7 +34,7 @@ const model2 = {
 const combinedModel = combineModel('xxx', [model1, model2]);
 
 describe('combineModel', () => {
-    test.only('combinemodel resiger success', () => {
+    test('combinemodel resiger success', () => {
         const app = createResa();
         app.registerModel(combinedModel);
         expect(app.store.getState()).toEqual({
@@ -46,8 +46,23 @@ describe('combineModel', () => {
         });
     });
 
-    test.only('combinemodel dispatch action success', () => {
+    test('combinemodel dispatch action success', () => {
         const app = createResa();
         app.registerModel(combinedModel);
+        app.models.model1.add(1);
+        app.models.model2.add(2);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                xxx: {
+                    model1: { count: 1 },
+                    model2: { count: 4 },
+                },
+            });
+        });
     });
 });
