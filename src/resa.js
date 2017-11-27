@@ -308,7 +308,7 @@ export default function createResa(options = {}) {
         const { name } = model;
 
         /**
-         * user up level model to judge the shape of state
+         * use up level model to judge the shape of state
          */
         const getState = getStateDelegate(initialState, app.store.getState, name);
 
