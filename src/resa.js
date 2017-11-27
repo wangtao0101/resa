@@ -281,7 +281,7 @@ export default function createResa(options = {}) {
                 return;
             }
 
-            const getModelState = getStateDelegate(model.state, getState, model.name);
+            const getModelState = getStateDelegate(state, getState, model.name);
 
             if (model[COMBINED_RESA_MODEL]) {
                 rs[model.name] = registerCombineModel(model, app, getModelState);
@@ -308,12 +308,9 @@ export default function createResa(options = {}) {
         const { name } = model;
 
         /**
-         * if you want to immutable state, pass Immutable.map() here.
-         * clone state avoid bug when registerModel after unRegisterModel.
+         * user up level model to judge the shape of state
          */
-        const state = cloneState(model.state);
-
-        const getState = getStateDelegate(model.state, app.store.getState, name);
+        const getState = getStateDelegate(initialState, app.store.getState, name);
 
         if (model[COMBINED_RESA_MODEL]) {
             const action = registerCombineModel(model, app, getState);
@@ -323,6 +320,12 @@ export default function createResa(options = {}) {
         }
 
         const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app, name);
+
+        /**
+         * if you want to immutable state, pass Immutable.map() here.
+         * clone state avoid bug when registerModel after unRegisterModel.
+         */
+        const state = cloneState(model.state);
 
         store.asyncReducers[name] = handleActions(actions, state);
         store.replaceReducer(makeRootReducer(store.asyncReducers));

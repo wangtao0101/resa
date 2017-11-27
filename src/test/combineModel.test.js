@@ -1,3 +1,4 @@
+import Immutable from 'immutable';
 import createResa, { combineModel } from './..';
 
 const model1 = {
@@ -62,6 +63,26 @@ describe('combineModel', () => {
                     model2: { count: 4 },
                 },
             });
+        });
+    });
+
+    test('immutable root', () => {
+        const app = createResa({ initialState: Immutable.Map() });
+        app.registerModel(combinedModel);
+        app.models.model1.add(1);
+        app.models.model2.add(2);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual(Immutable.Map({
+                resaReducer: {},
+                xxx: {
+                    model1: { count: 1 },
+                    model2: { count: 4 },
+                },
+            }));
         });
     });
 });
