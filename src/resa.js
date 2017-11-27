@@ -235,7 +235,7 @@ export default function createResa(options = {}) {
         invariant(typeof model.name === 'string' && model.name !== '',
             'name of model should be non empty string');
 
-        if (app.models[name] != null) {
+        if (app.models[model.name] != null) {
             // avoid register twice
             return false;
         }

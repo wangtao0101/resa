@@ -66,6 +66,13 @@ const effectModel = {
             yield delay(10);
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'throttle', 100],
+
+        * minus() {
+            this.fulfilled({
+                count: this.state.count + 1,
+            });
+            yield 0;
+        },
     },
 };
 
@@ -145,6 +152,25 @@ describe('dispatch action success', () => {
                 resaReducer: {},
                 model: {
                     a: 'a',
+                },
+            });
+        });
+    });
+
+    test('avoid register twice', () => {
+        const app = createResa();
+        app.registerModel(effectModel);
+        app.registerModel(effectModel);
+        app.models.effectModel.minus();
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                effectModel: {
+                    count: 1,
                 },
             });
         });
