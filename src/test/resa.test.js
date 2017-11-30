@@ -226,7 +226,7 @@ describe('dispatch action success', () => {
     test('dispatch fulfilled success when immutable', () => {
         const app = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
-        app.models.model.add({ a: 'a' });
+        app.models.model.add({ a: { a: 'b' } });
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -235,7 +235,29 @@ describe('dispatch action success', () => {
             expect(data).toEqual(Immutable.Map({
                 resaReducer: {},
                 model: Immutable.Map({
-                    a: 'a',
+                    a: {
+                        a: 'b',
+                    },
+                }),
+            }));
+        });
+    });
+
+    test('dispatch fulfilled success dispatch immutable payload', () => {
+        const app = createResa({ initialState: Immutable.Map() });
+        app.registerModel(immutableModel, 'model');
+        app.models.model.add(Immutable.fromJS({ a: { a: 'b' } }));
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual(Immutable.Map({
+                resaReducer: {},
+                model: Immutable.fromJS({
+                    a: {
+                        a: 'b',
+                    },
                 }),
             }));
         });

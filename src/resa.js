@@ -72,8 +72,22 @@ export default function createResa(options = {}) {
         }, initialState);
     }
 
+    // immutable merge bug see https://github.com/facebook/immutable-js/issues/1293
     function mergeImmutablePayload(state, payload = {}) {
-        return state.merge(payload);
+        if (isImmutable(payload)) {
+            return state.withMutations((map) => {
+                payload.map((value, key) => {
+                    map.set(key, value);
+                    return null;
+                });
+            });
+        }
+        return state.withMutations((map) => {
+            Object.keys(payload).map((key) => {
+                map.set(key, payload[key]);
+                return null;
+            });
+        });
     }
 
     function commonReducerHandle(state, payload) {
