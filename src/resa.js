@@ -217,7 +217,10 @@ export default function createResa(options = {}) {
         for (const key in oldReducers) { // eslint-disable-line
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
                 actions[`${model.name}/${key}`] = (state, { payload }) => {
-                    const that = { state };
+                    const that = {
+                        state,
+                        fulfilled: pl => commonReducerHandle(state, pl),
+                    };
                     return oldReducers[key].call(that, ...payloadDecode(payload));
                 };
                 newReducers[key] = (...args) => {

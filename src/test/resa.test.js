@@ -31,6 +31,10 @@ const model = {
         mul(a, b) {
             return Object.assign({}, this.state, { result: a * b });
         },
+
+        ful(payload) {
+            return this.fulfilled(payload);
+        },
     },
 };
 
@@ -152,6 +156,24 @@ describe('dispatch action success', () => {
                 resaReducer: {},
                 model: {
                     a: 'a',
+                },
+            });
+        });
+    });
+
+    test('reducer use fulfilled success', () => {
+        const app = createResa();
+        app.registerModel(model, 'model');
+        app.models.model.ful({ a: 'aaa' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                model: {
+                    a: 'aaa',
                 },
             });
         });
