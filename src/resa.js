@@ -127,8 +127,8 @@ export default function createResa(options = {}) {
             actualEffect = effect[0];
 
             invariant(
-                ['takeEvery', 'takeLatest', 'throttle'].indexOf(type) > -1,
-                'effect type should be takeEvery, takeLatest or throttle.'
+                ['takeEvery', 'takeLatest', 'throttle', 'takeFirst'].indexOf(type) > -1,
+                'effect type should be takeEvery, takeFirst, takeLatest or throttle.'
             );
 
             if (type === 'throttle') {
@@ -139,12 +139,21 @@ export default function createResa(options = {}) {
             }
         }
 
+        const effectSaga = getEffectSaga(app.models, actualEffect, model.name, dispatch);
+
         switch (type) {
+            case 'takeFirst': // eslint-disable-line
+                return function* () { // eslint-disable-line
+                    while (true) { // eslint-disable-line
+                        const at = yield take(action.pending);
+                        yield call(effectSaga, at);
+                    }
+                };
             case 'takeLatest': // eslint-disable-line
                 return function* () { // eslint-disable-line
                     yield takeLatest(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
+                        effectSaga
                     );
                 };
             case 'throttle': // eslint-disable-line
@@ -152,14 +161,14 @@ export default function createResa(options = {}) {
                     yield throttle(
                         effect[2],
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
+                        effectSaga
                     );
                 };
             default: // eslint-disable-line
                 return function* () { // eslint-disable-line
                     yield takeEvery(
                         action.pending,
-                        getEffectSaga(app.models, actualEffect, model.name, dispatch)
+                        effectSaga
                     );
                 };
         }

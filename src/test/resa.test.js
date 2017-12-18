@@ -66,6 +66,11 @@ const effectModel = {
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'takeLatest'],
 
+        plus: [function* (count) { // eslint-disable-line
+            yield delay(10);
+            this.fulfilled({ count });
+        }, 'takeFirst'],
+
         throttle: [function* (payload) { // eslint-disable-line
             yield delay(10);
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
@@ -348,6 +353,22 @@ describe('dispatch action success', () => {
             expect(data).toEqual(Immutable.Map({
                 a: 'a',
             }));
+        });
+    });
+
+    test('takeFirst', () => {
+        const app = createResa();
+        app.registerModel(effectModel, 'effectModel');
+        app.models.effectModel.plus(2);
+        app.models.effectModel.plus(4);
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.models.effectModel.state);
+            }, 20);
+        }).then((data) => {
+            expect(data).toEqual({
+                count: 2,
+            });
         });
     });
 
