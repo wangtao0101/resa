@@ -375,23 +375,27 @@ export default function createResa(options = {}) {
         mountModel(app, model, actionCreaters, getState);
     }
 
+    function unReg(app, model) {
+        if (app.models[model.name]) {
+            app.store.dispatch({ type: `${model.name}/${ActionTypes.CANCEL_EFFECTS}` });
+            delete app.models[model.name]; // eslint-disable-line
+        }
+    }
+
     /**
-     * unregister model, including delete reducer, delete asyncReducers ,cancle saga, delete model
+     * unregister model, including cancle saga, delete model, retain reducers
      * @param {*} model
      */
-    function unRegisterModel(name) {
-        const store = this.store;
+    function unRegisterModel(model) {
+        if (model[COMBINED_RESA_MODEL]) {
+            const { models = [] } = model;
 
-        const model = this.models[name];
-        if (model == null) {
-            return;
+            models.forEach((m) => {
+                this.unRegisterModel(m);
+            });
+        } else {
+            unReg(this, model);
         }
-
-        if (store.asyncReducers[name]) {
-            delete store.asyncReducers[name];
-            store.replaceReducer(makeRootReducer(store.asyncReducers));
-        }
-        delete this.models[name];
     }
 
     const app = {

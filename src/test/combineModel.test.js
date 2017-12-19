@@ -94,4 +94,11 @@ describe('combineModel', () => {
         app.models.model1.add(1);
         expect(console.error).not.toBeCalled(); // eslint-disable-line
     });
+
+    test('unRegisterModel combined model success', () => {
+        const app = createResa();
+        app.registerModel(combinedModel);
+        app.unRegisterModel(combinedModel);
+        expect(app.models).toEqual({});
+    });
 });

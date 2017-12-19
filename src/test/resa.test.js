@@ -509,9 +509,8 @@ describe('unRegisterModel', () => {
         app.registerModel(unModel, 'unModel');
         app.models.unModel.xxx({ a: 'dd' });
         app.models.unModel.add({ b: 'cc' });
-        app.unRegisterModel('unModel');
+        app.unRegisterModel(unModel);
         expect(app.models).toEqual({});
-        expect(app.store.asyncReducers).toEqual({});
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -571,7 +570,7 @@ describe('test setup', () => {
 
         return new Promise((resolve) => {
             setTimeout(() => {
-                app.unRegisterModel('setupModel');
+                app.unRegisterModel(setupModel);
             }, 5);
             setTimeout(() => {
                 resolve(app.store.getState());
