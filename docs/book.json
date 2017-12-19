@@ -1,0 +1,16 @@
+{
+  "title": "Resa",
+  "gitbook": ">3.0.0",
+  "plugins": ["prism", "-fontsettings", "-highlight", "github"],
+  "pluginsConfig": {
+    "github": {
+      "url": "https://github.com/wangtao0101/resa"
+    }
+  },
+  "links": {
+    "sharing": {
+      "facebook": false,
+      "twitter": false
+    }
+  }
+}

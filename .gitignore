@@ -5,3 +5,4 @@ npm-debug.*
 .DS_Store
 lib/
 coverage
+docs/_book

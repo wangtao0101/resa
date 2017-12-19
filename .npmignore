@@ -12,3 +12,4 @@ src
 jsconfig.json
 yarn.lock
 coverage
+docs
