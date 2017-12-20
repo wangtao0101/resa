@@ -572,7 +572,7 @@ const setupModel = {
     },
     * setup() {
         yield call(this.add, { aa: 'bbc' });
-        yield delay(10);
+        yield delay(20);
         yield call(this.add, { aa: 'bbb' });
     },
 };
