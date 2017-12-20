@@ -101,4 +101,12 @@ describe('combineModel', () => {
         app.unRegisterModel(combinedModel);
         expect(app.models).toEqual({});
     });
+
+    test('should only unRegister root model', () => {
+        expect(() => {
+            const app = createResa();
+            app.registerModel(combinedModel);
+            app.unRegisterModel(model1);
+        }).toThrow(/should only unRegister root model/);
+    });
 });

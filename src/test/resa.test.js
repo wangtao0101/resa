@@ -549,6 +549,15 @@ describe('unRegisterModel', () => {
             });
         });
     });
+
+    test('should not unRegister unRegistered model', () => {
+        expect(() => {
+            const app = createResa();
+            app.registerModel(unModel, 'unModel');
+            app.unRegisterModel(unModel);
+            app.unRegisterModel(unModel);
+        }).toThrow(/should not unRegister unRegistered model/);
+    });
 });
 
 const setupModel = {

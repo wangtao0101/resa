@@ -9,6 +9,9 @@ import isImmutable from './predicates';
 import { COMBINED_RESA_MODEL } from './combineModel';
 import { cloneState, getStateDelegate } from './help';
 
+// is root model
+const ROOT_MODEL = '@@__ROOT_MODEL__@@';
+
 const ActionTypes = {
     INIT: '@@redux/INIT',
     CANCEL_EFFECTS: '@@CANCEL_EFFECTS',
@@ -271,10 +274,11 @@ export default function createResa(options = {}) {
         return true;
     }
 
-    function mountModel(app, model, actionCreaters, getState) {
+    function mountModel(app, model, actionCreaters, getState, isRoot = false) {
         app.models[model.name] = { // eslint-disable-line
             ...actionCreaters,
             name: model.name,
+            [ROOT_MODEL]: isRoot,
         };
 
         Object.defineProperty(app.models[model.name], 'state', {
@@ -300,8 +304,8 @@ export default function createResa(options = {}) {
      */
     function registerCombineModel(combineModel, app, getState) {
         const { models = [], state } = combineModel;
-
         const rs = {};
+
         models.forEach((model) => {
             if (!checkModel(model, app)) {
                 return;
@@ -310,6 +314,7 @@ export default function createResa(options = {}) {
             const getModelState = getStateDelegate(state, getState, model.name);
 
             if (model[COMBINED_RESA_MODEL]) {
+                this.models[model.name] = Object.assign({}, model);
                 rs[model.name] = registerCombineModel(model, app, getModelState);
                 return;
             }
@@ -339,7 +344,9 @@ export default function createResa(options = {}) {
         const getState = getStateDelegate(initialState, app.store.getState, name);
 
         if (model[COMBINED_RESA_MODEL]) {
-            this.models[name] = model;
+            this.models[model.name] = Object.assign({}, model, {
+                [ROOT_MODEL]: true,
+            });
             const action = registerCombineModel(model, app, getState);
             store.asyncReducers[name] = action;
             store.replaceReducer(makeRootReducer(store.asyncReducers));
@@ -357,7 +364,7 @@ export default function createResa(options = {}) {
         store.asyncReducers[name] = handleActions(actions, state);
         store.replaceReducer(makeRootReducer(store.asyncReducers));
 
-        mountModel(app, model, actionCreaters, getState);
+        mountModel(app, model, actionCreaters, getState, true);
     }
 
     function unReg(app, model) {
@@ -371,16 +378,23 @@ export default function createResa(options = {}) {
      * unregister model, including cancle saga, delete model, retain reducers
      * @param {*} model
      */
-    function unRegisterModel(model) {
-        if (model[COMBINED_RESA_MODEL]) {
-            const { models = [] } = model;
-            delete this.models[model.name];
+    function unRegisterModel(model, shoudCheckRoot = true) {
+        const transformedModel = this.models[model.name];
+        invariant(transformedModel != null, 'should not unRegister unRegistered model');
+
+        if (shoudCheckRoot) {
+            invariant(transformedModel[ROOT_MODEL], 'should only unRegister root model');
+        }
+
+        if (transformedModel[COMBINED_RESA_MODEL]) {
+            const { models = [] } = transformedModel;
+            delete this.models[transformedModel.name];
 
             models.forEach((m) => {
-                this.unRegisterModel(m);
+                this.unRegisterModel(m, false);
             });
         } else {
-            unReg(this, model);
+            unReg(this, transformedModel);
         }
     }
 
