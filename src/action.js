@@ -2,7 +2,6 @@ import { createAction as cAction } from 'redux-actions';
 
 const PENDING = '_PENDING';
 const FULFILLED = '_FULFILLED';
-const REJECTED = '_REJECTED';
 
 /**
  * create action
@@ -14,7 +13,6 @@ function createActionInner(type, payloadCreator, metaCreator) {
     return {
         pending: cAction(type + PENDING, payloadCreator, metaCreator),
         fulfilled: cAction(type + FULFILLED, payloadCreator, metaCreator),
-        reject: cAction(type + REJECTED, payloadCreator, metaCreator),
     };
 }
 

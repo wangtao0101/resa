@@ -17,7 +17,7 @@ const model = {
         },
 
         * minus(payload) {
-            yield call(this.reject, payload);
+            yield call(this.fulfilled, payload);
             throw new Error('error');
         },
 
@@ -94,7 +94,7 @@ const callSelfModel = {
         },
 
         * minus(payload) {
-            this.reject(payload);
+            this.fulfilled(payload);
             yield 1;
         },
     },

@@ -194,14 +194,10 @@ export default function createResa(options = {}) {
                     }
                 };
                 actions[action.fulfilled] = innerReducer;
-                actions[action.reject] = innerReducer;
 
                 const dispatch = {
                     fulfilled(obj) {
                         store.dispatch(action.fulfilled(obj));
-                    },
-                    reject(obj) {
-                        store.dispatch(action.reject(obj));
                     },
                 };
 
