@@ -4,34 +4,34 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/resa.svg?style=flat)](https://travis-ci.org/wangtao0101/resa)
 [![Coverage Status](https://coveralls.io/repos/github/wangtao0101/resa/badge.svg?branch=master)](https://coveralls.io/github/wangtao0101/resa?branch=master)
 
-[以中文查看](README_CN.md)
+[View README in English](README.md)
 
-A simple framework based on typescript, redux, redux-saga, redux-action.
+基于typescript, redux, redux-saga, redux-action的前端框架。
 
-## Installation
+## 安装
 ```
 npm install resa --save
 yarn add resa
 ```
 
-## Features
-* No redundant redux boilerplate code
-* Full IntelliSense with vscode and typescript using [resa-class-model](https://github.com/wangtao0101/resa-class-model)
-* Typed redux store
-* Typed action creater and payload
-* Better side effects control with redux-saga
-* Action creater born to be promise
-* Better error handling, support use promise.catch to capture error
-* Easy learn, easy write, easy test
+## 特性
+* 没有多余的redux样板代码
+* 完全的智能提示（by vscode and typescript [resa-class-model](https://github.com/wangtao0101/resa-class-model)）
+* 类型标注的redux store
+* 类型安全的action creater和payload
+* 使用redux-saga更好的控制副作用
+* Action creater返回promise
+* 更好的错误处理， 支持使用promise.catch
+* 容易学习，容易编码，容易测试
 
-## Motivation
+## 为什么造轮子
 Actually i like redux and redux-saga very much, but both them hava many problems:
 * Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project
 * no IntelliSense
 * no type-safe
 * terrible error handling in redux-saga
 
-## First sight
+## 第一眼
 Define model
 ```
 import { Model, reducer, init, effect } from 'resa-class-model';
