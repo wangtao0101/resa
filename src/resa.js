@@ -268,8 +268,6 @@ export default function createResa(options = {}) {
             `name of model should be unique, please check model name: ${model.name}`);
 
         invariant(model.state != null, 'State in model should not be null or undefined.');
-
-        return true;
     }
 
     function mountModel(app, model, actionCreaters, getState, isRoot = false) {
@@ -305,9 +303,7 @@ export default function createResa(options = {}) {
         const rs = {};
 
         models.forEach((model) => {
-            if (!checkModel(model, app)) {
-                return;
-            }
+            checkModel(model, app);
 
             const getModelState = getStateDelegate(state, getState, model.name);
 
@@ -327,9 +323,7 @@ export default function createResa(options = {}) {
     }
 
     function registerModel(model) {
-        if (!checkModel(model, this)) {
-            return;
-        }
+        checkModel(model, this);
 
         const app = this;
         const store = this.store;
