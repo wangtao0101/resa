@@ -262,7 +262,7 @@ export default function createResa(options = {}) {
 
     function checkModel(model, app) {
         invariant(typeof model.name === 'string' && model.name !== '',
-            'name of model should be non empty string');
+            `name of model should be non empty string, but got ${typeof model.name}`);
 
         if (app.models[model.name] != null) {
             // avoid register twice
@@ -379,6 +379,9 @@ export default function createResa(options = {}) {
      * @param {*} model
      */
     function unRegisterModel(model, shoudCheckRoot = true) {
+        invariant(typeof model.name === 'string' && model.name !== '',
+            `name of model should be non empty string, but got ${typeof model.name}`);
+
         const transformedModel = this.models[model.name];
         invariant(transformedModel != null, 'should not unRegister unRegistered model');
 

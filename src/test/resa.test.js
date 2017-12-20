@@ -558,6 +558,14 @@ describe('unRegisterModel', () => {
             app.unRegisterModel(unModel);
         }).toThrow(/should not unRegister unRegistered model/);
     });
+
+    test('name of model should be non empty string', () => {
+        expect(() => {
+            const app = createResa();
+            app.registerModel(unModel, 'unModel');
+            app.unRegisterModel({ name: 5 });
+        }).toThrow(/name of model should be non empty string/);
+    });
 });
 
 const setupModel = {
