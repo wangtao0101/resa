@@ -87,12 +87,11 @@ describe('combineModel', () => {
     });
 
     test('avoid resigter top level combined model twice', () => {
-        global.console = { error: jest.fn() };
-        const app = createResa();
-        app.registerModel(combinedModel);
-        app.registerModel(combinedModel);
-        app.models.model1.add(1);
-        expect(console.error).not.toBeCalled(); // eslint-disable-line
+        expect(() => {
+            const app = createResa();
+            app.registerModel(combinedModel);
+            app.registerModel(combinedModel);
+        }).toThrow(/name of model should be unique, please check model name:/);
     });
 
     test('unRegisterModel combined model success', () => {

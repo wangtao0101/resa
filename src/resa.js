@@ -264,10 +264,8 @@ export default function createResa(options = {}) {
         invariant(typeof model.name === 'string' && model.name !== '',
             `name of model should be non empty string, but got ${typeof model.name}`);
 
-        if (app.models[model.name] != null) {
-            // avoid register twice
-            return false;
-        }
+        invariant(app.models[model.name] == null,
+            `name of model should be unique, please check model name: ${model.name}`);
 
         invariant(model.state != null, 'State in model should not be null or undefined.');
 

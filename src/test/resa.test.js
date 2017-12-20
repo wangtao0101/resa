@@ -185,22 +185,11 @@ describe('dispatch action success', () => {
     });
 
     test('avoid register twice', () => {
-        const app = createResa();
-        app.registerModel(effectModel);
-        app.registerModel(effectModel);
-        app.models.effectModel.minus();
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 5);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                effectModel: {
-                    count: 1,
-                },
-            });
-        });
+        expect(() => {
+            const app = createResa();
+            app.registerModel(effectModel);
+            app.registerModel(effectModel);
+        }).toThrow(/name of model should be unique, please check model name:/);
     });
 
     test('dispatch an empty payload success', () => {
