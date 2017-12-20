@@ -174,7 +174,7 @@ export default function createResa(options = {}) {
         }
     }
 
-    function runSagaAndReturnActionCreators(model, app, unRegisterName) {
+    function runSagaAndReturnActionCreators(model, app) {
         const actions = {};
         const { store, runSaga } = app;
 
@@ -214,7 +214,7 @@ export default function createResa(options = {}) {
                     const saga = getSaga(app, action, oldEffects[key], model, dispatch);
                     const task = yield fork(saga);
                     yield fork(function* () { // eslint-disable-line
-                        yield take(`${unRegisterName}/${ActionTypes.CANCEL_EFFECTS}`);
+                        yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
                         yield cancel(task);
                     });
                 });

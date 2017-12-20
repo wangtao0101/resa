@@ -495,6 +495,9 @@ const unModel = {
             yield delay(5);
             this.fulfilled(payload);
         },
+        * minus(payload) {
+            yield this.fulfilled(payload);
+        },
     },
     reducers: {
         xxx(payload) {
@@ -520,6 +523,28 @@ describe('unRegisterModel', () => {
                 resaReducer: {},
                 unModel: {
                     a: 'dd',
+                },
+            });
+        });
+    });
+
+    test('resigter twice success and dispatch action success after unRegisterModel model', () => {
+        const app = createResa();
+        app.registerModel(unModel, 'unModel');
+        app.models.unModel.minus({ b: 'cc' });
+        app.unRegisterModel(unModel);
+        expect(app.models).toEqual({});
+        app.registerModel(unModel, 'unModel');
+        app.models.unModel.minus({ b: 'dd' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 10);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                unModel: {
+                    b: 'dd',
                 },
             });
         });
