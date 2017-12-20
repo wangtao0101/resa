@@ -257,29 +257,13 @@ export default function createResa(options = {}) {
         };
     }
 
-    function checkModel(model, app, isRoot) {
+    function checkModel(model, app) {
         invariant(typeof model.name === 'string' && model.name !== '',
             'name of model should be non empty string');
 
         if (app.models[model.name] != null) {
             // avoid register twice
             return false;
-        }
-
-        /**
-         * avoid register top level combined model twice
-         */
-        if (isRoot) {
-            const state = app.store.getState();
-            if (isImmutable(initialState)) {
-                if (state.get(model.name) != null) {
-                    return false;
-                }
-            } else {
-                if (state[model.name] != null) { // eslint-disable-line
-                    return false;
-                }
-            }
         }
 
         invariant(model.state != null, 'State in model should not be null or undefined.');
@@ -319,7 +303,7 @@ export default function createResa(options = {}) {
 
         const rs = {};
         models.forEach((model) => {
-            if (!checkModel(model, app, false)) {
+            if (!checkModel(model, app)) {
                 return;
             }
 
@@ -340,7 +324,7 @@ export default function createResa(options = {}) {
     }
 
     function registerModel(model) {
-        if (!checkModel(model, this, true)) {
+        if (!checkModel(model, this)) {
             return;
         }
 
@@ -355,6 +339,7 @@ export default function createResa(options = {}) {
         const getState = getStateDelegate(initialState, app.store.getState, name);
 
         if (model[COMBINED_RESA_MODEL]) {
+            this.models[name] = model;
             const action = registerCombineModel(model, app, getState);
             store.asyncReducers[name] = action;
             store.replaceReducer(makeRootReducer(store.asyncReducers));
@@ -389,6 +374,7 @@ export default function createResa(options = {}) {
     function unRegisterModel(model) {
         if (model[COMBINED_RESA_MODEL]) {
             const { models = [] } = model;
+            delete this.models[model.name];
 
             models.forEach((m) => {
                 this.unRegisterModel(m);
