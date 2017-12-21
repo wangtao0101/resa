@@ -124,9 +124,10 @@ ReactDOM.render(
 ## What is resa？
 resa = a simple way to use redux and redux-saga
 
+## Examples
+[count](./examples/count/README.md)
+
 ## Docs
-- [Getting Started](./docs/GettingStarted.md)
-- [Api](./docs/Api.md)
 
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).
