@@ -59,7 +59,7 @@ export default class AppModel extends Model<AppState> {
     add(count: number) {
         return this.fulfilled({
             count: this.state.count + count, // type check here
-        })
+        });
     }
 }
 
@@ -81,12 +81,14 @@ class App extends React.Component<AppProps> {
     return (
       <div className="App">
         <h1>{this.props.count}</h1>
-        // add and addAsync have been transformed to action creaters, you just call them with arguments(type check payload)
-        <button onClick={() => this.props.appModel.add(1)}>+</button> // type check here
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> // type check here
+        {/* add and addAsync have been transformed to action creaters,
+            you just call them with arguments(type check payload)
+        */}
+        <button onClick={() => this.props.appModel.add(1)}>+</button> {/* type check here */}
+        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* type check here */}
         <button
           onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})} // type check here
+            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback'); })}
         >promise
         </button>
       </div>
@@ -95,14 +97,30 @@ class App extends React.Component<AppProps> {
 }
 
 const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // annotation type
-    return {
-        count: appModel.state.count
-    };
+  return {
+    count: appModel.state.count
+  };
 };
 
 const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // connect model by name
 
 export default NewApp;
+```
+wapper with Provider like react-redux
+```
+import createResa, { Provider } from 'resa';
+
+import App from './App';
+import AppModel from './AppModel';
+const app = createResa();
+app.registerModel(new AppModel());
+
+ReactDOM.render(
+  <Provider store={app.store} resa={app}>
+    <App />
+  </Provider>,
+  document.getElementById('root') as HTMLElement
+);
 ```
 So, do you like the simplicity ?
 

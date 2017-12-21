@@ -59,10 +59,9 @@ export default class AppModel extends Model<AppState> {
     add(count: number) {
         return this.fulfilled({
             count: this.state.count + count, // 类型检查
-        })
+        });
     }
 }
-
 ```
 定义组件
 ```
@@ -81,12 +80,14 @@ class App extends React.Component<AppProps> {
     return (
       <div className="App">
         <h1>{this.props.count}</h1>
-        // add和addAsync已经被转换成了action creaters，直接调用它就会派发action, 参数相当于有类型检查的payload
-        <button onClick={() => this.props.appModel.add(1)}>+</button> // 类型检查
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> // 类型检查
+        {/* add和addAsync已经被转换成了action creaters
+            直接调用它就会派发action, 参数相当于有类型检查的payload
+        */}
+        <button onClick={() => this.props.appModel.add(1)}>+</button> {/* 类型检查 */}
+        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* 类型检查 */}
         <button
           onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})} // 类型检查
+            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback'); })}
         >promise
         </button>
       </div>
@@ -95,14 +96,28 @@ class App extends React.Component<AppProps> {
 }
 
 const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // 标注类型，帮助智能提示
-    return {
-        count: appModel.state.count // 类型检查
-    };
+  return {
+    count: appModel.state.count // 类型检查
+  };
 };
 
 const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // 在connect中通过model name链接模型
+```
+使用Provider包裹应用，就像react-redux
+```
+import createResa, { Provider } from 'resa';
 
-export default NewApp;
+import App from './App';
+import AppModel from './AppModel';
+const app = createResa();
+app.registerModel(new AppModel());
+
+ReactDOM.render(
+  <Provider store={app.store} resa={app}>
+    <App />
+  </Provider>,
+  document.getElementById('root') as HTMLElement
+);
 ```
 所以你喜欢这样简洁的代码吗 ?
 
