@@ -128,7 +128,7 @@ So, do you like the simplicity ?
 resa = a simple way to use redux and redux-saga
 
 ## Examples
-[count](./examples/count/README.md)
+[count](./examples/count)
 
 ## Docs
 
