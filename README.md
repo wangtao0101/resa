@@ -25,7 +25,7 @@ yarn add resa resa-class-model
 * Easy learn, easy write, easy test
 
 ## Motivation
-Actually i like redux and redux-saga very much, but both them hava many problems:
+Actually i like redux and redux-saga very much, but both them have many problems:
 * Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project
 * no IntelliSense
 * no type-safe
