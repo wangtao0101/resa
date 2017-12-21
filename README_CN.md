@@ -16,7 +16,7 @@ yarn add resa
 
 ## 特性
 * 没有多余的redux样板代码
-* 完全的智能提示（by vscode and typescript [resa-class-model](https://github.com/wangtao0101/resa-class-model)）
+* 完全的智能提示（by vscode、 typescript 、[resa-class-model](https://github.com/wangtao0101/resa-class-model)）
 * 类型标注的redux store
 * 类型安全的action creater和payload
 * 使用redux-saga更好的控制副作用
@@ -25,15 +25,16 @@ yarn add resa
 * 容易学习，容易编码，容易测试
 
 ## 为什么造轮子
-Actually i like redux and redux-saga very much, but both them hava many problems:
-* Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project
-* no IntelliSense
-* no type-safe
-* terrible error handling in redux-saga
+我非常喜欢redux和redux-saga，但是它们在使用过程当中有许多问题:
+* 在大项目中到处都是样板代码
+* 没有智能提示
+* 没有类型检查
+* 在redux-saga中错误处理不友好
 
 ## 第一眼
-Define model
+定义模型
 ```
+// AppModel.ts
 import { Model, reducer, init, effect } from 'resa-class-model';
 import { delay } from 'redux-saga';
 
@@ -44,34 +45,35 @@ interface AppState {
 @init<AppState>({
     name: 'appModel',
     state: {
-        count: 0
+        count: 0 // 类型检查
     }
 })
 export default class AppModel extends Model<AppState> {
-    @effect()
+    @effect() // 定义异步的action处理函数
     * addAsync(count: number) {
         yield delay(2000);
-        this.add(count);
+        this.add(count); // 类型检查
     }
 
-    @reducer()
+    @reducer() // 定义reducer，也就是同步的action处理函数
     add(count: number) {
         return this.fulfilled({
-            count: this.state.count + count,
+            count: this.state.count + count, // 类型检查
         })
     }
 }
 
 ```
-Define component
+定义组件
 ```
+// App.tsx
 import AppModel from './AppModel';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
 
 interface AppProps {
   count: number;
-  appModel: AppModel; // annotation type
+  appModel: AppModel; // 标注类型，帮助智能提示，实体由connect注入
 }
 
 class App extends React.Component<AppProps> {
@@ -79,11 +81,12 @@ class App extends React.Component<AppProps> {
     return (
       <div className="App">
         <h1>{this.props.count}</h1>
-        <button onClick={() => this.props.appModel.add(1)}>+</button>
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button>
+        // add和addAsync已经被转换成了action creaters，直接调用它就会派发action, 参数相当于有类型检查的payload
+        <button onClick={() => this.props.appModel.add(1)}>+</button> // 类型检查
+        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> // 类型检查
         <button
           onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})}
+            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})} // 类型检查
         >promise
         </button>
       </div>
@@ -91,17 +94,17 @@ class App extends React.Component<AppProps> {
   }
 }
 
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // annotation type
+const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // 标注类型，帮助智能提示
     return {
-        count: appModel.state.count
+        count: appModel.state.count // 类型检查
     };
 };
 
-const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // connect model by name
+const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // 在connect中通过model name链接模型
 
 export default NewApp;
 ```
-So, do you like the simplicity ?
+所以你喜欢这样简洁的代码吗 ?
 
 ## What is resa？
 resa = a simple way to use redux and redux-saga

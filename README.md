@@ -34,6 +34,7 @@ Actually i like redux and redux-saga very much, but both them hava many problems
 ## First sight
 Define model
 ```
+// AppModel.ts
 import { Model, reducer, init, effect } from 'resa-class-model';
 import { delay } from 'redux-saga';
 
@@ -44,20 +45,20 @@ interface AppState {
 @init<AppState>({
     name: 'appModel',
     state: {
-        count: 0
+        count: 0 // type check here
     }
 })
 export default class AppModel extends Model<AppState> {
-    @effect()
+    @effect() // define async action handle
     * addAsync(count: number) {
         yield delay(2000);
-        this.add(count);
+        this.add(count); // type check here
     }
 
-    @reducer()
+    @reducer() // define redux reducer: sync action handle
     add(count: number) {
         return this.fulfilled({
-            count: this.state.count + count,
+            count: this.state.count + count, // type check here
         })
     }
 }
@@ -65,13 +66,14 @@ export default class AppModel extends Model<AppState> {
 ```
 Define component
 ```
+// App.tsx
 import AppModel from './AppModel';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
 
 interface AppProps {
   count: number;
-  appModel: AppModel; // annotation type
+  appModel: AppModel; // annotation type, will inject by connect
 }
 
 class App extends React.Component<AppProps> {
@@ -79,11 +81,12 @@ class App extends React.Component<AppProps> {
     return (
       <div className="App">
         <h1>{this.props.count}</h1>
-        <button onClick={() => this.props.appModel.add(1)}>+</button>
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button>
+        // add and addAsync have been transformed to action creaters, you just call them with arguments(type check payload)
+        <button onClick={() => this.props.appModel.add(1)}>+</button> // type check here
+        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> // type check here
         <button
           onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})}
+            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback');})} // type check here
         >promise
         </button>
       </div>
