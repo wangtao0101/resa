@@ -10,8 +10,8 @@
 
 ## 安装
 ```
-npm install resa --save
-yarn add resa
+npm install resa resa-class-model --save
+yarn add resa resa-class-model
 ```
 
 ## 特性

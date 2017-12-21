@@ -557,67 +557,6 @@ describe('unRegisterModel', () => {
     });
 });
 
-const setupModel = {
-    name: 'setupModel',
-    state: {},
-    effects: {
-        * add(payload) {
-            try {
-                this.fulfilled(payload);
-                yield 1;
-            } catch (error) {
-                //
-            }
-        },
-    },
-    * setup() {
-        yield call(this.add, { aa: 'bbc' });
-        yield delay(20);
-        yield call(this.add, { aa: 'bbb' });
-    },
-};
-
-describe('test setup', () => {
-    test('setup success', () => {
-        const app = createResa();
-        app.registerModel(setupModel, 'setupModel');
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 5);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                setupModel: {
-                    aa: 'bbc',
-                },
-            });
-        });
-    });
-
-    test('cancel setup success', () => {
-        const app = createResa();
-        app.registerModel(setupModel, 'setupModel');
-
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                app.unRegisterModel(setupModel);
-            }, 5);
-            setTimeout(() => {
-                resolve(app.store.getState());
-            }, 15);
-        }).then((data) => {
-            expect(data).toEqual({
-                resaReducer: {},
-                setupModel: {
-                    aa: 'bbc',
-                },
-            });
-        });
-    });
-});
-
-
 const emptyStateModel = {
     name: 'model',
 };

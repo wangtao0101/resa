@@ -278,16 +278,6 @@ export default function createResa(options = {}) {
             configurable: false,
             get: getState,
         });
-
-        if (model.setup) {
-            app.runSaga(function* () { // eslint-disable-line
-                const task = yield fork([app.models[model.name], model.setup]);
-                yield fork(function* () { // eslint-disable-line
-                    yield take(`${name}/${ActionTypes.CANCEL_EFFECTS}`);
-                    yield cancel(task);
-                });
-            });
-        }
     }
 
     /**

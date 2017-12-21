@@ -10,8 +10,8 @@ A simple framework based on typescript, redux, redux-saga, redux-action.
 
 ## Installation
 ```
-npm install resa --save
-yarn add resa
+npm install resa resa-class-model --save
+yarn add resa resa-class-model
 ```
 
 ## Features
