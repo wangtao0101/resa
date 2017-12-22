@@ -25,7 +25,8 @@ yarn add resa resa-class-model
 * 容易学习，容易编码，容易测试
 
 ## 为什么造轮子
-我非常喜欢redux和redux-saga，但是它们在使用过程当中有许多问题:
+我非常喜欢redux和redux-saga，但是它们在使用过程当中有许多问题, 现有的框架[dva](https://github.com/dvajs/dva),
+ [mirror](https://github.com/mirrorjs/mirror)也没有彻底解决他们：
 * 在大项目中到处都是样板代码
 * 没有智能提示
 * 没有类型检查
@@ -49,13 +50,13 @@ interface AppState {
     }
 })
 export default class AppModel extends Model<AppState> {
-    @effect() // 定义异步的action处理函数
+    @effect() // 定义saga: 异步的action处理函数
     * addAsync(count: number) {
         yield delay(2000);
         this.add(count); // 类型检查
     }
 
-    @reducer() // 定义reducer，也就是同步的action处理函数
+    @reducer() // 定义reducer: 同步的action处理函数
     add(count: number) {
         return this.fulfilled({
             count: this.state.count + count, // 类型检查

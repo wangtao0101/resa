@@ -25,10 +25,11 @@ yarn add resa resa-class-model
 * Easy learn, easy write, easy test
 
 ## Motivation
-Actually i like redux and redux-saga very much, but both them have many problems:
+Actually i like redux and redux-saga very much, but both them have many problems and they are not completely solved by existing packages like [dva](https://github.com/dvajs/dva),
+ [mirror](https://github.com/mirrorjs/mirror):
 * Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project
 * no IntelliSense
-* no type-safe
+* no Type-safe
 * terrible error handling in redux-saga
 
 ## First sight
@@ -49,7 +50,7 @@ interface AppState {
     }
 })
 export default class AppModel extends Model<AppState> {
-    @effect() // define async action handle
+    @effect() // define saga: async action handle
     * addAsync(count: number) {
         yield delay(2000);
         this.add(count); // type check here
