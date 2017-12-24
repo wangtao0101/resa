@@ -1,7 +1,7 @@
 import { createAction as cAction } from 'redux-actions';
 
-const PENDING = '_PENDING';
-const FULFILLED = '_FULFILLED';
+const PENDING = '_ASYNC';
+const FULFILLED = '_ASYNC_FULFILLED';
 
 /**
  * create action
