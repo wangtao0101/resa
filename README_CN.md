@@ -32,6 +32,11 @@ yarn add resa resa-class-model
 * 没有类型检查
 * 在redux-saga中错误处理不友好
 
+## Examples
+我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
+
+[count](./examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+
 ## 第一眼
 定义模型
 ```
@@ -124,11 +129,6 @@ ReactDOM.render(
 
 ## What is resa？
 resa = a simple way to use redux and redux-saga
-s
-## Examples
-我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
-
-[count](./examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## Docs
 
