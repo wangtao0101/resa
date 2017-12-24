@@ -13,3 +13,5 @@ jsconfig.json
 yarn.lock
 coverage
 docs
+examples
+yarn-error.log

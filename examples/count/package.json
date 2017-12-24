@@ -9,7 +9,7 @@
     "react-scripts-ts": "2.8.0",
     "redux": "^3.7.2",
     "redux-saga": "^0.16.0",
-    "resa": "^3.0.0-rc.12",
+    "resa": "^3.0.0-rc.13",
     "resa-class-model": "^1.0.0-rc.3"
   },
   "scripts": {
