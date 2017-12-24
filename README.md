@@ -129,7 +129,9 @@ So, do you like the simplicity ?
 resa = a simple way to use redux and redux-saga
 
 ## Examples
-[count](./examples/count)
+We hava integrated redux-devtool in online-vscode, you can click **Open in New Window** button and open chrome redux-devtool to see what action will be dispathed when you click button.
+
+[count](./examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## Docs
 
