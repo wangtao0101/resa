@@ -114,7 +114,7 @@ const app = createResa();
 app.registerModel(new AppModel());
 
 ReactDOM.render(
-  <Provider store={app.store} resa={app}>
+  <Provider resa={app}>
     <App />
   </Provider>,
   document.getElementById('root') as HTMLElement
