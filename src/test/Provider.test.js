@@ -24,7 +24,7 @@ describe('Provider', () => {
     test('should add resa to the child context', () => {
         const app = createResa();
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <Child />
             </Provider>
         );

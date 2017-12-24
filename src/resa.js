@@ -41,6 +41,7 @@ export default function createResa(options = {}) {
     const {
         reducers = {},
         errorHandle = noop,
+        reduxDevToolOptions = {},
     } = options;
 
     /**
@@ -410,12 +411,10 @@ export default function createResa(options = {}) {
     let middlewares = (options.middlewares || []).concat(sagaMiddleware, reduxSagaMiddleware);
 
     if (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__) { // eslint-disable-line
+        // redux dev tool extension for chrome
         middlewares = compose(
             applyMiddleware(...middlewares),
-            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__({ // eslint-disable-line
-                // if set to false, will not recompute the states on hot reloading (or on replacing the reducers).
-                shouldHotReload: false,
-            }) // redux dev tool extension for chrome
+            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions) // eslint-disable-line
         );
     } else {
         middlewares = applyMiddleware(...middlewares);

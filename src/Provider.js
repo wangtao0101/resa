@@ -46,7 +46,7 @@ export function createProvider(storeKey = 'store', subKey) {
 
         constructor(props, context) {
             super(props, context);
-            this[storeKey] = props.store;
+            this[storeKey] = props.resa.store;
             this[resaKey] = props.resa;
         }
 
@@ -65,14 +65,13 @@ export function createProvider(storeKey = 'store', subKey) {
 
     if (process.env.NODE_ENV !== 'production') {
         Provider.prototype.componentWillReceiveProps = function (nextProps) { // eslint-disable-line
-            if (this[storeKey] !== nextProps.store) {
+            if (this[storeKey] !== nextProps.resa.store) {
                 warnAboutReceivingStore();
             }
         };
     }
 
     Provider.propTypes = {
-        store: storeShape.isRequired,
         children: PropTypes.element.isRequired,
         resa: resaShape.isRequired,
     };
