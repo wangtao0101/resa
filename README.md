@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/resa.svg?style=flat)](https://travis-ci.org/wangtao0101/resa)
 [![Coverage Status](https://coveralls.io/repos/github/wangtao0101/resa/badge.svg?branch=master)](https://coveralls.io/github/wangtao0101/resa?branch=master)
 
-[以中文查看](README_CN.md)
+[以中文查看](https://github.com/wangtao0101/resa/blob/master/README_CN.md)
 
 A simple framework based on typescript, redux, redux-saga, redux-action.
 
@@ -35,7 +35,7 @@ Actually i like redux and redux-saga very much, but both them have many problems
 ## Examples
 We hava integrated redux-devtool in online-vscode, you can click **Open in New Window** button and open chrome redux-devtool to see what action will be dispathed when you click button.
 
-[count](./examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+[count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## First sight
 Define model

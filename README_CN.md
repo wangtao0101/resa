@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/resa.svg?style=flat)](https://travis-ci.org/wangtao0101/resa)
 [![Coverage Status](https://coveralls.io/repos/github/wangtao0101/resa/badge.svg?branch=master)](https://coveralls.io/github/wangtao0101/resa?branch=master)
 
-[View README in English](README.md)
+[View README in English](https://github.com/wangtao0101/resa/blob/master/README.md)
 
 基于typescript, redux, redux-saga, redux-action的前端框架。
 
@@ -35,7 +35,7 @@ yarn add resa resa-class-model
 ## Examples
 我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
 
-[count](./examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+[count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## 第一眼
 定义模型
