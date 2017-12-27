@@ -35,7 +35,7 @@ Actually i like redux and redux-saga very much, but both them have many problems
 ## Examples
 We hava integrated redux-devtool in online-vscode, you can click **Open in New Window** button and open chrome redux-devtool to see what action will be dispathed when you click button.
 
-[count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+* [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## First sight
 Define model
@@ -134,6 +134,7 @@ So, do you like the simplicity ?
 resa = a simple way to use redux and redux-saga
 
 ## Docs
+* [Full Documentation](https://wangtao0101.github.io/resa/en/)
 
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).

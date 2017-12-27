@@ -35,7 +35,7 @@ yarn add resa resa-class-model
 ## Examples
 我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
 
-[count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+* [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
 
 ## 第一眼
 定义模型
@@ -131,6 +131,7 @@ ReactDOM.render(
 resa = a simple way to use redux and redux-saga
 
 ## Docs
+* [完整文档](https://wangtao0101.github.io/resa/zh-cn/)
 
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).
