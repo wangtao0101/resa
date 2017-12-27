@@ -139,7 +139,133 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="introduction">Introduction</h1>
+                                <h1 id="resa">resa</h1>
+<p><a href="https://www.npmjs.com/package/resa" target="_blank"><img src="https://img.shields.io/npm/v/resa.svg?style=flat" alt="NPM version"></a>
+<a href="https://travis-ci.org/wangtao0101/resa" target="_blank"><img src="https://img.shields.io/travis/wangtao0101/resa.svg?style=flat" alt="Build Status"></a>
+<a href="https://coveralls.io/github/wangtao0101/resa?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/wangtao0101/resa/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<p><a href="https://github.com/wangtao0101/resa/blob/master/README_CN.md" target="_blank">&#x4EE5;&#x4E2D;&#x6587;&#x67E5;&#x770B;</a></p>
+<p>A simple framework based on typescript, redux, redux-saga, redux-action.</p>
+<h2 id="installation">Installation</h2>
+<pre class="language-"><code>npm install resa resa-class-model --save
+yarn add resa resa-class-model
+</code></pre><h2 id="features">Features</h2>
+<ul>
+<li>No redundant redux boilerplate code</li>
+<li>Full IntelliSense with vscode and typescript using <a href="https://github.com/wangtao0101/resa-class-model" target="_blank">resa-class-model</a></li>
+<li>Typed redux store</li>
+<li>Typed action creater and payload</li>
+<li>Better side effects control with redux-saga</li>
+<li>Action creater born to be promise</li>
+<li>Better error handling, support use promise.catch to capture error</li>
+<li>Easy learn, easy write, easy test</li>
+</ul>
+<h2 id="motivation">Motivation</h2>
+<p>Actually i like redux and redux-saga very much, but both them have many problems and they are not completely solved by existing packages like <a href="https://github.com/dvajs/dva" target="_blank">dva</a>,
+ <a href="https://github.com/mirrorjs/mirror" target="_blank">mirror</a>:</p>
+<ul>
+<li>Boilerplate code is everywhere when using redux, react-redux, redux-saga, redux-actions in the big project</li>
+<li>no IntelliSense</li>
+<li>no Type-safe</li>
+<li>terrible error handling in redux-saga</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<p>We hava integrated redux-devtool in online-vscode, you can click <strong>Open in New Window</strong> button and open chrome redux-devtool to see what action will be dispathed when you click button.</p>
+<ul>
+<li><a href="https://github.com/wangtao0101/resa/tree/master/examples/count" target="_blank">count</a> <a href="https://stackblitz.com/edit/react-ts-84mcge" target="_blank">online-vscode</a></li>
+</ul>
+<h2 id="first-sight">First sight</h2>
+<p>Define model</p>
+<pre class="language-"><code>// AppModel.ts
+import { Model, reducer, init, effect } from &apos;resa-class-model&apos;;
+import { delay } from &apos;redux-saga&apos;;
+
+interface AppState {
+    count: number;
+}
+
+@init<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span>({
+    name: &apos;appModel&apos;,
+    state: {
+        count: 0 // type check here
+    }
+})
+export default class AppModel extends Model<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span> {
+    @effect() // define saga: async action handle
+    * addAsync(count: number) {
+        yield delay(2000);
+        this.add(count); // type check here
+    }
+
+    @reducer() // define redux reducer: sync action handle
+    add(count: number) {
+        return this.fulfilled({
+            count: this.state.count + count, // type check here
+        });
+    }
+}
+</code></pre><p>Define component</p>
+<pre class="language-"><code>// App.tsx
+import AppModel from &apos;./AppModel&apos;;
+import { connect } from &apos;resa&apos;;
+import { wapper } from &apos;resa-class-model&apos;;
+
+interface AppProps {
+  count: number;
+  appModel: AppModel; // annotation type, will inject by connect
+}
+
+class App extends React.Component<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppProps</span><span class="token punctuation">&gt;</span></span> {
+  render() {
+    return (
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">className</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>App<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>{this.props.count}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+        {/* add and addAsync have been transformed to action creaters,
+            you just call them with arguments(type check payload)
+        */}
+        &lt;button onClick={() =&gt; this.props.appModel.add(1)}&gt;+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* type check here */}
+        &lt;button onClick={() =&gt; this.props.appModel.addAsync(2)}&gt;async<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* type check here */}
+        &lt;button
+          onClick={
+            () =&gt; wapper(this.props.appModel.addAsync(2)).then(() =&gt; { alert(&apos;callback&apos;); })}
+        &gt;promise
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    );
+  }
+}
+
+const mapStateToProps = ({ appModel }: { appModel: AppModel }) =&gt; { // annotation type
+  return {
+    count: appModel.state.count
+  };
+};
+
+const NewApp = connect(mapStateToProps, [&apos;appModel&apos;], null)(App); // connect model by name
+
+export default NewApp;
+</code></pre><p>wapper with Provider like react-redux</p>
+<pre class="language-"><code>import createResa, { Provider } from &apos;resa&apos;;
+
+import App from &apos;./App&apos;;
+import AppModel from &apos;./AppModel&apos;;
+const app = createResa();
+app.registerModel(new AppModel());
+
+ReactDOM.render(
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Provider</span> <span class="token attr-name">resa</span><span class="token attr-value"><span class="token punctuation">=</span>{app}</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>App</span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Provider</span><span class="token punctuation">&gt;</span></span>,
+  document.getElementById(&apos;root&apos;) as HTMLElement
+);
+</code></pre><p>So, do you like the simplicity ?</p>
+<h2 id="what-is-resa&#xFF1F;">What is resa&#xFF1F;</h2>
+<p>resa = a simple way to use redux and redux-saga</p>
+<h2 id="docs">Docs</h2>
+<ul>
+<li><a href="https://wangtao0101.github.io/resa/en/" target="_blank">Full Documentation</a></li>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<p>Pull requests and stars are always welcome. For bugs and feature requests, <a href="https://github.com/wangtao0101/resa/issues" target="_blank">please create an issue</a>.</p>
 
                                 
                                 </section>
@@ -175,7 +301,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"livereload":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"en","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"README.md","mtime":"2017-12-19T03:24:53.439Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-19T05:57:53.959Z"},"basePath":".","book":{"language":"en"}});
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"en","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"README.md","mtime":"2017-12-27T03:02:27.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-27T03:08:17.785Z"},"basePath":".","book":{"language":"en"}});
         });
     </script>
 </div>
@@ -186,10 +312,6 @@
     
         
         <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
-        
-    
-        
-        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
         
     
         
