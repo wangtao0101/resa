@@ -107,9 +107,6 @@ const mapStateToProps = ({ appModel }) => {
 * mapDispatchToProps也多了第一个参数，该参数也是所有模型的数组
 ```
 const mapDispatchToProps = ({ appModel }, dispatch) => {
-    return {
-        count: appModel.state.count
-    };
 };
 ```
 * mapDispatchToProp可以使用模型名称的数组代替，效果相当于把对应模型注入到了组件中。

@@ -13,7 +13,7 @@
     "coveralls": "npm run coverage && npm run report",
     "prepublish": "npm run lint && npm run test && npm run buildlib",
     "docs": "cd docs && gitbook install && gitbook serve",
-    "deploy": "cd docs && gitbook install && gh-pages -d _book"
+    "deploy": "cd docs && gitbook install && gitbook build && gh-pages -d _book"
   },
   "repository": {
     "type": "git",
