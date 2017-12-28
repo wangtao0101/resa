@@ -205,13 +205,17 @@ export default class AppModel extends Model<span class="token tag"><span class="
 }
 </code></pre><p>Define component</p>
 <pre class="language-"><code>// App.tsx
-import AppModel from &apos;./AppModel&apos;;
+import * as React from &apos;react&apos;;
 import { connect } from &apos;resa&apos;;
 import { wapper } from &apos;resa-class-model&apos;;
+import AppModel from &apos;./AppModel&apos;;
 
-interface AppProps {
+interface InjectedProps {
   count: number;
   appModel: AppModel; // annotation type, will inject by connect
+}
+
+interface AppProps extends InjectedProps {
 }
 
 class App extends React.Component<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppProps</span><span class="token punctuation">&gt;</span></span> {
@@ -240,7 +244,7 @@ const mapStateToProps = ({ appModel }: { appModel: AppModel }) =&gt; { // annota
   };
 };
 
-const NewApp = connect(mapStateToProps, [&apos;appModel&apos;], null)(App); // connect model by name
+const NewApp = connect<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InjectedProps</span><span class="token punctuation">&gt;</span></span>(mapStateToProps, [&apos;appModel&apos;])(App); // connect model by name
 
 export default NewApp;
 </code></pre><p>wapper with Provider like react-redux</p>
@@ -301,7 +305,7 @@ ReactDOM.render(
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"en","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"README.md","mtime":"2017-12-27T03:02:27.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-27T03:08:17.785Z"},"basePath":".","book":{"language":"en"}});
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"en","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"README.md","mtime":"2017-12-27T03:02:27.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T07:07:11.992Z"},"basePath":".","book":{"language":"en"}});
         });
     </script>
 </div>
