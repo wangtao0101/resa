@@ -280,6 +280,33 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="&#x8054;&#x5408;&#x6A21;&#x578B;">&#x8054;&#x5408;&#x6A21;&#x578B;</h1>
+<p>&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x540E;&#x72B6;&#x6001;&#x4F1A;&#x653E;&#x5728;redux&#x9876;&#x5C42;&#xFF0C;&#x8FD9;&#x6837;&#x53EF;&#x80FD;&#x5BFC;&#x81F4;&#x9876;&#x5C42;&#x6570;&#x636E;&#x8FC7;&#x4E8E;&#x81C3;&#x80BF;&#xFF0C;&#x4E0D;&#x540C;&#x6A21;&#x5757;&#x7684;&#x6570;&#x636E;&#x8026;&#x5408;&#x5728;&#x4E00;&#x8D77;&#x3002;</p>
+<pre class="language-"><code>state: {
+    model1: {},
+    model2: {},
+    model3: {},
+}
+</code></pre><p>redux&#x7684;combineReducer&#x53EF;&#x4EE5;&#x7EC4;&#x5408;reducer&#xFF0C;&#x4F7F;&#x5F97;&#x540C;&#x4E00;&#x6A21;&#x5757;&#x7684;state&#x53EF;&#x4EE5;&#x805A;&#x96C6;&#x5728;&#x540C;&#x4E00;&#x8282;&#x70B9;&#x3002;</p>
+<pre class="language-"><code>state: {
+    combine: {
+        model1: {},
+        model2: {},
+        model3: {},
+    }
+}
+</code></pre><p>&#x4E3A;&#x4E86;&#x8FBE;&#x5230;&#x76F8;&#x540C;&#x7684;&#x6548;&#x679C;&#xFF0C;resa&#x63D0;&#x4F9B;&#x4E86;combineModel&#x51FD;&#x6570;&#x7EC4;&#x5408;&#x6A21;&#x578B;&#xFF0C;&#x7EC4;&#x5408;&#x540E;&#x7684;&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x4E00;&#x6B21;&#x5373;&#x53EF;&#xFF0C;&#x5E76;&#x4E14;&#x652F;&#x6301;&#x5D4C;&#x5957;&#x3002;</p>
+<pre class="language-"><code>const cm = combineModel(&apos;combine&apos;, [new Model1(), new Model2()]);
+resa.registerModel(cm);
+
+// redux state&#x4F1A;&#x53D8;&#x6210;&#x5982;&#x4E0B;&#x6240;&#x793A;
+state: {
+    combine: {
+        model1: {},
+        model2: {},
+    }
+}
+</code></pre><p>combineModel&#x6CE8;&#x518C;&#x540E;&#x7684;&#x6A21;&#x578B;&#x4ECD;&#x7136;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;resa.models&#x548C;connect&#x83B7;&#x53D6;&#xFF0C;&#x548C;&#x6CE8;&#x518C;&#x7684;&#x666E;&#x901A;&#x6A21;&#x578B;&#x4E00;&#x6837;&#xFF0C;combineModel&#x53EA;&#x4F1A;&#x6539;&#x53D8;redux state&#x7684;&#x5C42;&#x7EA7;&#x3002;</p>
+<p><a href="https://stackblitz.com/edit/react-ts-d1uenc" target="_blank">&#x67E5;&#x770B;combineModel&#x7684;&#x4F8B;&#x5B50;</a></p>
 
                                 
                                 </section>
@@ -323,7 +350,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"连接模型","level":"1.3.3","depth":2,"next":{"title":"智能提示","level":"1.3.4","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]},"previous":{"title":"使用模型","level":"1.3.2","depth":2,"path":"model-usage.md","ref":"./model-usage.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"combine-model.md","mtime":"2017-12-28T07:04:46.652Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T13:43:10.463Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"连接模型","level":"1.3.3","depth":2,"next":{"title":"智能提示","level":"1.3.4","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]},"previous":{"title":"使用模型","level":"1.3.2","depth":2,"path":"model-usage.md","ref":"./model-usage.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"combine-model.md","mtime":"2017-12-28T14:53:44.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T14:56:21.089Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
