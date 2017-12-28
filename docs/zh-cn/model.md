@@ -57,7 +57,7 @@ Object.assign({}, state, payload)
 ```
 
 ### effect
-就是redux-saga的saga函数，在resa中，effect可以被称作为异步的reducer。经过saga的加持，effect可以随性所欲的发起请求、控制异步操作。effect不能直接修改状态，只能通过调用reducer修改状态。resa内部提供了一个内置的reducer: this.fulfilled，这样你就不用为每个resa都创建一个reducer。
+effect就是redux-saga的saga函数，在resa中，effect可以被称作为异步的reducer。经过saga的加持，effect可以随性所欲的发起请求、控制异步操作。effect不能直接修改状态，只能通过调用reducer修改状态。resa内部提供了一个内置的reducer: this.fulfilled，这样你就不用为每个resa都创建一个reducer。
 ```
 @effect()
 * addAsync(count: number) {
