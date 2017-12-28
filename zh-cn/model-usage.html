@@ -361,14 +361,16 @@ resa.models.appModel.add(1);
 <li>mapDispatchToProps&#x4E5F;&#x591A;&#x4E86;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x8BE5;&#x53C2;&#x6570;&#x4E5F;&#x662F;&#x6240;&#x6709;&#x6A21;&#x578B;&#x7684;&#x6570;&#x7EC4;<pre class="language-"><code>const mapDispatchToProps = ({ appModel }, dispatch) =&gt; {
 };
 </code></pre></li>
-<li>mapDispatchToProp&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6A21;&#x578B;&#x540D;&#x79F0;&#x7684;&#x6570;&#x7EC4;&#x4EE3;&#x66FF;&#xFF0C;&#x6548;&#x679C;&#x76F8;&#x5F53;&#x4E8E;&#x628A;&#x5BF9;&#x5E94;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;&#x4E86;&#x7EC4;&#x4EF6;&#x4E2D;&#x3002;<pre class="language-"><code>interface InjectedProps { // &#x5E2E;&#x52A9;&#x63A8;&#x65AD;&#x7C7B;&#x578B;&#xFF0C;&#x8BE6;&#x89C1;[&#x667A;&#x80FD;&#x63D0;&#x793A;](./IntelliSense.md)
-appModel: AppModel;
+<li>mapDispatchToProp&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6A21;&#x578B;&#x540D;&#x79F0;&#x7684;&#x6570;&#x7EC4;&#x4EE3;&#x66FF;&#xFF0C;&#x6548;&#x679C;&#x76F8;&#x5F53;&#x4E8E;&#x628A;&#x5BF9;&#x5E94;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;&#x4E86;&#x7EC4;&#x4EF6;&#x4E2D;&#x3002;</li>
+</ul>
+<p>InjectedProps&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x63A8;&#x65AD;&#x7C7B;&#x578B;&#xFF0C;&#x8BE6;&#x89C1;<a href="IntelliSense.html">&#x667A;&#x80FD;&#x63D0;&#x793A;</a></p>
+<pre class="language-"><code>interface InjectedProps {
+    appModel: AppModel;
 }
 connect<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InjectedProps</span><span class="token punctuation">&gt;</span></span>(mapStateToProps, [&apos;appModel&apos;])(App);
-</code></pre>&#x4F60;&#x53EF;&#x4EE5;&#x5728;&#x7EC4;&#x4EF6;&#x7684;props&#x4E0A;&#x76F4;&#x63A5;&#x83B7;&#x53D6;&#x6A21;&#x578B;&#x5E76;&#x6D3E;&#x53D1;Action&#x3002;<pre class="language-"><code>this.props.appModel.add(1);
-</code></pre></li>
-</ul>
-
+</code></pre><p>&#x4F60;&#x53EF;&#x4EE5;&#x5728;&#x7EC4;&#x4EF6;&#x7684;props&#x4E0A;&#x76F4;&#x63A5;&#x83B7;&#x53D6;&#x6A21;&#x578B;&#x5E76;&#x6D3E;&#x53D1;Action&#x3002;</p>
+<pre class="language-"><code>this.props.appModel.add(1);
+</code></pre>
                                 
                                 </section>
                             
@@ -411,7 +413,7 @@ connect<span class="token tag"><span class="token tag"><span class="token punctu
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2017-12-28T06:37:20.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T07:07:11.992Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2017-12-28T07:11:54.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T07:12:38.758Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
