@@ -36,6 +36,7 @@ Actually i like redux and redux-saga very much, but both them have many problems
 We hava integrated redux-devtool in online-vscode, you can click **Open in New Window** button and open chrome redux-devtool to see what action will be dispathed when you click button.
 
 * [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+* [combineModel](https://stackblitz.com/edit/react-ts-d1uenc)
 
 ## First sight
 Define model

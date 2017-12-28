@@ -36,6 +36,7 @@ yarn add resa resa-class-model
 我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
 
 * [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
+* [combineModel](https://stackblitz.com/edit/react-ts-d1uenc)
 
 ## 第一眼
 定义模型
