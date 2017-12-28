@@ -1,8 +1,9 @@
 {
   "name": "resa",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.",
   "main": "lib/index.js",
+  "typings": "types/index.d.ts",
   "scripts": {
     "build": "babel src -d lib --ignore test",
     "buildlib": "cross-env NODE_ENV=production babel src -d lib --ignore src/test",
@@ -33,6 +34,7 @@
     "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0"
   },
   "dependencies": {
+    "@types/react-redux": "^5.0.14",
     "clone": "^2.1.1",
     "invariant": "^2.2.2",
     "react-redux": "^5.0.0",

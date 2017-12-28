@@ -46,7 +46,7 @@ const resa = createResa();
 resa.registerModel(new AppModel());
 
 // 根据模型名称调用
-resa.appModel.add(1);
+resa.models.appModel.add(1);
 ```
 add(1)函数会派发一个Action，格式如下：
 ```
@@ -61,7 +61,7 @@ add(1)函数会派发一个Action，格式如下：
 ### 调用effect
 和调用reducer一样，直接调用effect函数名称：
 ```
-resa.appModel.addAsync(1);
+resa.models.appModel.addAsync(1);
 ```
 addAsync(1)会派发一个Action用来调用effect，格式如下：
 ```
