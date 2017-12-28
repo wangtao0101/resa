@@ -109,14 +109,14 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3" >
+        <li class="chapter " data-level="1.3" data-path="core-concept.html">
             
-                <span>
+                <a href="core-concept.html">
             
                     
                     核心概念
             
-                </span>
+                </a>
             
 
             
@@ -277,7 +277,83 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x672A;&#x5B8C;&#x5F85;&#x7EED;">&#x672A;&#x5B8C;&#x5F85;&#x7EED;</h1>
+                                <h1 id="&#x667A;&#x80FD;&#x63D0;&#x793A;&#x4E0E;&#x7C7B;&#x578B;&#x68C0;&#x67E5;">&#x667A;&#x80FD;&#x63D0;&#x793A;&#x4E0E;&#x7C7B;&#x578B;&#x68C0;&#x67E5;</h1>
+<h2 id="&#x7C7B;&#x578B;&#x68C0;&#x67E5;">&#x7C7B;&#x578B;&#x68C0;&#x67E5;</h2>
+<h3 id="&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;">&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;</h3>
+<p>&#x9996;&#x5148;&#x5B9A;&#x4E49;&#x6A21;&#x578B;&#x7684;state&#x7C7B;&#x578B;</p>
+<pre class="language-"><code>interface AppState {
+    count: number;
+}
+</code></pre><p>init&#x6CE8;&#x89E3;&#x652F;&#x6301;&#x6CDB;&#x578B;&#x4F20;&#x5165;&#x6A21;&#x578B;&#x7684;state&#x7C7B;&#x578B;&#xFF0C;&#x8FD9;&#x6837;&#x521D;&#x59CB;&#x5316;&#x7684;state&#x4F1A;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;&#x3002;</p>
+<pre class="language-"><code>@init<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span>({
+    name: &apos;appModel&apos;,
+    state: {
+        count: 0 // &#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;
+    }
+})
+</code></pre><p>&#x57FA;&#x7C7B;Model&#x652F;&#x6301;&#x6CDB;&#x578B;&#x4F20;&#x5165;&#x6A21;&#x578B;&#x7684;state&#x7C7B;&#x578B;&#xFF0C;&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x6240;&#x6709;&#x5BF9;state&#x7684;&#x64CD;&#x4F5C;&#x90FD;&#x80FD;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;&#x3002;</p>
+<pre class="language-"><code>export default class AppModel extends Model<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span> {
+}
+</code></pre><p>effect&#x4E2D;&#x5185;&#x7F6E;reducer&#xFF1A;this.fulfilled&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;</p>
+<pre class="language-"><code>@effect()
+* addAsync(count: number) {
+    return this.fulfilled({
+        count: this.state.count + count // &#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;
+    });
+}
+</code></pre><p>reducer&#x4E2D;&#x7684;&#x5E2E;&#x52A9;&#x51FD;&#x6570;this.fulfilled&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;</p>
+<pre class="language-"><code>@reducer()
+add(count: number) {
+    return this.fulfilled({
+        count: this.state.count + count, // &#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;
+    });
+}
+</code></pre><h3 id="&#x8C03;&#x7528;action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x6D4B;">&#x8C03;&#x7528;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x6D4B;</h3>
+<pre class="language-"><code>// &#x83B7;&#x5F97;&#x6A21;&#x578B;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x5728;&#x7EC4;&#x4EF6;&#x4E2D;&#x901A;&#x8FC7;connect&#x6CE8;&#x5165;&#x83B7;&#x5F97;&#x6A21;&#x578B;
+const appModel = resa.models.appModel;
+appModel.addAsync(1); // &#x51FD;&#x6570;&#x53C2;&#x6570;&#x83B7;&#x5F97;&#x7C7B;&#x578B;&#x68C0;&#x67E5;
+</code></pre><h3 id="connect&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x7684;&#x7EC4;&#x4EF6;&#x83B7;&#x5F97;jsx&#x7684;&#x53C2;&#x6570;&#x68C0;&#x67E5;">connect&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x7684;&#x7EC4;&#x4EF6;&#x83B7;&#x5F97;JSX&#x7684;&#x53C2;&#x6570;&#x68C0;&#x67E5;</h3>
+<p>react-redux&#x7684;connect&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x7684;&#x7EC4;&#x4EF6;&#x672C;&#x8EAB;&#x652F;&#x6301;JSX&#x53C2;&#x6570;&#x68C0;&#x67E5;&#xFF08;&#x53BB;&#x9664;connect&#x5E26;&#x7ED9;&#x7EC4;&#x4EF6;&#x7684;&#x53C2;&#x6570;&#xFF09;&#xFF0C;&#x4F46;&#x662F;&#x7531;&#x4E8E;resa&#x7684;connect&#x51FD;&#x6570;&#x652F;&#x6301;&#x4F20;&#x5165;&#x5B57;&#x7B26;&#x4E32;&#x6570;&#x7EC4;&#xFF0C;&#x56E0;&#x6B64;&#x7834;&#x574F;&#x4E86;react-redux&#x5B9A;&#x4E49;&#x7684;connect&#x51FD;&#x6570;&#x7C7B;&#x578B;&#x3002;</p>
+<p>&#x4E3A;&#x4E86;&#x83B7;&#x53D6;JSX&#x53C2;&#x6570;&#x68C0;&#x67E5;&#x7684;&#x6548;&#x679C;&#xFF0C;resa&#x652F;&#x6301;&#x4F20;&#x9012;&#x7ED9;connect&#x4E00;&#x4E2A;&#x6CDB;&#x578B;&#x7C7B;&#x578B;&#xFF0C;&#x8BE5;&#x6CDB;&#x578B;&#x7C7B;&#x578B;&#x76F4;&#x63A5;&#x53CD;&#x6620;&#x4E86;connect&#x51FD;&#x6570;&#x4F1A;&#x7ED9;&#x7EC4;&#x4EF6;&#x6CE8;&#x5165;&#x54EA;&#x4E9B;&#x53C2;&#x6570;&#xFF0C;connect&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x7684;&#x7EC4;&#x4EF6;&#x53BB;&#x9664;&#x4E86;&#x8FD9;&#x4E9B;&#x53C2;&#x6570;&#xFF0C;&#x4EE5;&#x6B64;&#x5B9E;&#x73B0;JSX&#x7684;&#x53C2;&#x6570;&#x68C0;&#x67E5;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x5C55;&#x793A;&#x4F7F;&#x7528;connect&#x65F6;&#x7EC4;&#x4EF6;&#x5B9A;&#x4E49;&#x7684;&#x65B9;&#x5F0F;&#x3002;</p>
+<p>&#x9996;&#x5148;&#x5B9A;&#x4E49;&#x6CE8;&#x5165;&#x7684;Props&#x3002;</p>
+<pre class="language-"><code>interface InjectedProps {
+  count: number;
+  appModel: AppModel;
+}
+</code></pre><p>&#x518D;&#x5B9A;&#x4E49;&#x7EC4;&#x4EF6;&#x7684;Props&#xFF0C;&#x7EE7;&#x627F;&#x6CE8;&#x5165;&#x7684;Props&#x3002;</p>
+<pre class="language-"><code>interface AppProps extends InjectedProps {
+    length: number;
+}
+</code></pre><p>&#x518D;&#x5B9A;&#x4E49;&#x7EC4;&#x4EF6;&#x3002;</p>
+<pre class="language-"><code>class App extends React.Component<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppProps</span><span class="token punctuation">&gt;</span></span> {
+  render() {
+    return (
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">className</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>App<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        xxx
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    );
+  }
+}
+</code></pre><p>&#x6700;&#x540E;&#x8FDE;&#x63A5;&#x7EC4;&#x4EF6;&#x3002;</p>
+<pre class="language-"><code>const mapStateToProps = ({ appModel }: { appModel: AppModel }) =&gt; {
+  return {
+    count: appModel.state.count
+  };
+};
+
+const NewApp = connect<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InjectedProps</span><span class="token punctuation">&gt;</span></span>(mapStateToProps, [&apos;appModel&apos;])(App);
+</code></pre><p>&#x4F7F;&#x7528;NewApp&#x7EC4;&#x4EF6;&#x65F6;&#x4F1A;&#x83B7;&#x5F97;JSX&#x7C7B;&#x578B;&#x68C0;&#x67E5;&#x3002;</p>
+<h2 id="&#x667A;&#x80FD;&#x63D0;&#x793A;">&#x667A;&#x80FD;&#x63D0;&#x793A;</h2>
+<p>&#x5728;&#x6A21;&#x578B;&#x51FD;&#x6570;&#x4E2D;&#x83B7;&#x5F97;state&#x7684;&#x667A;&#x80FD;&#x63D0;&#x793A;&#x3002;</p>
+<p><img src="../image/state.png" alt=""></p>
+<p>&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x8C03;&#x7528;&#x5176;&#x4ED6;reducer&#x6216;effect&#x65F6;&#x83B7;&#x5F97;&#x667A;&#x80FD;&#x63D0;&#x793A;</p>
+<p><em>&#x6CE8;&#x610F;&#xFF1A;&#x5728;reducer&#x51FD;&#x6570;&#x4E2D;&#x867D;&#x7136;&#x53EF;&#x4EE5;&#x63D0;&#x793A;effect&#x51FD;&#x6570;&#xFF0C;&#x4F46;&#x662F;&#x5B9E;&#x9645;&#x4E0A;&#x4E0D;&#x80FD;&#x8C03;&#x7528;&#x3002;</em></p>
+<p><img src="../image/modelhelp.png" alt=""></p>
+<p>mapStateToProps&#x4E2D;&#x901A;&#x8FC7;&#x624B;&#x52A8;&#x7C7B;&#x578B;&#x6807;&#x6CE8;&#x83B7;&#x5F97;&#x667A;&#x80FD;&#x63D0;&#x793A;</p>
+<p><img src="../image/mapstate.png" alt=""></p>
+<p>&#x5728;&#x7EC4;&#x4EF6;&#x4E2D;&#x8C03;&#x7528;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x83B7;&#x5F97;&#x667A;&#x80FD;&#x63D0;&#x793A;</p>
+<p><img src="../image/apphelp.png" alt=""></p>
 
                                 
                                 </section>
@@ -317,7 +393,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"智能提示","level":"1.3.4","depth":2,"next":{"title":"项目结构","level":"1.4","depth":1,"ref":"","articles":[]},"previous":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"IntelliSense.md","mtime":"2017-12-27T02:14:52.217Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T07:15:48.904Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"智能提示","level":"1.3.4","depth":2,"next":{"title":"项目结构","level":"1.4","depth":1,"ref":"","articles":[]},"previous":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"IntelliSense.md","mtime":"2017-12-28T13:28:22.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T13:43:10.463Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
