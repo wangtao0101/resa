@@ -193,4 +193,8 @@ declare module 'resa' {
     }
 
     export class Provider extends React.Component<ProviderProps, {}> { }
+
+    interface CombinedModel extends Model {}
+
+    export function combineModel(name: string, models: Array<Model>, state?: any): CombinedModel;
 }
