@@ -110,9 +110,11 @@ const mapDispatchToProps = ({ appModel }, dispatch) => {
 };
 ```
 * mapDispatchToProp可以使用模型名称的数组代替，效果相当于把对应模型注入到了组件中。
+
+InjectedProps可以帮助推断类型，详见[智能提示](./IntelliSense.md)
 ```
-interface InjectedProps { // 帮助推断类型，详见[智能提示](./IntelliSense.md)
-  appModel: AppModel;
+interface InjectedProps {
+    appModel: AppModel;
 }
 connect<InjectedProps>(mapStateToProps, ['appModel'])(App);
 ```
