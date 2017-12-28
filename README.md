@@ -77,9 +77,12 @@ import AppModel from './AppModel';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
 
-interface AppProps {
+interface InjectedProps {
   count: number;
   appModel: AppModel; // annotation type, will inject by connect
+}
+
+interface AppProps extends InjectedProps {
 }
 
 class App extends React.Component<AppProps> {
@@ -108,7 +111,7 @@ const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // annotatio
   };
 };
 
-const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // connect model by name
+const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App); // connect model by name
 
 export default NewApp;
 ```

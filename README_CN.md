@@ -76,9 +76,12 @@ import AppModel from './AppModel';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
 
-interface AppProps {
+interface InjectedProps {
   count: number;
-  appModel: AppModel; // 标注类型，帮助智能提示，实体由connect注入
+  appModel: AppModel; // annotation type, will inject by connect
+}
+
+interface AppProps extends InjectedProps {
 }
 
 class App extends React.Component<AppProps> {
@@ -107,7 +110,7 @@ const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // 标注类
   };
 };
 
-const NewApp = connect(mapStateToProps, ['appModel'], null)(App); // 在connect中通过model name链接模型
+const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App); // 在connect中通过model name链接模型
 ```
 使用Provider包裹应用，就像react-redux
 ```
