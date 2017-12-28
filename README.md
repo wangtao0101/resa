@@ -73,9 +73,10 @@ export default class AppModel extends Model<AppState> {
 Define component
 ```
 // App.tsx
-import AppModel from './AppModel';
+import * as React from 'react';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
+import AppModel from './AppModel';
 
 interface InjectedProps {
   count: number;

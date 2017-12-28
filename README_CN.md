@@ -72,9 +72,10 @@ export default class AppModel extends Model<AppState> {
 定义组件
 ```
 // App.tsx
-import AppModel from './AppModel';
+import * as React from 'react';
 import { connect } from 'resa';
 import { wapper } from 'resa-class-model';
+import AppModel from './AppModel';
 
 interface InjectedProps {
   count: number;
