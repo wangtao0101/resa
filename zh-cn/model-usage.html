@@ -182,40 +182,40 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4" >
+        <li class="chapter " data-level="1.4" data-path="structure.html">
             
-                <span>
+                <a href="structure.html">
             
                     
                     项目结构
             
-                </span>
+                </a>
             
 
             
         </li>
     
-        <li class="chapter " data-level="1.5" >
+        <li class="chapter " data-level="1.5" data-path="register-model.html">
             
-                <span>
+                <a href="register-model.html">
             
                     
-                    代码分割
+                    模型加载卸载的时机
             
-                </span>
+                </a>
             
 
             
         </li>
     
-        <li class="chapter " data-level="1.6" >
+        <li class="chapter " data-level="1.6" data-path="test.html">
             
-                <span>
+                <a href="test.html">
             
                     
                     测试
             
-                </span>
+                </a>
             
 
             
@@ -280,12 +280,25 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x4E0E;&#x4F7F;&#x7528;">&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x4E0E;&#x4F7F;&#x7528;</h1>
+<h2 id="&#x521B;&#x5EFA;resa">&#x521B;&#x5EFA;resa</h2>
+<pre class="language-"><code>const resa = createResa();
+</code></pre><p>createResa&#x4F1A;&#x521D;&#x59CB;&#x5316;redux store&#xFF0C;&#x652F;&#x6301;&#x7528;&#x6237;&#x4F20;&#x5165;&#x989D;&#x5916;&#x7684;reducer&#x548C;middleware&#x3002;</p>
 <h2 id="&#x6A21;&#x578B;&#x6CE8;&#x518C;">&#x6A21;&#x578B;&#x6CE8;&#x518C;</h2>
 <p>&#x8C03;&#x7528;registerModel&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4F20;&#x5165;&#x65B0;&#x5EFA;&#x7684;&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x3002;</p>
 <pre class="language-"><code>import AppModel from &apos;./AppModel&apos;;
 const resa = createResa();
 resa.registerModel(new AppModel());
-</code></pre><h2 id="&#x6A21;&#x578B;&#x4F7F;&#x7528;">&#x6A21;&#x578B;&#x4F7F;&#x7528;</h2>
+</code></pre><p><strong>&#x6A21;&#x578B;&#x4E0D;&#x80FD;&#x91CD;&#x590D;&#x6CE8;&#x518C;</strong></p>
+<h2 id="&#x6A21;&#x578B;&#x5378;&#x8F7D;">&#x6A21;&#x578B;&#x5378;&#x8F7D;</h2>
+<p>&#x8C03;&#x7528;unRegisterModel&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4F20;&#x5165;&#x65B0;&#x5EFA;&#x7684;&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x3002;</p>
+<pre class="language-"><code>import AppModel from &apos;./AppModel&apos;;
+resa.unRegisterModel(new AppModel());
+</code></pre><p><strong>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x6CE8;&#x610F;&#x4E8B;&#x9879;</strong></p>
+<ul>
+<li>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x4F1A;&#x505C;&#x6B62;&#x6240;&#x6709;&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;effect&#x3002;</li>
+<li>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x4E0D;&#x4F1A;&#x6E05;&#x9664;state&#x6570;&#x636E;&#xFF0C;&#x7528;&#x6237;&#x53EF;&#x4EE5;&#x5728;&#x5378;&#x8F7D;&#x524D;&#x8C03;&#x7528;reducer&#x4E3B;&#x52A8;&#x6E05;&#x9664;&#x6570;&#x636E;&#x3002;</li>
+</ul>
+<h2 id="&#x6A21;&#x578B;&#x4F7F;&#x7528;">&#x6A21;&#x578B;&#x4F7F;&#x7528;</h2>
 <p>&#x8C03;&#x7528;resa&#x4E0A;&#x7684;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x6765;&#x8C03;&#x7528;&#x5BF9;&#x5E94;&#x7684;reducer&#x548C;effect&#xFF0C;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x7684;&#x540D;&#x79F0;&#x548C;&#x53C2;&#x6570;&#x548C;&#x4F60;&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x5B9A;&#x4E49;&#x7684;
 reducer&#x548C;effect&#x4E00;&#x6A21;&#x4E00;&#x6837;&#x3002;</p>
 <p>&#x6211;&#x4EEC;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x6A21;&#x578B;&#x3002;</p>
@@ -411,7 +424,7 @@ connect<span class="token tag"><span class="token tag"><span class="token punctu
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2017-12-28T07:15:11.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-28T14:56:21.089Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2018-01-07T03:42:55.493Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>

@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>核心概念 · Resa</title>
+        <title>测试 · Resa</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -53,10 +53,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="model.html" />
     
-    
-    <link rel="prev" href="get-started.html" />
+    <link rel="prev" href="register-model.html" />
     
 
     </head>
@@ -111,7 +109,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.3" data-path="core-concept.html">
+        <li class="chapter " data-level="1.3" data-path="core-concept.html">
             
                 <a href="core-concept.html">
             
@@ -208,7 +206,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6" data-path="test.html">
+        <li class="chapter active" data-level="1.6" data-path="test.html">
             
                 <a href="test.html">
             
@@ -264,7 +262,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="." >核心概念</a>
+        <a href="." >测试</a>
     </h1>
 </div>
 
@@ -279,14 +277,60 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x6838;&#x5FC3;&#x6982;&#x5FF5;">&#x6838;&#x5FC3;&#x6982;&#x5FF5;</h1>
-<ul>
-<li><a href="model.html">&#x5B9A;&#x4E49;&#x6A21;&#x578B;</a></li>
-<li><a href="model-usage.html">&#x4F7F;&#x7528;&#x6A21;&#x578B;</a></li>
-<li><a href="combine-model.html">&#x8FDE;&#x63A5;&#x6A21;&#x578B;</a></li>
-<li><a href="IntelliSense.html">&#x667A;&#x80FD;&#x63D0;&#x793A;</a></li>
-</ul>
+                                <h1 id="&#x6D4B;&#x8BD5;">&#x6D4B;&#x8BD5;</h1>
+<p>&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x6A21;&#x578B;&#x3002;</p>
+<pre class="language-"><code>@init<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span>({
+    name: &apos;appModel&apos;,
+    state: {
+        count: 0
+    }
+})
+export default class AppModel extends Model<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppState</span><span class="token punctuation">&gt;</span></span> {
+    @effect() // define saga: async action handle
+    * addAsync(count: number) {
+        yield delay(2000);
+        this.add(count);
+    }
 
+    @reducer()
+    add(count: number) {
+        return this.fulfilled({
+            count: this.state.count + count
+        });
+    }
+}
+</code></pre><h2 id="&#x6D4B;&#x8BD5;reducer">&#x6D4B;&#x8BD5;reducer</h2>
+<p>reducer&#x6D4B;&#x8BD5;&#x76F8;&#x5F53;&#x7B80;&#x5355;&#xFF0C;&#x4F60;&#x53EA;&#x9700;&#x8981;&#x6CE8;&#x518C;&#x6A21;&#x578B;&#xFF0C;&#x76F4;&#x63A5;&#x8C03;&#x7528;reducer&#x5373;&#x53EF;&#x3002;
+&#x4E0B;&#x9762;&#x4F7F;&#x7528;<a href="http://facebook.github.io/jest/" target="_blank">jest</a>&#x6D4B;&#x8BD5;reducer&#x7684;&#x4F8B;&#x5B50;&#x3002;</p>
+<pre class="language-"><code>test(&apos;test reducer&apos;, () =&gt; {
+    const resa = createResa();
+    resa.registerModel(new AppModel());
+    resa.models.appModel.add(1);
+    expect(data).toEqual({
+        resaReducer: {},
+        appModel: {
+            count: 1
+        },
+    });
+});
+</code></pre><h2 id="&#x6D4B;&#x8BD5;effect">&#x6D4B;&#x8BD5;effect</h2>
+<p>&#x6D4B;&#x8BD5;effect&#x76F8;&#x5BF9;&#x590D;&#x6742;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x8C03;&#x7528;&#x4E86;&#x5916;&#x90E8;api&#xFF0C;&#x4F60;&#x53EF;&#x80FD;&#x9700;&#x8981;mock&#xFF0C;&#x8FD9;&#x53D6;&#x51B3;&#x4F60;&#x7684;&#x5E94;&#x7528;&#x3002;
+&#x4E0B;&#x9762;&#x4F7F;&#x7528;<a href="http://facebook.github.io/jest/" target="_blank">jest</a>&#x6D4B;&#x8BD5;effect&#x7684;&#x4F8B;&#x5B50;&#x3002;</p>
+<pre class="language-"><code>test(&apos;test reducer&apos;, () =&gt; {
+    const resa = createResa();
+    resa.registerModel(new AppModel());
+    resa.models.appModel.addAsync(1);
+    return new Promise((resolve) =&gt; {
+        setTimeout(() =&gt; {
+            resolve(resa.models.appModel.state);
+        }, 3000);
+    }).then((data) =&gt; {
+        expect(data).toEqual({
+            count: 1,
+        });
+    });
+});
+</code></pre>
                                 
                                 </section>
                             
@@ -313,14 +357,10 @@
 
             
                 
-                <a href="get-started.html" class="navigation navigation-prev " aria-label="Previous page: 开始">
+                <a href="register-model.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 模型加载卸载的时机">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
-                
-                <a href="model.html" class="navigation navigation-next " aria-label="Next page: 定义模型">
-                    <i class="fa fa-angle-right"></i>
-                </a>
                 
             
         
@@ -329,7 +369,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"核心概念","level":"1.3","depth":1,"next":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"previous":{"title":"开始","level":"1.2","depth":1,"path":"get-started.md","ref":"./get-started.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"core-concept.md","mtime":"2018-01-06T03:37:22.584Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"测试","level":"1.6","depth":1,"next":{"title":"Api文档","level":"1.7","depth":1,"ref":"","articles":[]},"previous":{"title":"模型加载卸载的时机","level":"1.5","depth":1,"path":"register-model.md","ref":"./register-model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"test.md","mtime":"2018-01-07T05:50:16.956Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
