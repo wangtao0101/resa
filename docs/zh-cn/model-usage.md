@@ -1,13 +1,30 @@
 # 模型注册与使用
 
+## 创建resa
+```
+const resa = createResa();
+```
+createResa会初始化redux store，支持用户传入额外的reducer和middleware。
+
 ## 模型注册
 调用registerModel函数，并传入新建的模型对象。
-
 ```
 import AppModel from './AppModel';
 const resa = createResa();
 resa.registerModel(new AppModel());
 ```
+**模型不能重复注册**
+
+## 模型卸载
+调用unRegisterModel函数，并传入新建的模型对象。
+```
+import AppModel from './AppModel';
+resa.unRegisterModel(new AppModel());
+```
+
+**卸载模型注意事项**
+* 卸载模型会停止所有正在运行的effect。
+* 卸载模型不会清除state数据，用户可以在卸载前调用reducer主动清除数据。
 
 ## 模型使用
 调用resa上的Action创建函数来调用对应的reducer和effect，Action创建函数的名称和参数和你在模型中定义的

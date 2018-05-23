@@ -6,9 +6,9 @@
     - [使用模型](./model-usage.md)
     - [连接模型](./combine-model.md)
     - [智能提示](./IntelliSense.md)
-* 项目结构
-* 代码分割
-* 测试
+* [项目结构](./structure.md)
+* [模型加载卸载的时机](./register-model.md)
+* [测试](./test.md)
 * Api文档
 
 
