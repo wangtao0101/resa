@@ -23,7 +23,6 @@ export default function createConnect() {
                     this.wrappedInstance = null;
 
                     this.setWappedInstance = this.setWappedInstance.bind(this);
-                    this.getWrappedInstance = this.getWrappedInstance.bind(this);
 
                     const newMapStateToProps = (() => {
                         if (mapStateToProps == null) {
@@ -45,6 +44,9 @@ export default function createConnect() {
                         }
                         return dispatch => mapDispatchToProps(this.resa.models, dispatch);
                     })();
+
+                    // add withRef for all use case, user can use React.createRef() to get ref
+                    extraOptions.withRef = true; // eslint-disable-line
                     this.ConnectedComponent = reactReduxConnect(
                         newMapStateToProps,
                         newMapDispatchToProps,
@@ -60,12 +62,10 @@ export default function createConnect() {
                     };
                 }
 
-                getWrappedInstance() {
-                    return this.wrappedInstance.getWrappedInstance();
-                }
-
                 setWappedInstance(ref) {
-                    this.wrappedInstance = ref;
+                    if (this.props.forwardedRef) { // eslint-disable-line
+                        this.props.forwardedRef.current = ref.getWrappedInstance(); // eslint-disable-line
+                    }
                 }
 
                 render() {
@@ -80,7 +80,9 @@ export default function createConnect() {
             Connect.displayName = `ResaConnect(${wrappedComponentName})`;
             Connect.childContextTypes = contextTypes;
             Connect.contextTypes = contextTypes;
-            return hoistNonReactStatic(Connect, WrappedComponent);
+            const TargetComponent = hoistNonReactStatic(Connect, WrappedComponent);
+
+            return React.forwardRef((props, ref) => <TargetComponent {...props} forwardedRef={ref} />);
         };
     };
 }

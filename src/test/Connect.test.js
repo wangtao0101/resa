@@ -88,7 +88,7 @@ describe('Connect', () => {
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-        expect(container.props.ownProps).toEqual({ c: 'c' });
+        expect(container.props.ownProps).toEqual({ c: 'c', forwardedRef: null });
     });
 
     test('mapDispatchToProps can get models and dispatch', () => {
@@ -115,20 +115,21 @@ describe('Connect', () => {
         });
     });
 
-    test('mapDispatchToProps can get wapperInstance by setting connectOptions withref', () => {
+    test('mapDispatchToProps can get wapperInstance using React.createRef()', () => {
         const app = createResa();
 
-        const ConnectedChild = connect(null, null, null, { withRef: true })(Child);
+        const ConnectedChild = connect(null, null, null)(Child);
+
+        const ref = React.createRef();
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <ConnectedChild />
+                <ConnectedChild ref={ref} c={'c'} />
             </Provider>
         );
 
-        const container = TestUtils.findRenderedComponentWithType(tree, Child);
-        const wapper = TestUtils.findRenderedComponentWithType(tree, ConnectedChild);
-        expect(wapper.getWrappedInstance()).toEqual(container);
+        const child = TestUtils.findRenderedComponentWithType(tree, Child);
+        expect(ref.current).toEqual(child);
     });
 
     test('mapDispatchToProps can bind app name and get model in mapdispathtoprops', () => {
@@ -187,15 +188,16 @@ describe('connectModel', () => {
         const app = createResa();
         app.registerModel(model, 'model1');
 
-        const tree = TestUtils.renderIntoDocument(
+        const ref = React.createRef();
+
+        TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <DecoratorChild />
+                <DecoratorChild ref={ref} />
             </Provider>
         );
 
-        const container = TestUtils.findRenderedComponentWithType(tree, DecoratorChild).getWrappedInstance();
-        expect(container.props.a).toEqual('a');
+        expect(ref.current.props.a).toEqual('a');
 
-        expect(container.props.model.name).toEqual('model');
+        expect(ref.current.props.model.name).toEqual('model');
     });
 });

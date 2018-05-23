@@ -8,10 +8,10 @@
             "type": "node",
             "request": "launch",
             "name": "启动程序",
-            "program": "${workspaceRoot}/src/index.js",
+            "program": "${workspaceFolder}/src/index.js",
             "sourceMaps": true, //sourcemap打开
             "outFiles": [
-                "${workspaceRoot}/lib/**/*.js"
+                "${workspaceFolder}/lib/**/*.js"
             ], //源映射，指定实际执行文件
             "preLaunchTask": "build" //首先执行build task
         },
@@ -19,10 +19,10 @@
             "name": "Jest One Test",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/jest-cli/bin/jest.js",
+            "program": "${workspaceFolder}/node_modules/jest-cli/bin/jest.js",
             "stopOnEntry": false,
             "args": ["${fileBasenameNoExtension}", "--runInBand"],
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "preLaunchTask": null,
             "runtimeExecutable": null,
             "runtimeArgs": [

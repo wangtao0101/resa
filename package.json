@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/wangtao0101/resa#readme",
   "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0-0 || ^16.0.0-0"
+    "react": "^16.3.0-0"
   },
   "dependencies": {
     "@types/react-redux": "^5.0.14",
@@ -60,7 +60,7 @@
     "babel-runtime": "^6.23.0",
     "coveralls": "^2.13.1",
     "cross-env": "^4.0.0",
-    "enzyme": "^2.9.1",
+    "enzyme": "^3.3.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.6.1",
@@ -70,8 +70,8 @@
     "immutable": "^3.8.1",
     "jest": "^20.0.0",
     "nyc": "^11.0.3",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-test-renderer": "^15.6.1"
+    "react": "16.3.2",
+    "react-dom": "16.3.2",
+    "react-test-renderer": "16.3.2"
   }
 }
