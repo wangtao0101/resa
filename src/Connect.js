@@ -63,6 +63,10 @@ export default function createConnect() {
                 }
 
                 setWappedInstance(ref) {
+                    if (ref == null) {
+                        this.props.forwardedRef.current = null; // eslint-disable-line
+                        return;
+                    }
                     if (this.props.forwardedRef) { // eslint-disable-line
                         this.props.forwardedRef.current = ref.getWrappedInstance(); // eslint-disable-line
                     }
