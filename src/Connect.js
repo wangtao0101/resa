@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
 import hoistNonReactStatic from 'hoist-non-react-statics';
+import invariant from 'invariant';
 import { storeShape, subscriptionShape, resaShape } from './Provider';
 
 export default function createConnect() {
@@ -63,12 +64,19 @@ export default function createConnect() {
                 }
 
                 setWappedInstance(ref) {
-                    if (ref == null) {
-                        this.props.forwardedRef.current = null; // eslint-disable-line
+                    const forwardedRef = this.props.forwardedRef; // eslint-disable-line
+                    if (forwardedRef == null) {
                         return;
                     }
-                    if (this.props.forwardedRef) { // eslint-disable-line
-                        this.props.forwardedRef.current = ref.getWrappedInstance(); // eslint-disable-line
+
+                    invariant(forwardedRef.hasOwnProperty('current'), 'You must use React.createRef() to create ref.'); // eslint-disable-line
+
+                    if (ref == null) {
+                        forwardedRef.current = null;
+                        return;
+                    }
+                    if (forwardedRef) {
+                        forwardedRef.current = ref.getWrappedInstance();
                     }
                 }
 

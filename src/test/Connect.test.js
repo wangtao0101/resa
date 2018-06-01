@@ -115,7 +115,7 @@ describe('Connect', () => {
         });
     });
 
-    test('mapDispatchToProps can get wapperInstance using React.createRef()', () => {
+    test('get wapperInstance using React.createRef()', () => {
         const app = createResa();
 
         const ConnectedChild = connect(null, null, null)(Child);
@@ -130,6 +130,22 @@ describe('Connect', () => {
 
         const child = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(ref.current).toEqual(child);
+    });
+
+    test('should use React.createRef()', () => {
+        const app = createResa();
+
+        const ConnectedChild = connect(null, null, null)(Child);
+
+        const ref = () => {};
+
+        expect(() => {
+            TestUtils.renderIntoDocument(
+                <Provider store={app.store} resa={app}>
+                    <ConnectedChild ref={ref} />
+                </Provider>
+            );
+        }).toThrow('You must use React.createRef() to create ref.');
     });
 
     test('mapDispatchToProps can bind app name and get model in mapdispathtoprops', () => {
