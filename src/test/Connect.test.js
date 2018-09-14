@@ -88,7 +88,7 @@ describe('Connect', () => {
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-        expect(container.props.ownProps).toEqual({ c: 'c', forwardedRef: null });
+        expect(container.props.ownProps).toEqual({ c: 'c', forwardedRef: null, theme: expect.anything() });
     });
 
     test('mapDispatchToProps can get models and dispatch', () => {

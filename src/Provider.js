@@ -1,4 +1,4 @@
-import { Component, Children } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import warning from 'react-redux/lib/utils/warning';
 
@@ -38,11 +38,13 @@ function warnAboutReceivingStore() {
     );
 }
 
+export const ThemeContext = React.createContext();
+
 export function createProvider(storeKey = 'store', subKey) {
     const resaKey = `${storeKey}Resa`;
     const subscriptionKey = subKey || `${storeKey}Subscription`;
 
-    class Provider extends Component {
+    class Provider extends React.Component {
 
         constructor(props, context) {
             super(props, context);
@@ -59,7 +61,16 @@ export function createProvider(storeKey = 'store', subKey) {
         }
 
         render() {
-            return Children.only(this.props.children);
+            return (
+                <ThemeContext.Provider value={{
+                    [storeKey]: this[storeKey],
+                    [subscriptionKey]: null,
+                    [resaKey]: this[resaKey],
+                }}
+                >
+                    {React.Children.only(this.props.children)}
+                </ThemeContext.Provider>
+            );
         }
     }
 

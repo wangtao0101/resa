@@ -2,7 +2,7 @@ import React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
 import hoistNonReactStatic from 'hoist-non-react-statics';
 import invariant from 'invariant';
-import { storeShape, subscriptionShape, resaShape } from './Provider';
+import { storeShape, subscriptionShape, resaShape, ThemeContext } from './Provider';
 
 export default function createConnect() {
     return (mapStateToProps, mapDispatchToProps, mergeProps, extraOptions = {}) => {
@@ -20,7 +20,8 @@ export default function createConnect() {
             class Connect extends React.Component {
                 constructor(props, context) {
                     super(props, context);
-                    this.resa = context[resaKey];
+                    // this.resa = context[resaKey];
+                    this.resa = props.theme[resaKey]; // eslint-disable-line
                     this.wrappedInstance = null;
 
                     this.setWappedInstance = this.setWappedInstance.bind(this);
@@ -94,7 +95,11 @@ export default function createConnect() {
             Connect.contextTypes = contextTypes;
             const TargetComponent = hoistNonReactStatic(Connect, WrappedComponent);
 
-            return React.forwardRef((props, ref) => <TargetComponent {...props} forwardedRef={ref} />);
+            return React.forwardRef((props, ref) => (
+                <ThemeContext.Consumer>
+                    {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+                </ThemeContext.Consumer>
+            ));
         };
     };
 }
