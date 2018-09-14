@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider, connect } from './..';
+import createResa, { Provider, connect } from '..';
 import DecoratorChild from './decoratorChild';
 
 const model = {

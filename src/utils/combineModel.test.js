@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import createResa, { combineModel } from './..';
+import createResa, { combineModel } from '..';
 
 const model1 = {
     name: 'model1',

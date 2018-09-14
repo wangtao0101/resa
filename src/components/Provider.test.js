@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider } from '../';
+import createResa, { Provider } from '..';
 
 describe('Provider', () => {
     const createChild = (storeKey = 'store') => {

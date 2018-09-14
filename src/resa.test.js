@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
-import createResa from '../resa';
+import createResa from './resa';
 
 function myReducer(state = {}, _action) {
     return state;

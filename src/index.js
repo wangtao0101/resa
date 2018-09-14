@@ -1,8 +1,8 @@
 
 import createResa from './resa';
-import Provider from './Provider';
-import createConnect from './Connect';
-import combineModel from './combineModel';
+import Provider from './components/Provider';
+import createConnect from './components/Connect';
+import combineModel from './utils/combineModel';
 
 const connect = createConnect();
 

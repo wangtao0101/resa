@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from './..';
+import { connect } from '..';
 
 const mapStateToProps = (_app, _state) => ({
     a: 'a',

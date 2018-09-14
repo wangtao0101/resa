@@ -4,10 +4,10 @@ import createSagaMiddleware from 'redux-saga';
 import invariant from 'invariant';
 import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
-import { createAction, handleActions } from './action';
-import isImmutable from './predicates';
-import { COMBINED_RESA_MODEL } from './combineModel';
-import { cloneState, getStateDelegate } from './help';
+import { createAction, handleActions } from './utils/action';
+import isImmutable from './utils/predicates';
+import { COMBINED_RESA_MODEL } from './utils/combineModel';
+import { cloneState, getStateDelegate } from './utils/help';
 
 // is root model
 const ROOT_MODEL = '@@__ROOT_MODEL__@@';
