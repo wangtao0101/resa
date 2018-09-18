@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider } from '..';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
+import * as TestUtils from 'react-dom/test-utils';
+import createResa, { Provider } from 'resa';
 
 describe('Provider', () => {
     const createChild = (storeKey = 'store') => {
         const resaKey = `${storeKey}Resa`;
-        class Child extends Component { // eslint-disable-line
+        class Child extends React.Component {
+            static contextTypes: { [x: string]: PropTypes.Validator<object>; };
             render() {
                 return <div />;
             }

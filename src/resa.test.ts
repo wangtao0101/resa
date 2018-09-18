@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import createResa from './resa';
@@ -11,28 +11,28 @@ const model = {
     name: 'model',
     state: {},
     effects: {
-        * add(payload) {
+        * add(this: any, payload) {
             yield call(this.fulfilled, payload);
             return 5;
         },
 
-        * minus(payload) {
+        * minus(this: any, payload) {
             yield call(this.fulfilled, payload);
             throw new Error('error');
         },
 
-        * div(a, b) {
+        * div(this: any, a, b) {
             this.fulfilled({ result: a / b });
             yield 1;
         },
 
     },
     reducers: {
-        mul(a, b) {
+        mul(this: any, a, b) {
             return Object.assign({}, this.state, { result: a * b });
         },
 
-        ful(payload) {
+        ful(this: any, payload) {
             return this.fulfilled(payload);
         },
     },
@@ -42,13 +42,13 @@ const immutableModel = {
     name: 'model',
     state: Immutable.Map(),
     effects: {
-        * add(payload) {
+        * add(this: any, payload) {
             this.fulfilled(payload);
             yield 1;
             return 5;
         },
 
-        * minus(payload) {
+        * minus(this: any, payload) {
             yield call(this.reject, payload);
             throw new Error('error');
         },
@@ -61,22 +61,22 @@ const effectModel = {
         count: 0,
     },
     effects: {
-        add: [function* (payload) { // eslint-disable-line
+        add: [function* (this: any, payload) { // eslint-disable-line
             yield delay(10);
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'takeLatest'],
 
-        plus: [function* (count) { // eslint-disable-line
+        plus: [function* (this: any, count) { // eslint-disable-line
             yield delay(10);
             this.fulfilled({ count });
         }, 'takeFirst'],
 
-        throttle: [function* (payload) { // eslint-disable-line
+        throttle: [function* (this: any, payload) { // eslint-disable-line
             yield delay(10);
             this.fulfilled({ count: this.models.effectModel.state.count + 1 });
         }, 'throttle', 100],
 
-        * minus() {
+        * minus(this: any) {
             this.fulfilled({
                 count: this.state.count + 1,
             });
@@ -93,7 +93,7 @@ const callSelfModel = {
             yield call(this.minus, payload);
         },
 
-        * minus(payload) {
+        * minus(this: any, payload) {
             this.fulfilled(payload);
             yield 1;
         },
@@ -104,12 +104,12 @@ const modelState = {
     name: 'modelState',
     state: 0,
     effects: {
-        * add(payload) {
+        * add(this: any, payload) {
             yield call(this.minus, payload);
         },
     },
     reducers: {
-        minus(payload) {
+        minus(this: any, payload) {
             return this.state + payload;
         },
     },
@@ -127,7 +127,7 @@ describe('createResa', () => {
     });
 
     test('createResa set initialState success', () => {
-        const app = createResa({ initialState: { myReducer: 'a' }, reducers: { myReducer } });
+        const app: any = createResa({ initialState: { myReducer: 'a' }, reducers: { myReducer } });
         expect(app.store.getState()).toEqual({
             myReducer: 'a',
             resaReducer: {},
@@ -137,7 +137,7 @@ describe('createResa', () => {
 
 describe('registerModel', () => {
     test('register model success use default reducerName', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model);
         expect(app.models.model).toEqual(expect.objectContaining({
             name: 'model',
@@ -149,7 +149,7 @@ describe('registerModel', () => {
 
 describe('dispatch action success', () => {
     test('dispatch fulfilled success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -167,7 +167,7 @@ describe('dispatch action success', () => {
     });
 
     test('reducer use fulfilled success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         app.models.model.ful({ a: 'aaa' });
         return new Promise((resolve) => {
@@ -193,7 +193,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch an empty payload success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         app.models.model.add({ a: 'a' });
         app.models.model.add();
@@ -213,16 +213,16 @@ describe('dispatch action success', () => {
 
     test('should catch The payload must be an object if the shape of state is object', () => {
         const fn = jest.fn();
-        const app = createResa({
+        const app: any = createResa({
             errorHandle: fn,
         });
         app.registerModel(model, 'model');
-        app.models.model.add(1);
+        app.models.model.add(1).catch(() => {});
         expect(fn).toHaveBeenCalledTimes(1);
     });
 
     test('dispatch return promise resolve success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         return app.models.model.add({ a: 'a' })
             .then((data) => {
@@ -231,7 +231,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch return promise reject success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         return app.models.model.minus({ a: 'a' })
             .catch((data) => {
@@ -240,7 +240,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch fulfilled success when immutable', () => {
-        const app = createResa({ initialState: Immutable.Map() });
+        const app: any = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: { a: 'b' } });
         return new Promise((resolve) => {
@@ -260,9 +260,9 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch fulfilled success dispatch immutable payload', () => {
-        const app = createResa({ initialState: Immutable.Map() });
+        const app: any = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
-        app.models.model.add(Immutable.fromJS({ a: { a: 'b' } }));
+        app.models.model.add(Immutable.Map({ a: { a: 'b' } }));
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -270,7 +270,7 @@ describe('dispatch action success', () => {
         }).then((data) => {
             expect(data).toEqual(Immutable.Map({
                 resaReducer: {},
-                model: Immutable.fromJS({
+                model: Immutable.Map({
                     a: {
                         a: 'b',
                     },
@@ -280,9 +280,9 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch reject success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
-        app.models.model.minus({ a: 'a' });
+        app.models.model.minus({ a: 'a' }).catch(() => {});
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(app.store.getState());
@@ -298,7 +298,7 @@ describe('dispatch action success', () => {
     });
 
     test('dispatch action in saga', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(callSelfModel, 'callSelfModel');
         app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -316,7 +316,7 @@ describe('dispatch action success', () => {
     });
 
     test('model getState success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(callSelfModel, 'callSelfModel');
         app.models.callSelfModel.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -331,7 +331,7 @@ describe('dispatch action success', () => {
     });
 
     test('model getState success when use immutable', () => {
-        const app = createResa({ initialState: Immutable.Map() });
+        const app: any = createResa({ initialState: Immutable.Map() });
         app.registerModel(immutableModel, 'model');
         app.models.model.add({ a: 'a' });
         return new Promise((resolve) => {
@@ -346,7 +346,7 @@ describe('dispatch action success', () => {
     });
 
     test('takeFirst', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(effectModel, 'effectModel');
         app.models.effectModel.plus(2);
         app.models.effectModel.plus(4);
@@ -362,7 +362,7 @@ describe('dispatch action success', () => {
     });
 
     test('takeLatest', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(effectModel, 'effectModel');
         app.models.effectModel.add({ a: 'a' });
         app.models.effectModel.add({ a: 'c' });
@@ -378,7 +378,7 @@ describe('dispatch action success', () => {
     });
 
     test('throttle', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(effectModel, 'effectModel');
         app.models.effectModel.throttle({ a: 'a' });
         app.models.effectModel.throttle({ a: 'c' });
@@ -394,7 +394,7 @@ describe('dispatch action success', () => {
     });
 
     test('non object state', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(modelState, 'modelState');
         app.models.modelState.add(10);
         return new Promise((resolve) => {
@@ -410,7 +410,7 @@ describe('dispatch action success', () => {
     });
 
     test('effect multiple args', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         app.models.model.div(4, 2);
         return new Promise((resolve) => {
@@ -428,7 +428,7 @@ describe('dispatch action success', () => {
     });
 
     test('reducer multiple args', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(model, 'model');
         app.models.model.mul(4, 2);
         return new Promise((resolve) => {
@@ -450,13 +450,13 @@ const modelReducer = {
     name: 'modelReducer',
     state: {},
     effects: {
-        * add(payload) {
+        * add(this: any, payload) {
             this.fulfilled(payload);
             yield 1;
         },
     },
     reducers: {
-        xxx(payload) {
+        xxx(this: any, payload) {
             return Object.assign(this.state, payload);
         },
     },
@@ -464,7 +464,7 @@ const modelReducer = {
 
 describe('reducers', () => {
     test('handle reducers success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(modelReducer, 'modelReducer');
         app.models.modelReducer.xxx({ a: 'dd' });
         expect(app.store.getState()).toEqual({
@@ -480,16 +480,16 @@ const unModel = {
     name: 'unModel',
     state: {},
     effects: {
-        * add(payload) {
+        * add(this: any, payload) {
             yield delay(5);
             this.fulfilled(payload);
         },
-        * minus(payload) {
+        * minus(this: any, payload) {
             yield this.fulfilled(payload);
         },
     },
     reducers: {
-        xxx(payload) {
+        xxx(this: any, payload) {
             return Object.assign(this.state, payload);
         },
     },
@@ -497,7 +497,7 @@ const unModel = {
 
 describe('unRegisterModel', () => {
     test('unRegisterModel model success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(unModel, 'unModel');
         app.models.unModel.xxx({ a: 'dd' });
         app.models.unModel.add({ b: 'cc' });
@@ -518,7 +518,7 @@ describe('unRegisterModel', () => {
     });
 
     test('resigter twice success and dispatch action success after unRegisterModel model', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(unModel, 'unModel');
         app.models.unModel.minus({ b: 'cc' });
         app.unRegisterModel(unModel);
@@ -541,7 +541,7 @@ describe('unRegisterModel', () => {
 
     test('should not unRegister unRegistered model', () => {
         expect(() => {
-            const app = createResa();
+            const app: any = createResa();
             app.registerModel(unModel, 'unModel');
             app.unRegisterModel(unModel);
             app.unRegisterModel(unModel);
@@ -550,7 +550,7 @@ describe('unRegisterModel', () => {
 
     test('name of model should be non empty string', () => {
         expect(() => {
-            const app = createResa();
+            const app: any = createResa();
             app.registerModel(unModel, 'unModel');
             app.unRegisterModel({ name: 5 });
         }).toThrow(/name of model should be non empty string/);
@@ -580,7 +580,7 @@ const pureReducerModel = {
 
 describe('pureReducerModel', () => {
     test('pureReducerModel', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(pureReducerModel);
         app.store.dispatch({
             type: 'add',

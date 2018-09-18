@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "lib": [
+        "dom",
+        "es2015"
+      ],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "outDir": "lib",
+      "experimentalDecorators": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "allowSyntheticDefaultImports": true,
+      "declaration": false,
+      "strict": true,
+      "removeComments": true,
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "baseUrl": ".",
+      "paths": {
+        "resa": ["src/index.ts"]
+      },
+      "jsx": "react"
+    },
+    "include": [
+      "src/**/*.tsx",
+      "src/**/*.ts",
+      "src/*.tsx",
+      "src/*.ts",
+    ],
+    "compileOnSave": false
+}

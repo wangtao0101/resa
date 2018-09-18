@@ -1,18 +1,19 @@
 {
   "name": "resa",
-  "version": "3.1.2",
+  "version": "4.0.0-beta-0",
   "description": "A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.",
   "main": "lib/index.js",
   "typings": "types/index.d.ts",
   "scripts": {
-    "build": "babel src -d lib --ignore test",
-    "buildlib": "cross-env NODE_ENV=production babel src -d lib --ignore src/test",
-    "lint": "eslint src/*.js src/test/*.js",
+    "build": "npm run clean && tsc -p . --sourceMap false",
+    "build:debug": "npm run clean && tsc -p .",
     "test": "jest",
+    "tsc": "tsc",
+    "clean": "rimraf lib",
     "coverage": "jest --coverage",
     "report": "nyc report --temp-directory=coverage --reporter=text-lcov | coveralls",
     "coveralls": "npm run coverage && npm run report",
-    "prepublish": "npm run lint && npm run test && npm run buildlib",
+    "prepublish": "npm run test && npm run build",
     "docs": "cd docs && gitbook install && gitbook serve",
     "deploy": "cd docs && gitbook install && gitbook build && gh-pages -d _book"
   },
@@ -46,32 +47,38 @@
     "warning": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^20.0.2",
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.24.0",
-    "babel-eslint": "^7.2.1",
-    "babel-jest": "^19.0.0",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-es2015": "^6.24.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.22.0",
-    "babel-runtime": "^6.23.0",
+    "@types/jest": "^23.3.2",
     "coveralls": "^2.13.1",
     "cross-env": "^4.0.0",
     "enzyme": "^3.3.0",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^15.0.1",
-    "eslint-plugin-import": "^2.6.1",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.1.0",
     "gh-pages": "^1.1.0",
     "immutable": "^3.8.1",
-    "jest": "^20.0.0",
+    "jest": "^23.6.0",
     "nyc": "^11.0.3",
-    "react": "16.3.2",
-    "react-dom": "16.3.2",
-    "react-test-renderer": "16.3.2"
+    "react": "16.4.0",
+    "react-dom": "16.4.0",
+    "react-test-renderer": "16.4.0",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
+    "rimraf": "^2.6.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
+    ],
+    "moduleFileExtensions": [
+      "tsx",
+      "ts",
+      "js",
+      "jsx"
+    ],
+    "moduleNameMapper": {
+      "resa": "<rootDir>/src/index.ts"
+    }
   }
 }

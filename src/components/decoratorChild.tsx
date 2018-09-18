@@ -1,12 +1,13 @@
-import React from 'react';
-import { connect } from '..';
+import * as React from 'react';
+import { connect } from 'resa';
 
 const mapStateToProps = (_app, _state) => ({
     a: 'a',
 });
 
+// @ts-ignore
 @connect(mapStateToProps, ['model'], null)
-export default class DecoratorChild extends React.Component { // eslint-disable-line
+export default class DecoratorChild extends React.Component<any, any> {
     render() {
         return <div />;
     }

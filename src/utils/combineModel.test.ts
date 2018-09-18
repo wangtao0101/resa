@@ -1,5 +1,5 @@
-import Immutable from 'immutable';
-import createResa, { combineModel } from '..';
+import * as Immutable from 'immutable';
+import createResa, { combineModel } from 'resa';
 
 const model1 = {
     name: 'model1',
@@ -8,7 +8,9 @@ const model1 = {
     },
     effects: {
         * add(count) {
+            // @ts-ignore
             this.fulfilled({
+                // @ts-ignore
                 count: this.state.count + count,
             });
             yield 0;
@@ -23,7 +25,9 @@ const model2 = {
     },
     effects: {
         * add(count) {
+            // @ts-ignore
             this.fulfilled({
+                // @ts-ignore
                 count: this.state.count + count + count,
             });
             yield 0;
@@ -31,11 +35,12 @@ const model2 = {
     },
 };
 
+// @ts-ignore
 const combinedModel = combineModel('xxx', [model1, model2]);
 
 describe('combineModel', () => {
     test('combinemodel resiger success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(combinedModel);
         expect(app.store.getState()).toEqual({
             xxx: {
@@ -47,7 +52,7 @@ describe('combineModel', () => {
     });
 
     test('combinemodel dispatch action success', () => {
-        const app = createResa();
+        const app: any = createResa();
         app.registerModel(combinedModel);
         app.models.model1.add(1);
         app.models.model2.add(2);
@@ -67,7 +72,7 @@ describe('combineModel', () => {
     });
 
     test('immutable root', () => {
-        const app = createResa({ initialState: Immutable.Map() });
+        const app: any = createResa({ initialState: Immutable.Map() });
         app.registerModel(combinedModel);
         app.models.model1.add(1);
         app.models.model2.add(2);

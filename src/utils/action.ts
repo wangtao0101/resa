@@ -17,7 +17,7 @@ function createActionInner(type, payloadCreator, metaCreator) {
 }
 
 const actionMeta = '@redux-saga-action';
-export function createAction(type, payloadCreator) {
+export function createAction(type, payloadCreator?) {
     return createActionInner(type, payloadCreator, () => actionMeta);
 }
 

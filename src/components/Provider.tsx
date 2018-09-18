@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import warning from 'react-redux/lib/utils/warning';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
+import * as warning from 'warning';
 
 export const subscriptionShape = PropTypes.shape({
     trySubscribe: PropTypes.func.isRequired,
@@ -31,21 +31,20 @@ function warnAboutReceivingStore() {
 
     warning(
         '<Provider> does not support changing `store` on the fly. ' +
-        'It is most likely that you see this error because you updated to ' +
-        'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' +
-        'automatically. See https://github.com/reactjs/react-redux/releases/' +
-        'tag/v2.0.0 for the migration instructions.'
+            'It is most likely that you see this error because you updated to ' +
+            'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' +
+            'automatically. See https://github.com/reactjs/react-redux/releases/' +
+            'tag/v2.0.0 for the migration instructions.',
     );
 }
 
-export const ThemeContext = React.createContext();
+export const ThemeContext = React.createContext<any>({});
 
-export function createProvider(storeKey = 'store', subKey) {
+export function createProvider(storeKey = 'store', subKey = undefined) {
     const resaKey = `${storeKey}Resa`;
     const subscriptionKey = subKey || `${storeKey}Subscription`;
 
-    class Provider extends React.Component {
-
+    class Provider extends React.Component<any, any> {
         constructor(props, context) {
             super(props, context);
             this[storeKey] = props.resa.store;
@@ -62,12 +61,12 @@ export function createProvider(storeKey = 'store', subKey) {
 
         render() {
             return (
-                <ThemeContext.Provider value={{
-                    [storeKey]: this[storeKey],
-                    [subscriptionKey]: null,
-                    [resaKey]: this[resaKey],
-                }}
-                >
+                <ThemeContext.Provider
+                    value={{
+                        [storeKey]: this[storeKey],
+                        [subscriptionKey]: null,
+                        [resaKey]: this[resaKey],
+                    }}>
                     {React.Children.only(this.props.children)}
                 </ThemeContext.Provider>
             );
@@ -75,18 +74,21 @@ export function createProvider(storeKey = 'store', subKey) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        Provider.prototype.componentWillReceiveProps = function (nextProps) { // eslint-disable-line
+        Provider.prototype.componentWillReceiveProps = function(nextProps) {
             if (this[storeKey] !== nextProps.resa.store) {
                 warnAboutReceivingStore();
             }
         };
     }
 
+
+    // @ts-ignore
     Provider.propTypes = {
         children: PropTypes.element.isRequired,
         resa: resaShape.isRequired,
     };
 
+    // @ts-ignore
     Provider.childContextTypes = {
         [storeKey]: storeShape.isRequired,
         [subscriptionKey]: subscriptionShape,

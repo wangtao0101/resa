@@ -2,9 +2,24 @@ import * as React from 'react';
 import * as Redux from 'redux';
 import * as ReactRedux from 'react-redux';
 import * as Saga from "redux-saga";
-import { Model } from 'resa-class-model';
 
 declare module 'resa' {
+
+    export class Model<S = any> {
+        protected models: any
+        state: S;
+        fulfilled(payload?: S | Partial<S>): S;
+    }
+
+    export function effect(name?: string , mn?: number) : MethodDecorator;
+
+    export function reducer(pure?: boolean) : MethodDecorator;
+
+    export function init<S = any>({ name, state }
+        : { name?: string, state: S}) : ClassDecorator;
+
+    export function wapper(cb: IterableIterator<any>): Promise<any>;
+
     export interface Options {
         reducers?: Redux.ReducersMapObject;
         reduxDevToolOptions?: Object;

@@ -1,4 +1,4 @@
-import clone from 'clone';
+import * as clone from 'clone';
 import isImmutable from './predicates';
 
 export function cloneState(state) { // eslint-disable-line

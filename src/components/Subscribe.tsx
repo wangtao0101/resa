@@ -1,9 +1,10 @@
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { ThemeContext } from './Provider';
 
-class ThemeSubscribe extends React.Component {
+class ThemeSubscribe extends React.Component<any, any> {
+    resa: any;
 
     constructor(props) {
         super(props);
@@ -17,11 +18,12 @@ class ThemeSubscribe extends React.Component {
     }
 
     render() {
-        // get model
+        // @ts-ignore
         return this.props.children();
     }
 }
 
+// @ts-ignore
 ThemeSubscribe.propTypes = {
     theme: PropTypes.any.isRequired,
     children: PropTypes.func.isRequired,

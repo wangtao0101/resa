@@ -1,13 +1,14 @@
 import { applyMiddleware, createStore, combineReducers, compose } from 'redux';
 import { combineReducers as combineImmutableReducers } from 'redux-immutable';
 import createSagaMiddleware from 'redux-saga';
-import invariant from 'invariant';
+import * as invariant from 'invariant';
 import { call, fork, take, cancel, takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { reduxSagaMiddleware } from 'redux-saga-middleware';
 import { createAction, handleActions } from './utils/action';
 import isImmutable from './utils/predicates';
 import { COMBINED_RESA_MODEL } from './utils/combineModel';
 import { cloneState, getStateDelegate } from './utils/help';
+import * as Redux from 'redux';
 
 // is root model
 const ROOT_MODEL = '@@__ROOT_MODEL__@@';
@@ -30,24 +31,29 @@ const payloadEncode = (...args) => {
 };
 
 const payloadDecode = (payload) => {
-    if (payload.__resa__payload__) { // eslint-disable-line
-        delete payload.__resa__payload__; // eslint-disable-line
+    if (payload.__resa__payload__) {
+        delete payload.__resa__payload__;
         return Object.keys(payload).map(k => payload[k]);
     }
     return payload;
 };
 
-export default function createResa(options = {}) {
+export interface Options {
+    reducers?: Redux.ReducersMapObject;
+    reduxDevToolOptions?: Object;
+    errorHandle?: (error: Error) => void;
+    middlewares?: Array<Redux.Middleware>;
+    initialState?: any;
+}
+
+export default function createResa(options?: Options) {
     const {
         reducers = {},
         errorHandle = noop,
         reduxDevToolOptions = {},
-    } = options;
-
-    /**
-     * init state
-     */
-    const initialState = options.initialState || {};
+        initialState = {},
+        middlewares =  [],
+    } = options || {};
 
     function resaReducer(state = {}, _action) {
         return state;
@@ -80,6 +86,7 @@ export default function createResa(options = {}) {
     function mergeImmutablePayload(state, payload = {}) {
         if (isImmutable(payload)) {
             return state.withMutations((map) => {
+                // @ts-ignore
                 payload.map((value, key) => {
                     map.set(key, value);
                     return null;
@@ -110,10 +117,11 @@ export default function createResa(options = {}) {
     }
 
     function getEffectSaga(models, saga, name, dispatch) {
-        return function* (action) { // eslint-disable-line
+        return function* (action) {
             const { resolve, reject, ...rest } = action;
             try {
                 const that = Object.assign({}, models[name], dispatch, { models });
+                // @ts-ignore
                 const result = yield call([that, saga], ...payloadDecode(rest.payload));
                 resolve(result);
             } catch (error) {
@@ -146,30 +154,30 @@ export default function createResa(options = {}) {
         const effectSaga = getEffectSaga(app.models, actualEffect, model.name, dispatch);
 
         switch (type) {
-            case 'takeFirst': // eslint-disable-line
-                return function* () { // eslint-disable-line
-                    while (true) { // eslint-disable-line
+            case 'takeFirst':
+                return function* () {
+                    while (true) {
                         const at = yield take(action.pending);
                         yield call(effectSaga, at);
                     }
                 };
-            case 'takeLatest': // eslint-disable-line
-                return function* () { // eslint-disable-line
+            case 'takeLatest':
+                return function* () {
                     yield takeLatest(
                         action.pending,
                         effectSaga
                     );
                 };
-            case 'throttle': // eslint-disable-line
-                return function* () { // eslint-disable-line
+            case 'throttle':
+                return function* () {
                     yield throttle(
                         effect[2],
                         action.pending,
                         effectSaga
                     );
                 };
-            default: // eslint-disable-line
-                return function* () { // eslint-disable-line
+            default:
+                return function* () {
                     yield takeEvery(
                         action.pending,
                         effectSaga
@@ -184,14 +192,15 @@ export default function createResa(options = {}) {
 
         const newEffects = {};
         const oldEffects = model.effects || {};
-        for (const key in oldEffects) { // eslint-disable-line
+        for (const key in oldEffects) {
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
                 const action = createAction(`${model.name}/${key}`);
-                const innerReducer = (state, action) => { // eslint-disable-line
+                const innerReducer = (state, action) => {
                     try {
                         return commonReducerHandle(state, action.payload);
                     } catch (error) {
                         errorHandle(error);
+                        return state;
                     }
                 };
                 actions[action.fulfilled] = innerReducer;
@@ -210,10 +219,10 @@ export default function createResa(options = {}) {
                 /**
                  * run watcher
                  */
-                runSaga(function* () { // eslint-disable-line
+                runSaga(function* () {
                     const saga = getSaga(app, action, oldEffects[key], model, dispatch);
                     const task = yield fork(saga);
-                    yield fork(function* () { // eslint-disable-line
+                    yield fork(function* () {
                         yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
                         yield cancel(task);
                     });
@@ -223,7 +232,7 @@ export default function createResa(options = {}) {
 
         const newReducers = {};
         const oldReducers = model.reducers || {};
-        for (const key in oldReducers) { // eslint-disable-line
+        for (const key in oldReducers) {
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
                 actions[`${model.name}/${key}`] = (state, { payload }) => {
                     const that = {
@@ -242,7 +251,7 @@ export default function createResa(options = {}) {
         }
 
         const oldPureReducers = model.pureReducers || {};
-        for (const key in oldPureReducers) { // eslint-disable-line
+        for (const key in oldPureReducers) {
             if (Object.prototype.hasOwnProperty.call(oldPureReducers, key)) {
                 actions[key] = oldPureReducers[key];
             }
@@ -268,7 +277,7 @@ export default function createResa(options = {}) {
     }
 
     function mountModel(app, model, actionCreaters, getState, isRoot = false) {
-        app.models[model.name] = { // eslint-disable-line
+        app.models[model.name] = {
             ...actionCreaters,
             name: model.name,
             [ROOT_MODEL]: isRoot,
@@ -295,6 +304,7 @@ export default function createResa(options = {}) {
             const getModelState = getStateDelegate(state, getState, model.name);
 
             if (model[COMBINED_RESA_MODEL]) {
+                // @ts-ignore
                 this.models[model.name] = Object.assign({}, model);
                 rs[model.name] = registerCombineModel(model, app, getModelState);
                 return;
@@ -310,9 +320,11 @@ export default function createResa(options = {}) {
     }
 
     function registerModel(model) {
+        // @ts-ignore
         checkModel(model, this);
-
+        // @ts-ignore
         const app = this;
+        // @ts-ignore
         const store = this.store;
 
         const { name } = model;
@@ -323,6 +335,7 @@ export default function createResa(options = {}) {
         const getState = getStateDelegate(initialState, app.store.getState, name);
 
         if (model[COMBINED_RESA_MODEL]) {
+            // @ts-ignore
             this.models[model.name] = Object.assign({}, model, {
                 [ROOT_MODEL]: true,
             });
@@ -332,7 +345,7 @@ export default function createResa(options = {}) {
             return;
         }
 
-        const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app, name);
+        const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app);
 
         /**
          * if you want to immutable state, pass Immutable.map() here.
@@ -349,7 +362,7 @@ export default function createResa(options = {}) {
     function unReg(app, model) {
         if (app.models[model.name]) {
             app.store.dispatch({ type: `${model.name}/${ActionTypes.CANCEL_EFFECTS}` });
-            delete app.models[model.name]; // eslint-disable-line
+            delete app.models[model.name];
         }
     }
 
@@ -360,7 +373,7 @@ export default function createResa(options = {}) {
     function unRegisterModel(model, shoudCheckRoot = true) {
         invariant(typeof model.name === 'string' && model.name !== '',
             `name of model should be non empty string, but got ${typeof model.name}`);
-
+        // @ts-ignore
         const transformedModel = this.models[model.name];
         invariant(transformedModel != null, 'should not unRegister unRegistered model');
 
@@ -370,17 +383,20 @@ export default function createResa(options = {}) {
 
         if (transformedModel[COMBINED_RESA_MODEL]) {
             const { models = [] } = transformedModel;
+            // @ts-ignore
             delete this.models[transformedModel.name];
 
             models.forEach((m) => {
+                // @ts-ignore
                 this.unRegisterModel(m, false);
             });
         } else {
+            // @ts-ignore
             unReg(this, transformedModel);
         }
     }
 
-    const app = {
+    const app: any = {
         /**
          * redux store
          */
@@ -408,22 +424,24 @@ export default function createResa(options = {}) {
     /**
      * init middlewares, compose redux-dev-tools
      */
-    let middlewares = (options.middlewares || []).concat(sagaMiddleware, reduxSagaMiddleware);
+    let finalMiddlewares: any = middlewares.concat(sagaMiddleware, reduxSagaMiddleware);
 
-    if (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__) { // eslint-disable-line
+    // @ts-ignore
+    if (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__) {
         // redux dev tool extension for chrome
-        middlewares = compose(
-            applyMiddleware(...middlewares),
-            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions) // eslint-disable-line
+        finalMiddlewares = compose(
+            applyMiddleware(...finalMiddlewares),
+            // @ts-ignore
+            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions)
         );
     } else {
-        middlewares = applyMiddleware(...middlewares);
+        finalMiddlewares = applyMiddleware(...finalMiddlewares);
     }
 
     app.store = createStore(
-        makeRootReducer(),
+        makeRootReducer({}),
         initialState,
-        middlewares
+        finalMiddlewares,
     );
     app.store.asyncReducers = {};
     app.store.reducerList = {};

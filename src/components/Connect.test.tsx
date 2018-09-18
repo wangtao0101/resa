@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import TestUtils from 'react-dom/test-utils';
-import createResa, { Provider, connect } from '..';
+import * as React from 'react';
+import * as TestUtils from 'react-dom/test-utils';
+import createResa, { Provider, connect } from 'resa';
 import DecoratorChild from './decoratorChild';
 
 const model = {
@@ -8,11 +8,13 @@ const model = {
     state: {},
     effects: {
         * add(payload) {
+            // @ts-ignore
             this.fulfilled(payload);
             yield 1;
         },
 
         * minus(payload) {
+            // @ts-ignore
             this.reject(payload);
             yield 1;
         },
@@ -24,18 +26,20 @@ const model1 = {
     state: {},
     effects: {
         * add(payload) {
+            // @ts-ignore
             this.fulfilled(payload);
             yield 1;
         },
 
         * minus(payload) {
+            // @ts-ignore
             this.reject(payload);
             yield 1;
         },
     },
 };
 
-class Child extends Component { // eslint-disable-line
+class Child extends React.Component { // eslint-disable-line
     render() {
         return <div />;
     }
@@ -78,6 +82,7 @@ describe('Connect', () => {
             ownProps,
         });
 
+        // @ts-ignore
         const ConnectedChild = connect(mapStateToProps)(Child);
 
         const tree = TestUtils.renderIntoDocument(
@@ -160,6 +165,7 @@ describe('Connect', () => {
             }),
         });
 
+        // @ts-ignore
         const ConnectedChild = connect(null, mapDispatchToProps)(Child, 'model', 'model1');
 
         const tree = TestUtils.renderIntoDocument(
@@ -206,14 +212,17 @@ describe('connectModel', () => {
 
         const ref = React.createRef();
 
+        const DecoratorChildAny: any = DecoratorChild;
+
         TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <DecoratorChild ref={ref} />
+                <DecoratorChildAny ref={ref} />
             </Provider>
         );
 
+        // @ts-ignore
         expect(ref.current.props.a).toEqual('a');
-
+        // @ts-ignore
         expect(ref.current.props.model.name).toEqual('model');
     });
 });
