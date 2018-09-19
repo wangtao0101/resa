@@ -1,6 +1,5 @@
 
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import { ThemeContext } from './Provider';
 
 class ThemeSubscribe extends React.Component<any, any> {
@@ -22,12 +21,6 @@ class ThemeSubscribe extends React.Component<any, any> {
         return this.props.children();
     }
 }
-
-// @ts-ignore
-ThemeSubscribe.propTypes = {
-    theme: PropTypes.any.isRequired,
-    children: PropTypes.func.isRequired,
-};
 
 const Subscribe = React.forwardRef((props, ref) => (
     <ThemeContext.Consumer>
