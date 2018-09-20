@@ -66,6 +66,7 @@ export function createProvider(storeKey = 'store', subKey = undefined) {
                         [storeKey]: this[storeKey],
                         [subscriptionKey]: null,
                         [resaKey]: this[resaKey],
+                        storeKey,
                     }}>
                     {React.Children.only(this.props.children)}
                 </ThemeContext.Provider>

@@ -6,6 +6,8 @@ export default class Model<S = any> {
     state: S;
     // @ts-ignore
     fulfilled(payload?: S | Partial<S>): S;
+    // @ts-ignore
+    name: string;
 
     constructor() {
         this['effects'] = this['__effects__'];
