@@ -27,6 +27,16 @@ class MyModel extends Model<MyModelState> {
             count: 1,
         });
     }
+
+    @effect()
+    *ss() {
+        /**
+         * type check
+         */
+        this.fulfilled({
+            length: 1,
+        });
+    }
 }
 
 describe('Subscribe', () => {
@@ -44,5 +54,6 @@ describe('Subscribe', () => {
             </Provider>,
         );
         app.models.model.add();
+        app.models.model.ss();
     });
 });

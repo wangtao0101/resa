@@ -65,7 +65,7 @@ class ThemeSubscribe extends React.PureComponent<any, any> {
         this.modelMetaArray = this.modelMetaArray.map(modelMeta => {
             const model = models[modelMeta.name];
             const state = model.state;
-            // assumption state is immutable
+            // state is immutable
             if (modelMeta.state !== state) {
                 modelMeta.state = state;
                 modelMeta.observableModel = Object.assign({}, model, { state: createObservable(state, modelMeta.depandenceMap) });
@@ -83,7 +83,19 @@ class ThemeSubscribe extends React.PureComponent<any, any> {
     }
 
     calculateShouldUpdate = () => {
-
+        const models = this.resa.models;
+        return this.modelMetaArray.some(modelMeta => {
+            const model = models[modelMeta.name];
+            const state = model.state;
+            const prevState = modelMeta.state;
+            const dMap = modelMeta.depandenceMap;
+            return Object.keys(dMap).some(key => {
+                if (state[key] !== prevState[key]) {
+                    return true;
+                }
+                return false;
+            })
+        });
     }
 
     onStateChange = () => {
