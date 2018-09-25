@@ -17,7 +17,6 @@
 const createObservable = function createObservable(target, depandenceMap) {
     const handler = {
         get(target, key, proxy) {
-            console.log(`GET request for ${key}`);
             depandenceMap[key] = true;
             return Reflect.get(target, key, proxy);
         },

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ThemeContext } from './Provider';
 import Model from '../decorators/Model';
 import Subscription from 'react-redux/lib/utils/Subscription';
-import createObservable from '../createObservable';
+import createObservable from '../utils/createObservable';
 
 /**
  * model meta info
@@ -14,7 +14,7 @@ interface ModelMeta {
     state: any;
 }
 
-class ThemeSubscribe extends React.PureComponent<any, any> {
+export class ThemeSubscribe extends React.PureComponent<any, any> {
     resa: any;
     modelMetaArray: Array<ModelMeta>;
     resaKey: string;
@@ -41,22 +41,25 @@ class ThemeSubscribe extends React.PureComponent<any, any> {
     tryRegister = () => {
         const models = this.resa.models;
         this.props.to.map(modelItem => {
+            let name = '';
+            let model = '';
+            let instance = modelItem;
             if (typeof modelItem === 'object' && modelItem instanceof Model) {
-                const name = modelItem.name;
-                const model = models[name];
-                if (model == null) {
-                    this.resa.registerModel(modelItem);
-                }
-                this.modelMetaArray.push({
-                    name,
-                    depandenceMap: {},
-                    observableModel: null,
-                    state: null,
-                })
+                name = modelItem.name;
             } else {
-                // TODO:
-                // console.log('bbbbbbbbbb');
+                instance = new modelItem();
+                name = instance.name;
             }
+            model = models[name];
+            if (model == null) {
+                this.resa.registerModel(instance);
+            }
+            this.modelMetaArray.push({
+                name,
+                depandenceMap: {},
+                observableModel: null,
+                state: null,
+            })
         });
     };
 
@@ -99,7 +102,6 @@ class ThemeSubscribe extends React.PureComponent<any, any> {
     }
 
     onStateChange = () => {
-        console.log('onStateChange');
         if (this.calculateShouldUpdate()) {
             // should updateObservable after call calculateShouldUpdate
             this.updateObservable();
