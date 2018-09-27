@@ -45,10 +45,17 @@ export function createProvider(storeKey = 'store', subKey = undefined) {
     const subscriptionKey = subKey || `${storeKey}Subscription`;
 
     class Provider extends React.Component<any, any> {
+        theme: { [x: string]: any; storeKey: string };
         constructor(props, context) {
             super(props, context);
             this[storeKey] = props.resa.store;
             this[resaKey] = props.resa;
+            this.theme = {
+                [storeKey]: this[storeKey],
+                [subscriptionKey]: null,
+                [resaKey]: this[resaKey],
+                storeKey,
+            };
         }
 
         getChildContext() {
@@ -61,13 +68,7 @@ export function createProvider(storeKey = 'store', subKey = undefined) {
 
         render() {
             return (
-                <ThemeContext.Provider
-                    value={{
-                        [storeKey]: this[storeKey],
-                        [subscriptionKey]: null,
-                        [resaKey]: this[resaKey],
-                        storeKey,
-                    }}>
+                <ThemeContext.Provider value={this.theme}>
                     {React.Children.only(this.props.children)}
                 </ThemeContext.Provider>
             );
@@ -81,7 +82,6 @@ export function createProvider(storeKey = 'store', subKey = undefined) {
             }
         };
     }
-
 
     // @ts-ignore
     Provider.propTypes = {

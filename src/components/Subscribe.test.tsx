@@ -20,9 +20,6 @@ interface MyModelState {
 class MyModel extends Model<MyModelState> {
     @effect()
     *add() {
-        /**
-         * type check
-         */
         this.fulfilled({
             count: 1,
         });
@@ -30,11 +27,24 @@ class MyModel extends Model<MyModelState> {
 
     @effect()
     *ss() {
-        /**
-         * type check
-         */
         this.fulfilled({
             length: 1,
+        });
+    }
+}
+
+@init<MyModelState>({
+    name: 'sencondModel',
+    state: {
+        count: 1,
+        length: 5,
+    },
+})
+class SecondModel extends Model<MyModelState> {
+    @effect()
+    *add() {
+        this.fulfilled({
+            count: 1,
         });
     }
 }
@@ -44,13 +54,7 @@ describe('Subscribe', () => {
         const app = createResa();
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <Subscribe to={[new MyModel()]}>
-                    {
-                        (myModel: MyModel) => (
-                            <div>{myModel.state.count}</div>
-                        )
-                    }
-                </Subscribe>
+                <Subscribe to={[new MyModel()]}>{(myModel: MyModel) => <div>{myModel.state.count}</div>}</Subscribe>
             </Provider>,
         );
         const container = TestUtils.findRenderedComponentWithType(tree, ThemeSubscribe);
@@ -64,15 +68,36 @@ describe('Subscribe', () => {
         const app = createResa();
         TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
-                <Subscribe to={[MyModel]}>
-                    {
-                        (myModel: MyModel) => (
-                            <div>{myModel.state.count}</div>
-                        )
-                    }
-                </Subscribe>
+                <Subscribe to={[MyModel]}>{(myModel: MyModel) => <div>{myModel.state.count}</div>}</Subscribe>
             </Provider>,
         );
         app.models.model.add();
+    });
+
+    it.only('should not notify nested sub', async () => {
+        const app = createResa();
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <Subscribe to={[MyModel]}>
+                    {(myModel: MyModel) => (
+                        <div>
+                            {myModel.state.count}
+                            <Subscribe to={[SecondModel, MyModel]}>
+                                {(secondModel: SecondModel) => (
+                                    <div>
+                                        {secondModel.state.count}
+                                    </div>
+                                )}
+                            </Subscribe>
+                        </div>
+                    )}
+                </Subscribe>
+            </Provider>,
+        );
+        // const container = TestUtils.scryRenderedComponentsWithType(tree, ThemeSubscribe)[1];
+        // container.render = jest.fn();
+        app.models.model.add();
+        /* TODO: render should be called 1 */
+        // expect(container.render).toBeCalledTimes(0);
     });
 });

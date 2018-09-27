@@ -14,28 +14,38 @@ interface ModelMeta {
     state: any;
 }
 
-export class ThemeSubscribe extends React.PureComponent<any, any> {
+export class ThemeSubscribe extends React.Component<any, any> {
     resa: any;
     modelMetaArray: Array<ModelMeta>;
     resaKey: string;
     subscriptionKey: string;
     subscription: any;
+    notifyNestedSubs: any;
+    storeKey: any;
+    theme: { [x: string]: any; [x: number]: any; storeKey: any };
 
     constructor(props) {
         super(props);
-        const storeKey = props.theme.storeKey;
-        this.resaKey = `${storeKey}Resa`;
-        this.subscriptionKey = `${storeKey}Subscription`;
+        this.storeKey = props.theme.storeKey;
+        this.resaKey = `${this.storeKey}Resa`;
+        this.subscriptionKey = `${this.storeKey}Subscription`;
         this.resa = props.theme[this.resaKey];
         this.modelMetaArray = [];
         this.tryRegister();
         this.updateObservable();
         this.initSubscription();
+        this.theme = {
+            [this.storeKey]: this.resa.store,
+            [this.subscriptionKey]: this.subscription,
+            [this.resaKey]: this.resa,
+            storeKey: this.props.theme.storeKey,
+        };
     }
 
     initSubscription() {
         const parentSub = this.props.theme[this.subscriptionKey];
         this.subscription = new Subscription(this.resa.store, parentSub, this.onStateChange.bind(this));
+        this.notifyNestedSubs = this.subscription.notifyNestedSubs.bind(this.subscription);
     }
 
     tryRegister = () => {
@@ -59,7 +69,7 @@ export class ThemeSubscribe extends React.PureComponent<any, any> {
                 depandenceMap: {},
                 observableModel: null,
                 state: null,
-            })
+            });
         });
     };
 
@@ -71,11 +81,20 @@ export class ThemeSubscribe extends React.PureComponent<any, any> {
             // state is immutable
             if (modelMeta.state !== state) {
                 modelMeta.state = state;
-                modelMeta.observableModel = Object.assign({}, model, { state: createObservable(state, modelMeta.depandenceMap) });
+                modelMeta.observableModel = Object.assign({}, model, {
+                    state: createObservable(state, modelMeta.depandenceMap),
+                });
             }
             return modelMeta;
         });
     };
+
+    shouldComponentUpdate(nextProps: any) {
+        console.log(this.props.to.length);
+        console.log('shouldComponentUpdate');
+        console.log(nextProps);
+        return true;
+    }
 
     componentDidMount() {
         this.subscription.trySubscribe();
@@ -97,34 +116,50 @@ export class ThemeSubscribe extends React.PureComponent<any, any> {
                     return true;
                 }
                 return false;
-            })
+            });
         });
-    }
+    };
 
     onStateChange = () => {
-        if (this.calculateShouldUpdate()) {
+        console.log(this.props.to.length);
+        const shouldUpdate = this.calculateShouldUpdate();
+        console.log(shouldUpdate);
+        if (shouldUpdate) {
+            this.componentDidUpdate = this.notifyNestedSubsOnComponentDidUpdate;
             // should updateObservable after call calculateShouldUpdate
             this.updateObservable();
             this.forceUpdate();
+        } else {
+            this.notifyNestedSubs();
         }
-        // TODO: call nextedSub
     };
+
+    notifyNestedSubsOnComponentDidUpdate() {
+        this.componentDidUpdate = undefined;
+        this.notifyNestedSubs();
+    }
 
     getSortedModel = () => {
         return this.modelMetaArray.map(modelMeta => {
             return modelMeta.observableModel;
         });
-    }
+    };
 
     render() {
-        // @ts-ignore
-        return this.props.children(...this.getSortedModel());
+        console.log(this.props.to.length);
+        console.log('render');
+        return (
+            <ThemeContext.Provider value={this.theme}>
+                // @ts-ignore
+                {this.props.children(...this.getSortedModel())}
+            </ThemeContext.Provider>
+        );
     }
 }
 
 export interface SubscribeProps {
-    to: [any];
-    children(...instances: [any]): React.ReactNode;
+    to: Array<any>;
+    children(...instances: Array<any>): React.ReactNode;
 }
 
 const Subscribe = React.forwardRef((props: SubscribeProps, ref) => (
