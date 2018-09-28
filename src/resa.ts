@@ -18,7 +18,7 @@ const ActionTypes = {
     CANCEL_EFFECTS: '@@CANCEL_EFFECTS',
 };
 
-const noop = () => { };
+const noop = () => {};
 
 const payloadEncode = (...args) => {
     const payload = {
@@ -30,7 +30,7 @@ const payloadEncode = (...args) => {
     return payload;
 };
 
-const payloadDecode = (payload) => {
+const payloadDecode = payload => {
     if (payload.__resa__payload__) {
         delete payload.__resa__payload__;
         return Object.keys(payload).map(k => payload[k]);
@@ -47,13 +47,8 @@ export interface Options {
 }
 
 export default function createResa(options?: Options) {
-    const {
-        reducers = {},
-        errorHandle = noop,
-        reduxDevToolOptions = {},
-        initialState = {},
-        middlewares =  [],
-    } = options || {};
+    const { reducers = {}, errorHandle = noop, reduxDevToolOptions = {}, initialState = {}, middlewares = [] } =
+        options || {};
 
     function resaReducer(state = {}, _action) {
         return state;
@@ -75,17 +70,30 @@ export default function createResa(options?: Options) {
         });
     }
 
-    function makeRootReducer(asyncReducers) {
-        return combineReducersInner({
-            ...initReducer,
-            ...asyncReducers,
-        }, initialState);
+    function makeRootReducer(asyncReducers, matrixReducers) {
+        const finalMatrixReducers = {};
+        Object.keys(matrixReducers).map(key => {
+            const maybeReducer = matrixReducers[key];
+            if (typeof maybeReducer === 'function') {
+                finalMatrixReducers[key] = maybeReducer;
+            } else {
+                finalMatrixReducers[key] = combineReducersInner(maybeReducer, {});
+            }
+        });
+        return combineReducersInner(
+            {
+                ...initReducer,
+                ...asyncReducers,
+                ...finalMatrixReducers,
+            },
+            initialState,
+        );
     }
 
     // immutable merge bug see https://github.com/facebook/immutable-js/issues/1293
     function mergeImmutablePayload(state, payload = {}) {
         if (isImmutable(payload)) {
-            return state.withMutations((map) => {
+            return state.withMutations(map => {
                 // @ts-ignore
                 payload.map((value, key) => {
                     map.set(key, value);
@@ -93,8 +101,8 @@ export default function createResa(options?: Options) {
                 });
             });
         }
-        return state.withMutations((map) => {
-            Object.keys(payload).map((key) => {
+        return state.withMutations(map => {
+            Object.keys(payload).map(key => {
                 map.set(key, payload[key]);
                 return null;
             });
@@ -109,18 +117,20 @@ export default function createResa(options?: Options) {
             return mergeImmutablePayload(state, payload);
         }
         if (Object.prototype.toString.call(state) === '[object Object]') {
-            invariant(Object.prototype.toString.call(payload) === '[object Object]',
-                'The payload must be an object if the shape of state is object');
+            invariant(
+                Object.prototype.toString.call(payload) === '[object Object]',
+                'The payload must be an object if the shape of state is object',
+            );
             return Object.assign({}, state, payload);
         }
         return payload;
     }
 
-    function getEffectSaga(models, saga, name, dispatch) {
-        return function* (action) {
+    function getEffectSaga(models, saga, effectName, dispatch) {
+        return function*(action) {
             const { resolve, reject, ...rest } = action;
             try {
-                const that = Object.assign({}, models[name], dispatch, { models });
+                const that = Object.assign({}, models[effectName], dispatch, { models });
                 // @ts-ignore
                 const result = yield call([that, saga], ...payloadDecode(rest.payload));
                 resolve(result);
@@ -131,7 +141,7 @@ export default function createResa(options?: Options) {
         };
     }
 
-    function getSaga(app, action, effect, model, dispatch) {
+    function getSaga(app, action, effect, effectName, dispatch) {
         let type = 'takeEvery';
         let actualEffect = effect;
         if (Array.isArray(effect)) {
@@ -140,61 +150,52 @@ export default function createResa(options?: Options) {
 
             invariant(
                 ['takeEvery', 'takeLatest', 'throttle', 'takeFirst'].indexOf(type) > -1,
-                'effect type should be takeEvery, takeFirst, takeLatest or throttle.'
+                'effect type should be takeEvery, takeFirst, takeLatest or throttle.',
             );
 
             if (type === 'throttle') {
                 invariant(
                     Number.isInteger(effect[2]) === true && effect[2] > 0,
-                    'ms of throttle should be positive integer.'
+                    'ms of throttle should be positive integer.',
                 );
             }
         }
 
-        const effectSaga = getEffectSaga(app.models, actualEffect, model.name, dispatch);
+        const effectSaga = getEffectSaga(app.models, actualEffect, effectName, dispatch);
 
         switch (type) {
             case 'takeFirst':
-                return function* () {
+                return function*() {
                     while (true) {
                         const at = yield take(action.pending);
                         yield call(effectSaga, at);
                     }
                 };
             case 'takeLatest':
-                return function* () {
-                    yield takeLatest(
-                        action.pending,
-                        effectSaga
-                    );
+                return function*() {
+                    yield takeLatest(action.pending, effectSaga);
                 };
             case 'throttle':
-                return function* () {
-                    yield throttle(
-                        effect[2],
-                        action.pending,
-                        effectSaga
-                    );
+                return function*() {
+                    yield throttle(effect[2], action.pending, effectSaga);
                 };
             default:
-                return function* () {
-                    yield takeEvery(
-                        action.pending,
-                        effectSaga
-                    );
+                return function*() {
+                    yield takeEvery(action.pending, effectSaga);
                 };
         }
     }
 
-    function runSagaAndReturnActionCreators(model, app) {
+    function runSagaAndReturnActionCreators(model, app, namespace = '') {
         const actions = {};
         const { store, runSaga } = app;
 
         const newEffects = {};
         const oldEffects = model.effects || {};
+        const effectName = namespace === '' ? model.name : `${namespace}/${model.name}`;
         for (const key in oldEffects) {
             if (Object.prototype.hasOwnProperty.call(oldEffects, key)) {
-                const action = createAction(`${model.name}/${key}`);
+                const action = createAction(`${effectName}/${key}`);
                 const innerReducer = (state, action) => {
                     try {
                         return commonReducerHandle(state, action.payload);
@@ -219,11 +220,11 @@ export default function createResa(options?: Options) {
                 /**
                  * run watcher
                  */
-                runSaga(function* () {
-                    const saga = getSaga(app, action, oldEffects[key], model, dispatch);
+                runSaga(function*() {
+                    const saga = getSaga(app, action, oldEffects[key], effectName, dispatch);
                     const task = yield fork(saga);
-                    yield fork(function* () {
-                        yield take(`${model.name}/${ActionTypes.CANCEL_EFFECTS}`);
+                    yield fork(function*() {
+                        yield take(`${effectName}/${ActionTypes.CANCEL_EFFECTS}`);
                         yield cancel(task);
                     });
                 });
@@ -234,7 +235,7 @@ export default function createResa(options?: Options) {
         const oldReducers = model.reducers || {};
         for (const key in oldReducers) {
             if (Object.prototype.hasOwnProperty.call(oldReducers, key)) {
-                actions[`${model.name}/${key}`] = (state, { payload }) => {
+                actions[`${effectName}/${key}`] = (state, { payload }) => {
                     const that = {
                         state,
                         fulfilled: pl => commonReducerHandle(state, pl),
@@ -243,7 +244,7 @@ export default function createResa(options?: Options) {
                 };
                 newReducers[key] = (...args) => {
                     store.dispatch({
-                        type: `${model.name}/${key}`,
+                        type: `${effectName}/${key}`,
                         payload: payloadEncode(...args),
                     });
                 };
@@ -266,24 +267,46 @@ export default function createResa(options?: Options) {
         };
     }
 
-    function checkModel(model, app) {
-        invariant(typeof model.name === 'string' && model.name !== '',
-            `name of model should be non empty string, but got ${typeof model.name}`);
+    function checkModel(model, app, namespace = '') {
+        invariant(
+            typeof model.name === 'string' && model.name !== '',
+            `name of model should be non empty string, but got ${typeof model.name}`,
+        );
 
-        invariant(app.models[model.name] == null,
-            `name of model should be unique, please check model name: ${model.name}`);
+        if (namespace !== '') {
+            invariant(
+                app.models[`${namespace}/${model.name}`] == null,
+                `namespace/name of model should be unique, please check model namespace/name: ${namespace}/${
+                    model.name
+                }`,
+            );
+            invariant(
+                typeof app.store.matrixReducers[namespace] !== 'function',
+                `namespace should be different of model name, please check namespace: ${namespace}`,
+            );
+        } else {
+            invariant(
+                app.models[model.name] == null,
+                `name of model should be unique, please check model name: ${model.name}`,
+            );
+
+            invariant(
+                app.store.matrixReducers[model.name] == null,
+                `name of model should be different of exist model name or exist namespace, please check model name: ${model.name}`,
+            );
+        }
 
         invariant(model.state != null, 'State in model should not be null or undefined.');
     }
 
-    function mountModel(app, model, actionCreaters, getState, isRoot = false) {
-        app.models[model.name] = {
+    function mountModel(app, name, actionCreaters, getState, isRoot = false) {
+        app.models[name] = {
             ...actionCreaters,
-            name: model.name,
+            name: name,
             [ROOT_MODEL]: isRoot,
         };
 
-        Object.defineProperty(app.models[model.name], 'state', {
+        Object.defineProperty(app.models[name], 'state', {
             enumerable: true,
             configurable: false,
             get: getState,
@@ -298,7 +321,7 @@ export default function createResa(options?: Options) {
         const { models = [], state } = combineModel;
         const rs = {};
 
-        models.forEach((model) => {
+        models.forEach(model => {
             checkModel(model, app);
 
             const getModelState = getStateDelegate(state, getState, model.name);
@@ -314,18 +337,20 @@ export default function createResa(options?: Options) {
 
             rs[model.name] = handleActions(actions, cloneState(model.state));
 
-            mountModel(app, model, actionCreaters, getModelState);
+            mountModel(app, model.name, actionCreaters, getModelState);
         });
         return combineReducersInner(rs, cloneState(state));
     }
 
     function registerModel(model) {
         // @ts-ignore
-        checkModel(model, this);
-        // @ts-ignore
         const app = this;
-        // @ts-ignore
-        const store = this.store;
+
+        if (process.env.NODE_ENV !== 'production') {
+            checkModel(model, app);
+        }
+
+        const store = app.store;
 
         const { name } = model;
 
@@ -341,7 +366,7 @@ export default function createResa(options?: Options) {
             });
             const action = registerCombineModel(model, app, getState);
             store.asyncReducers[name] = action;
-            store.replaceReducer(makeRootReducer(store.asyncReducers));
+            store.replaceReducer(makeRootReducer(store.asyncReducers, store.matrixReducers));
             return;
         }
 
@@ -354,9 +379,43 @@ export default function createResa(options?: Options) {
         const state = cloneState(model.state);
 
         store.asyncReducers[name] = handleActions(actions, state);
-        store.replaceReducer(makeRootReducer(store.asyncReducers));
+        store.replaceReducer(makeRootReducer(store.asyncReducers, store.matrixReducers));
 
-        mountModel(app, model, actionCreaters, getState, true);
+        mountModel(app, name, actionCreaters, getState, true);
+    }
+
+    /**
+     * register for 4.0, support config namespace in subscribe
+     * @param model
+     */
+    function register(model, namespace = '') {
+        // @ts-ignore
+        const app = this;
+        const store = app.store;
+        const name = model.name;
+
+        if (process.env.NODE_ENV !== 'production') {
+            checkModel(model, app, namespace);
+        }
+
+        const { actions, actionCreaters } = runSagaAndReturnActionCreators(model, app, namespace);
+        const state = cloneState(model.state);
+
+        if (namespace === '') {
+            const getState = getStateDelegate(initialState, app.store.getState, name);
+            store.matrixReducers[name] = handleActions(actions, state);
+            mountModel(app, name, actionCreaters, getState, true);
+        } else {
+            const namespaceReducer = store.matrixReducers[namespace] || {};
+            store.matrixReducers[namespace] = namespaceReducer;
+            namespaceReducer[name] = handleActions(actions, state);
+
+            let getState = getStateDelegate(initialState, app.store.getState, namespace);
+            getState = getStateDelegate({}, getState, name);
+            mountModel(app, `${namespace}/${name}`, actionCreaters, getState, false);
+        }
+
+        store.replaceReducer(makeRootReducer(store.asyncReducers, store.matrixReducers));
     }
 
     function unReg(app, model) {
@@ -371,8 +430,10 @@ export default function createResa(options?: Options) {
      * @param {*} model
      */
     function unRegisterModel(model, shoudCheckRoot = true) {
-        invariant(typeof model.name === 'string' && model.name !== '',
-            `name of model should be non empty string, but got ${typeof model.name}`);
+        invariant(
+            typeof model.name === 'string' && model.name !== '',
+            `name of model should be non empty string, but got ${typeof model.name}`,
+        );
         // @ts-ignore
         const transformedModel = this.models[model.name];
         invariant(transformedModel != null, 'should not unRegister unRegistered model');
@@ -386,7 +447,7 @@ export default function createResa(options?: Options) {
             // @ts-ignore
             delete this.models[transformedModel.name];
 
-            models.forEach((m) => {
+            models.forEach(m => {
                 // @ts-ignore
                 this.unRegisterModel(m, false);
             });
@@ -436,20 +497,17 @@ export default function createResa(options?: Options) {
         finalMiddlewares = compose(
             applyMiddleware(...finalMiddlewares),
             // @ts-ignore
-            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions)
+            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions),
         );
     } else {
         finalMiddlewares = applyMiddleware(...finalMiddlewares);
     }
 
-    app.store = createStore(
-        makeRootReducer({}),
-        initialState,
-        finalMiddlewares,
-    );
+    app.store = createStore(makeRootReducer({}, {}), initialState, finalMiddlewares);
     app.store.asyncReducers = {};
-    app.store.reducerList = {};
+    app.store.matrixReducers = {};
 
+    app.register = register.bind(app);
     app.registerModel = registerModel.bind(app);
     app.unRegisterModel = unRegisterModel.bind(app);
     app.runSaga = sagaMiddleware.run;

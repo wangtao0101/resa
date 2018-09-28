@@ -78,9 +78,14 @@ declare module 'resa' {
         [key: string]: Model<any> | ModelType;
     }
 
+    interface Config {
+        namespace?: string;
+    }
+
     interface Subscribe {
         <T>(
-            mapContainerToProps: T
+            mapContainerToProps: T,
+            config?: Config,
         ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
     }
 

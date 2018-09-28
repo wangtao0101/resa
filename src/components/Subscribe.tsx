@@ -30,7 +30,14 @@ function checkModelType(model, modelTypeName) {
     }
 }
 
-export default function subscribe(modelMap) {
+interface Config {
+    namespace?: string;
+}
+
+export default function subscribe(modelMap, config?: Config) {
+    const {
+        namespace = '',
+    } = config || {};
     return function wrapWithSubscribe(WrappedComponent) {
         class Subscribe extends React.PureComponent<SubscribeProps, any> {
             resa: any;
@@ -78,10 +85,10 @@ export default function subscribe(modelMap) {
                         invariant(Object.prototype.toString.call(instance.state) === '[object Object]', 'The shape of state must be an object');
                     }
 
-                    const name = instance.name;
+                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}` ;
                     const model = models[name];
                     if (model == null) {
-                        this.resa.registerModel(instance);
+                        this.resa.register(instance, namespace);
                     }
                     this.modelMetaMap[key] = {
                         name,

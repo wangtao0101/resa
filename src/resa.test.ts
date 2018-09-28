@@ -2,6 +2,7 @@ import * as Immutable from 'immutable';
 import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
 import createResa from './resa';
+import { init, Model, effect } from 'resa';
 
 function myReducer(state = {}, _action) {
     return state;
@@ -589,6 +590,157 @@ describe('pureReducerModel', () => {
         expect(app.store.getState()).toEqual({
             resaReducer: {},
             model: 1,
+        });
+    });
+});
+
+interface MyModelState {
+    count: number;
+}
+
+@init<MyModelState>({
+    name: 'model',
+    state: {
+        count: 0,
+    },
+})
+class MyModel extends Model<MyModelState> {
+    @effect()
+    *add(num: number) {
+        this.fulfilled({
+            count: this.state.count + num,
+        });
+    }
+}
+
+@init<MyModelState>({
+    name: 'secondModel',
+    state: {
+        count: 0,
+    },
+})
+class SecondModel extends Model<MyModelState> {
+    @effect()
+    *add(num: number) {
+        this.fulfilled({
+            count: this.state.count + num,
+        });
+    }
+}
+
+describe('new register', () => {
+    test('register root model', () => {
+        const app: any = createResa();
+        app.register(new MyModel());
+        app.models.model.add(2);
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            model: {
+                count: 2
+            },
+        });
+    });
+
+    test('register model in namespace', () => {
+        const app: any = createResa();
+        app.register(new MyModel(), 'namespace');
+        app.models['namespace/model'].add(2);
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            namespace: {
+                model: {
+                    count: 2
+                },
+            }
+        });
+    });
+
+    test('register same model in different namespace', () => {
+        const app: any = createResa();
+        app.register(new MyModel(), 'namespace');
+        app.register(new MyModel(), 'namespace1');
+        app.models['namespace/model'].add(2);
+        app.models['namespace1/model'].add(2);
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            namespace: {
+                model: {
+                    count: 2
+                },
+            },
+            namespace1: {
+                model: {
+                    count: 2
+                },
+            }
+        });
+    });
+
+    test('register tow model in same namespace', () => {
+        const app: any = createResa();
+        app.register(new MyModel(), 'namespace');
+        app.register(new SecondModel(), 'namespace');
+        app.models['namespace/model'].add(2);
+        app.models['namespace/secondModel'].add(2);
+        expect(app.store.getState()).toEqual({
+            resaReducer: {},
+            namespace: {
+                model: {
+                    count: 2
+                },
+                secondModel: {
+                    count: 2
+                },
+            },
+        });
+    });
+
+    test('should throw namespace/name of model should be unique', () => {
+        expect(() => {
+            const app: any = createResa();
+            app.register(new MyModel(), 'namespace');
+            app.register(new MyModel(), 'namespace');
+        }).toThrow(/namespace\/name of model should be unique/);
+    });
+
+    test('should throw name of model should be different of exist model name or exist namespace', () => {
+        expect(() => {
+            const app: any = createResa();
+            app.register(new MyModel(), 'secondModel');
+            app.register(new SecondModel());
+        }).toThrow(/name of model should be different of exist model name or exist namespace/);
+    });
+
+    test('should throw namespace should be different of model name', () => {
+        expect(() => {
+            const app: any = createResa();
+            app.register(new SecondModel());
+            app.register(new MyModel(), 'secondModel');
+        }).toThrow(/namespace should be different of model name/);
+    });
+
+    test('mix old registerModel and new register', () => {
+        const app: any = createResa();
+        app.registerModel(model, 'model');
+        app.register(new MyModel(), 'namespace');
+        app.models['namespace/model'].add(2);
+        app.models.model.add({ a: 'a' });
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(app.store.getState());
+            }, 5);
+        }).then((data) => {
+            expect(data).toEqual({
+                resaReducer: {},
+                model: {
+                    a: 'a',
+                },
+                namespace: {
+                    model: {
+                        count: 2
+                    },
+                },
+            });
         });
     });
 });

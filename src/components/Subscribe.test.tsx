@@ -125,7 +125,7 @@ describe('Subscribe', () => {
         expect(container.render).toBeCalledTimes(1);
     });
 
-    it.only('should render after ownProps changed', async () => {
+    it('should render after ownProps changed', async () => {
         const app = createResa();
         const SubscribeChild = subscribe({ myModel: MyModel })(Child);
         class Father extends React.Component<any, any> {
@@ -209,5 +209,20 @@ describe('Subscribe', () => {
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
 
         expect(ref.current).toEqual(container);
+    });
+
+    it('put model in namespace', () => {
+        const app = createResa();
+        const SubscribeChild = subscribe({ myModel: MyModel }, { namespace: 'namespace'})(Child);
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <SubscribeChild />
+            </Provider>,
+        );
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        container.render = jest.fn();
+        app.models['namespace/model'].add();
+        app.models['namespace/model'].ss();
+        expect(container.render).toBeCalledTimes(1);
     });
 });
