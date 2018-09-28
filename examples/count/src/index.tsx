@@ -12,7 +12,7 @@ app.registerModel(new AppModel());
 
 ReactDOM.render(
   <Provider resa={app}>
-    <App />
+    <App outer="s" />
   </Provider>,
   document.getElementById('root') as HTMLElement
 );

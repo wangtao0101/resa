@@ -1,4 +1,4 @@
-import { Model, reducer, init, effect } from 'resa-class-model';
+import { Model, reducer, init, effect } from 'resa';
 import { delay } from 'redux-saga';
 
 interface AppState {

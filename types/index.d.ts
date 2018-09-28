@@ -74,8 +74,12 @@ declare module 'resa' {
         ): React.ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & {WrappedComponent: React.ComponentType<P>}
     }
 
+    interface SubscribeModel {
+        [key: string]: Model<any> | ModelType;
+    }
+
     interface Subscribe {
-        <T extends Map<string, Model | ModelType>>(
+        <T>(
             mapContainerToProps: T
         ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
     }
@@ -224,9 +228,9 @@ declare module 'resa' {
     export interface Resa<T> {
         store: Redux.Store<T>;
         runSaga<A, S>(iterator: Iterator<any>): Saga.Task;
-        models: ModelMap<any>;
-        registerModel<T extends Model>(model: T): void;
-        unRegisterModel<T extends Model>(model: T): void;
+        models: any;
+        registerModel(model: any): void;
+        unRegisterModel(model: any): void;
     }
 
     export interface ProviderProps {

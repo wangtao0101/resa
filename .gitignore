@@ -7,3 +7,5 @@ lib/
 coverage
 docs/_book
 yarn-error.log
+
+examples/count/package-lock.json
