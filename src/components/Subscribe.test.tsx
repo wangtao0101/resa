@@ -160,4 +160,20 @@ describe('Subscribe', () => {
             );
         }).toThrow(/The shape of state must be an object/);
     });
+
+    it('get ref using React.createRef()', () => {
+        const app = createResa();
+        const SubscribeChild = subscribe({ myModel: MyModel })(Child);
+
+        const ref = React.createRef();
+
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <SubscribeChild ref={ref} />
+            </Provider>,
+        );
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+
+        expect(ref.current).toEqual(container);
+    });
 });
