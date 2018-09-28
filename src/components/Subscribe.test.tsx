@@ -129,11 +129,9 @@ describe('Subscribe', () => {
         expect(() => {
             @init<any>({
                 name: 'model',
-                state: {
-                },
+                state: {},
             })
-            class SameModel extends Model<MyModelState> {
-            }
+            class SameModel extends Model<any> {}
 
             const app: any = createResa();
             const SubscribeChild = subscribe({ myModel: MyModel, sameModel: SameModel })(Child);
@@ -143,5 +141,23 @@ describe('Subscribe', () => {
                 </Provider>,
             );
         }).toThrow(/Different Model should not use the same model name, Please check name: model/);
+    });
+
+    it('should throw The shape of state must be an object', () => {
+        expect(() => {
+            @init<any>({
+                name: 'model',
+                state: 0,
+            })
+            class SameModel extends Model<any> {}
+            const app: any = createResa();
+
+            const SubscribeChild = subscribe({ sameModel: SameModel })(Child);
+            TestUtils.renderIntoDocument(
+                <Provider store={app.store} resa={app}>
+                    <SubscribeChild />
+                </Provider>,
+            );
+        }).toThrow(/The shape of state must be an object/);
     });
 });

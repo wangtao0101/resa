@@ -410,6 +410,10 @@ export default function createResa(options?: Options) {
          */
         models: {},
         /**
+         * model to model type
+         */
+        modelTypeName: {},
+        /**
          * register a model
          */
         registerModel,

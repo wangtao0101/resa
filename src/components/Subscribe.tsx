@@ -20,9 +20,8 @@ interface SubscribeProps {
     forwardedRef: any;
 }
 
-const modelTypeName = {};
 
-function checkModelType(model) {
+function checkModelType(model, modelTypeName) {
     const instanceCon = modelTypeName[model.name];
     if (instanceCon == null) {
         modelTypeName[model.name] = model.constructor;
@@ -74,7 +73,9 @@ export default function subscribe(modelMap) {
                     const instance = new modelItem();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        checkModelType(instance);
+                        checkModelType(instance, this.resa.modelTypeName);
+
+                        invariant(Object.prototype.toString.call(instance.state) === '[object Object]', 'The shape of state must be an object');
                     }
 
                     const name = instance.name;
@@ -111,10 +112,6 @@ export default function subscribe(modelMap) {
                 this.subscription.trySubscribe();
             }
 
-            componentWillUnmount() {
-                // unregister
-            }
-
             calculateShouldUpdate = () => {
                 const models = this.resa.models;
                 return Object.keys(this.modelMetaMap).some(key => {
@@ -133,9 +130,7 @@ export default function subscribe(modelMap) {
             };
 
             onStateChange = () => {
-                console.log(Object.keys(this.modelMetaMap).length);
                 const shouldUpdate = this.calculateShouldUpdate();
-                console.log(shouldUpdate);
                 if (shouldUpdate) {
                     this.componentDidUpdate = this.notifyNestedSubsOnComponentDidUpdate;
                     // should updateObservable after call calculateShouldUpdate
@@ -160,8 +155,6 @@ export default function subscribe(modelMap) {
             };
 
             render() {
-                console.log(Object.keys(this.modelMetaMap).length);
-                console.log('render');
                 const { theme, forwardedRef, ...rest } = this.props;
                 return (
                     <ThemeContext.Provider value={this.theme}>
