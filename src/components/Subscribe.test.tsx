@@ -125,6 +125,40 @@ describe('Subscribe', () => {
         expect(container.render).toBeCalledTimes(1);
     });
 
+    it.only('should render after ownProps changed', async () => {
+        const app = createResa();
+        const SubscribeChild = subscribe({ myModel: MyModel })(Child);
+        class Father extends React.Component<any, any> {
+            state = {
+                attr: 'a',
+            };
+
+            changeProps = () => {
+                this.setState({
+                    attr: 'b',
+                });
+            };
+
+            render() {
+                return (
+                    <div>
+                        <SubscribeChild attr={this.state.attr} />
+                    </div>
+                );
+            }
+        }
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <Father />
+            </Provider>,
+        );
+        const child = TestUtils.findRenderedComponentWithType(tree, Child);
+        const father = TestUtils.findRenderedComponentWithType(tree, Father);
+        child.render = jest.fn();
+        father.changeProps();
+        expect(child.render).toBeCalledTimes(1);
+    });
+
     it('should throw two same model name error', () => {
         expect(() => {
             @init<any>({
