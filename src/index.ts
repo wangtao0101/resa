@@ -1,7 +1,7 @@
-
 import createResa from './resa';
 import Provider from './components/Provider';
 import createConnect from './components/Connect';
+import subscribe from './components/Subscribe';
 import combineModel from './utils/combineModel';
 
 import Model from './decorators/Model';
@@ -16,6 +16,7 @@ export default createResa;
 export {
     Provider,
     connect,
+    subscribe,
     combineModel,
     Model,
     effect,

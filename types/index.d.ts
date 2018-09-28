@@ -56,6 +56,32 @@ declare module 'resa' {
 
     type MapDispatchToPropsParam<TDispatchProps, TOwnProps> = MapDispatchToPropsFactory<TDispatchProps, TOwnProps> | MapDispatchToProps<TDispatchProps, TOwnProps>;
 
+    type GetInstanceType<T> = T extends new (...args: any[]) => infer R ? R : any;
+
+    type GetInstanceConditional<T> = T extends Model ? T : GetInstanceType<T>;
+
+    type SubscribeType<T> = { [P in keyof T]: GetInstanceConditional<T[P]> };
+
+    interface ModelType {
+        new(...args: any[]): Model;
+    }
+
+    type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+
+    interface InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> {
+        <P extends TInjectedProps>(
+            component: React.ComponentType<P>
+        ): React.ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & {WrappedComponent: React.ComponentType<P>}
+    }
+
+    interface Subscribe {
+        <T extends Map<string, Model | ModelType>>(
+            mapContainerToProps: T
+        ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
+    }
+
+    export const subscribe: Subscribe;
+
     /**
      * copy some code from react-redux
      * Connects a React component to a Redux store.
