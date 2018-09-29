@@ -1,12 +1,17 @@
-import React from 'react';
+import * as React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
-import hoistNonReactStatic from 'hoist-non-react-statics';
-import invariant from 'invariant';
-import { storeShape, subscriptionShape, resaShape } from './Provider';
+import * as hoistNonReactStatic from 'hoist-non-react-statics';
+import * as invariant from 'invariant';
+import { storeShape, subscriptionShape, resaShape, ThemeContext } from './Provider';
+
+interface extraOptions {
+    storeKey: any;
+    withRef: any;
+}
 
 export default function createConnect() {
-    return (mapStateToProps, mapDispatchToProps, mergeProps, extraOptions = {}) => {
-        const storeKey = extraOptions.storeKey || 'store';
+    return (mapStateToProps, mapDispatchToProps, mergeProps = null, extraOptions = {}) => {
+        const storeKey = (extraOptions as extraOptions).storeKey || 'store';
         const resaKey = `${storeKey}Resa`;
         const subscriptionKey = `${storeKey}Subscription`;
 
@@ -17,10 +22,17 @@ export default function createConnect() {
         };
 
         return function wrapWithConnect(WrappedComponent) {
-            class Connect extends React.Component {
+            class Connect extends React.Component<any, any> {
+                resa: any;
+                wrappedInstance: null;
+                static WrappedComponent: any;
+                static displayName: string;
+                static childContextTypes: { [x: string]: any;[x: number]: any; };
+                static contextTypes: { [x: string]: any;[x: number]: any; };
+                ConnectedComponent: any;
                 constructor(props, context) {
                     super(props, context);
-                    this.resa = context[resaKey];
+                    this.resa = props.theme[resaKey];
                     this.wrappedInstance = null;
 
                     this.setWappedInstance = this.setWappedInstance.bind(this);
@@ -37,7 +49,7 @@ export default function createConnect() {
                         }
                         if (Array.isArray(mapDispatchToProps)) {
                             const models = {};
-                            mapDispatchToProps.forEach((namespace) => {
+                            mapDispatchToProps.forEach(namespace => {
                                 const model = this.resa.models[namespace];
                                 models[namespace] = model;
                             });
@@ -47,12 +59,13 @@ export default function createConnect() {
                     })();
 
                     // add withRef for all use case, user can use React.createRef() to get ref
-                    extraOptions.withRef = true; // eslint-disable-line
+                    (extraOptions as extraOptions).withRef = true;
                     this.ConnectedComponent = reactReduxConnect(
                         newMapStateToProps,
                         newMapDispatchToProps,
                         mergeProps,
-                        extraOptions)(WrappedComponent);
+                        extraOptions,
+                    )(WrappedComponent);
                 }
 
                 getChildContext() {
@@ -64,12 +77,12 @@ export default function createConnect() {
                 }
 
                 setWappedInstance(ref) {
-                    const forwardedRef = this.props.forwardedRef; // eslint-disable-line
+                    const forwardedRef = this.props.forwardedRef;
                     if (forwardedRef == null) {
                         return;
                     }
 
-                    invariant(forwardedRef.hasOwnProperty('current'), 'You must use React.createRef() to create ref.'); // eslint-disable-line
+                    invariant(forwardedRef.hasOwnProperty('current'), 'You must use React.createRef() to create ref.');
 
                     if (ref == null) {
                         forwardedRef.current = null;
@@ -92,9 +105,14 @@ export default function createConnect() {
             Connect.displayName = `ResaConnect(${wrappedComponentName})`;
             Connect.childContextTypes = contextTypes;
             Connect.contextTypes = contextTypes;
+            // @ts-ignore
             const TargetComponent = hoistNonReactStatic(Connect, WrappedComponent);
 
-            return React.forwardRef((props, ref) => <TargetComponent {...props} forwardedRef={ref} />);
+            return React.forwardRef((props: any, ref: any) => (
+                <ThemeContext.Consumer>
+                    {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+                </ThemeContext.Consumer>
+            ));
         };
     };
 }

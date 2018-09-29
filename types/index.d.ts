@@ -2,9 +2,24 @@ import * as React from 'react';
 import * as Redux from 'redux';
 import * as ReactRedux from 'react-redux';
 import * as Saga from "redux-saga";
-import { Model } from 'resa-class-model';
 
 declare module 'resa' {
+
+    export class Model<S = any> {
+        protected models: any
+        state: S;
+        fulfilled(payload?: S | Partial<S>): S;
+    }
+
+    export function effect(name?: string , mn?: number) : MethodDecorator;
+
+    export function reducer(pure?: boolean) : MethodDecorator;
+
+    export function init<S = any>({ name, state }
+        : { name?: string, state: S}) : ClassDecorator;
+
+    export function wapper(cb: IterableIterator<any>): Promise<any>;
+
     export interface Options {
         reducers?: Redux.ReducersMapObject;
         reduxDevToolOptions?: Object;
@@ -40,6 +55,41 @@ declare module 'resa' {
     }
 
     type MapDispatchToPropsParam<TDispatchProps, TOwnProps> = MapDispatchToPropsFactory<TDispatchProps, TOwnProps> | MapDispatchToProps<TDispatchProps, TOwnProps>;
+
+    type GetInstanceType<T> = T extends new (...args: any[]) => infer R ? R : any;
+
+    type GetInstanceConditional<T> = T extends Model ? T : GetInstanceType<T>;
+
+    type SubscribeType<T> = { [P in keyof T]: GetInstanceConditional<T[P]> };
+
+    interface ModelType {
+        new(...args: any[]): Model;
+    }
+
+    type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+
+    interface InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> {
+        <P extends TInjectedProps>(
+            component: React.ComponentType<P>
+        ): React.ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & {WrappedComponent: React.ComponentType<P>}
+    }
+
+    interface SubscribeModel {
+        [key: string]: Model<any> | ModelType;
+    }
+
+    interface Config {
+        namespace?: string;
+    }
+
+    interface Subscribe {
+        <T>(
+            mapContainerToProps: T,
+            config?: Config,
+        ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
+    }
+
+    export const subscribe: Subscribe;
 
     /**
      * copy some code from react-redux
@@ -183,9 +233,9 @@ declare module 'resa' {
     export interface Resa<T> {
         store: Redux.Store<T>;
         runSaga<A, S>(iterator: Iterator<any>): Saga.Task;
-        models: ModelMap<any>;
-        registerModel<T extends Model>(model: T): void;
-        unRegisterModel<T extends Model>(model: T): void;
+        models: any;
+        registerModel(model: any): void;
+        unRegisterModel(model: any): void;
     }
 
     export interface ProviderProps {
