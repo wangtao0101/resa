@@ -130,5 +130,7 @@ resa = a simple way to use redux and redux-saga
 ## Docs
 * [Full Documentation](https://wangtao0101.github.io/resa)
 
+## 4.0 Break Change
+
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).

@@ -238,9 +238,9 @@ export default function createResa(options?: Options) {
                 actions[`${effectName}/${key}`] = (state, { payload }) => {
                     const that = {
                         state,
-                        fulfilled: pl => commonReducerHandle(state, pl),
                     };
-                    return oldReducers[key].call(that, ...payloadDecode(payload));
+                    const particalState = oldReducers[key].call(that, ...payloadDecode(payload));
+                    return commonReducerHandle(state, particalState);
                 };
                 newReducers[key] = (...args) => {
                     store.dispatch({

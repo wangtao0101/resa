@@ -34,7 +34,7 @@ const model = {
         },
 
         ful(this: any, payload) {
-            return this.fulfilled(payload);
+            return payload;
         },
     },
 };

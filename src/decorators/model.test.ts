@@ -72,8 +72,8 @@ class MyModel extends Model<MyModelState>{
     }
 
     @reducer()
-    ful(payload: Object): MyModelState {
-        return this.fulfilled(payload);
+    ful(payload: Object) {
+        return payload;
     }
 
     @reducer(true)
@@ -153,7 +153,7 @@ describe('Model test use resa', () => {
         });
     });
 
-    test('test fullfilled in reducer', () => {
+    test('test return partial state in reducer', () => {
         const app = createResa();
         app.registerModel(new MyModel());
         const model: MyModel = app.models.model;

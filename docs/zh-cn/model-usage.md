@@ -13,18 +13,29 @@ import AppModel from './AppModel';
 const resa = createResa();
 resa.registerModel(new AppModel());
 ```
-**模型不能重复注册**
 
-## 模型卸载
-调用unRegisterModel函数，并传入新建的模型对象。
+或者你可以将模型注册在namespace中：
 ```
-import AppModel from './AppModel';
-resa.unRegisterModel(new AppModel());
+resa.registerModel(new AppModel(), 'namespace');
 ```
 
-**卸载模型注意事项**
-* 卸载模型会停止所有正在运行的effect。
-* 卸载模型不会清除state数据，用户可以在卸载前调用reducer主动清除数据。
+它们的区别是数据在redux state中的层级不同，不用namespace，模型的数据在根节点；使用namespace，模型的数据在namespace中。
+
+如果同时使用上述两个方式注册appModel，那么redux的数据如下：
+```
+{
+  appModel: {
+    count: 0
+  },
+  namespace: {
+    appModel: {
+      count: 0
+    }
+  }
+}
+```
+
+**模型在同一namespace中不能重复注册**
 
 ## 模型使用
 调用resa上的Action创建函数来调用对应的reducer和effect，Action创建函数的名称和参数和你在模型中定义的
@@ -99,8 +110,15 @@ this.fulfilled会派发一个Action用来调用内置reducer，格式如下：
 }
 ```
 
+
+如果模型注册在namespace中，你可以使用namespace/${模型名称}调用模型
+```
+resa.registerModel(new AppModel(), 'namespace');
+resa.models.['namespace/model'].add(1);
+```
+
 ## 在react中使用模型
-为了方便你在react中使用createResa返回的resa对象，我们包装了react-redux的Provider组件和connect函数。
+为了方便你在react中使用createResa返回的resa对象，我们提供了Provider组件和subscribe高阶函数。
 
 ### Provider
 将Provider组件包裹住其他组件替换掉react-redux的Provider组件
@@ -110,7 +128,7 @@ this.fulfilled会派发一个Action用来调用内置reducer，格式如下：
 </Provider>,
 ```
 
-### connect
+### subscribe
 和react-redux的[connect函数用法](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options)几乎一模一样，下面讲讲不同点：
 
 * mapStateToProps多了第一个参数，该参数是所有模型的数组，你可以使用解构参数获取所需模型，并且通过模型的state字段获取模型状态。
