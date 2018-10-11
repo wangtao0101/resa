@@ -10,18 +10,19 @@
 
 ## 安装
 ```
-npm install resa resa-class-model --save
-yarn add resa resa-class-model
+npm install resa --save
+yarn add resa
 ```
 
 ## 特性
 * 没有多余的redux样板代码
-* 完全的智能提示（by vscode、 typescript 、[resa-class-model](https://github.com/wangtao0101/resa-class-model)）
+* 完全的智能提示 (by vscode、 typescript)
 * 类型标注的redux store
 * 类型安全的action creater和payload
 * 使用redux-saga更好的控制副作用
 * Action creater返回promise
 * 更好的错误处理， 支持使用promise.catch
+* 自动追踪state依赖，无需编写mapStateToProps函数，比react-redux的connect函数更容易使用
 * 容易学习，容易编码，容易测试
 
 ## 为什么造轮子
@@ -36,7 +37,6 @@ yarn add resa resa-class-model
 我们在online-vscode中集成了redux-devtools, 你可以点击 **Open in New Window** 按钮然后打开chrome redux-devtools来查看当你点击按钮时会派发什么action.
 
 * [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
-* [combineModel](https://stackblitz.com/edit/react-ts-d1uenc)
 
 ## 第一眼
 定义模型
@@ -74,54 +74,45 @@ export default class AppModel extends Model<AppState> {
 ```
 // App.tsx
 import * as React from 'react';
-import { connect } from 'resa';
-import { wapper } from 'resa-class-model';
 import AppModel from './AppModel';
+import { subscribe, wapper } from 'resa';
 
-interface InjectedProps {
-  count: number;
-  appModel: AppModel; // annotation type, will inject by connect
-}
-
-interface AppProps extends InjectedProps {
+interface AppProps {
+    appModel: AppModel; // 类型检查, subscribe函数会注入
 }
 
 class App extends React.Component<AppProps> {
-  render() {
-    return (
-      <div className="App">
-        <h1>{this.props.count}</h1>
-        {/* add和addAsync已经被转换成了action creaters
-            直接调用它就会派发action, 参数相当于有类型检查的payload
-        */}
-        <button onClick={() => this.props.appModel.add(1)}>+</button> {/* 类型检查 */}
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* 类型检查 */}
-        <button
-          onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback'); })}
-        >promise
-        </button>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="App">
+                <h1>{this.props.appModel.state.count}</h1>
+                {/* add和addAsync已经被转换成了action creaters
+                    直接调用它就会派发action, 参数相当于有类型检查的payload
+                */}
+                <button onClick={() => this.props.appModel.add(1)}>+</button> {/* 类型检查 */}
+                <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* 类型检查 */}
+                <button
+                    onClick={() =>
+                        wapper(this.props.appModel.addAsync(2)).then(() => {
+                            alert('callback');
+                        })
+                    }>
+                    promise
+                </button>
+            </div>
+        );
+    }
 }
 
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // 标注类型，帮助智能提示
-  return {
-    count: appModel.state.count // 类型检查
-  };
-};
-
-const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App); // 在connect中通过model name链接模型
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+export default NewApp;
 ```
 使用Provider包裹应用，就像react-redux
 ```
 import createResa, { Provider } from 'resa';
 
 import App from './App';
-import AppModel from './AppModel';
 const app = createResa();
-app.registerModel(new AppModel());
 
 ReactDOM.render(
   <Provider resa={app}>
@@ -136,7 +127,7 @@ ReactDOM.render(
 resa = a simple way to use redux and redux-saga
 
 ## Docs
-* [完整文档](https://wangtao0101.github.io/resa/zh-cn/)
+* [完整文档](https://wangtao0101.github.io/resa)
 
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).

@@ -3,12 +3,10 @@ import './App.css';
 import AppModel from './AppModel';
 import { subscribe, wapper } from 'resa';
 
-interface InjectedProps {
+interface AppProps {
     appModel: AppModel; // annotation type, will inject by connect
     outer: string;
 }
-
-interface AppProps extends InjectedProps {}
 
 class App extends React.Component<AppProps> {
     render() {

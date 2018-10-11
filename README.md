@@ -10,18 +10,19 @@ A simple framework based on typescript, redux, redux-saga, redux-action.
 
 ## Installation
 ```
-npm install resa resa-class-model --save
-yarn add resa resa-class-model
+npm install resa --save
+yarn add resa
 ```
 
 ## Features
 * No redundant redux boilerplate code
-* Full IntelliSense with vscode and typescript using [resa-class-model](https://github.com/wangtao0101/resa-class-model)
+* Full IntelliSense with vscode and typescript
 * Typed redux store
 * Typed action creater and payload
 * Better side effects control with redux-saga
 * Action creater born to be promise
 * Better error handling, support use promise.catch to capture error
+* auto detect dependence of state, without mapStateToProps, more easy than connect of react-redux
 * Easy learn, easy write, easy test
 
 ## Motivation
@@ -36,7 +37,6 @@ Actually i like redux and redux-saga very much, but both them have many problems
 We hava integrated redux-devtool in online-vscode, you can click **Open in New Window** button and open chrome redux-devtool to see what action will be dispathed when you click button.
 
 * [count](https://github.com/wangtao0101/resa/tree/master/examples/count) [online-vscode](https://stackblitz.com/edit/react-ts-84mcge)
-* [combineModel](https://stackblitz.com/edit/react-ts-d1uenc)
 
 ## First sight
 Define model
@@ -75,46 +75,37 @@ Define component
 ```
 // App.tsx
 import * as React from 'react';
-import { connect } from 'resa';
-import { wapper } from 'resa-class-model';
 import AppModel from './AppModel';
+import { subscribe, wapper } from 'resa';
 
-interface InjectedProps {
-  count: number;
-  appModel: AppModel; // annotation type, will inject by connect
-}
-
-interface AppProps extends InjectedProps {
+interface AppProps {
+    appModel: AppModel; // annotation type, will inject by subscribe
 }
 
 class App extends React.Component<AppProps> {
-  render() {
-    return (
-      <div className="App">
-        <h1>{this.props.count}</h1>
-        {/* add and addAsync have been transformed to action creaters,
+    render() {
+        return (
+            <div className="App">
+                <h1>{this.props.appModel.state.count}</h1>
+                {/* add and addAsync have been transformed to action creaters,
             you just call them with arguments(type check payload)
         */}
-        <button onClick={() => this.props.appModel.add(1)}>+</button> {/* type check here */}
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* type check here */}
-        <button
-          onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback'); })}
-        >promise
-        </button>
-      </div>
-    );
-  }
+                <button onClick={() => this.props.appModel.add(1)}>+</button> {/* type check here */}
+                <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* type check here */}
+                <button
+                    onClick={() =>
+                        wapper(this.props.appModel.addAsync(2)).then(() => {
+                            alert('callback');
+                        })
+                    }>
+                    promise
+                </button>
+            </div>
+        );
+    }
 }
 
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // annotation type
-  return {
-    count: appModel.state.count
-  };
-};
-
-const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App); // connect model by name
-
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
 export default NewApp;
 ```
 wapper with Provider like react-redux
@@ -122,9 +113,7 @@ wapper with Provider like react-redux
 import createResa, { Provider } from 'resa';
 
 import App from './App';
-import AppModel from './AppModel';
 const app = createResa();
-app.registerModel(new AppModel());
 
 ReactDOM.render(
   <Provider resa={app}>
@@ -139,7 +128,7 @@ So, do you like the simplicity ?
 resa = a simple way to use redux and redux-saga
 
 ## Docs
-* [Full Documentation](https://wangtao0101.github.io/resa/en/)
+* [Full Documentation](https://wangtao0101.github.io/resa)
 
 ## Contributing
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/resa/issues).
