@@ -151,20 +151,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3.3" data-path="combine-model.html">
-            
-                <a href="combine-model.html">
-            
-                    
-                    连接模型
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.3.4" data-path="IntelliSense.html">
+        <li class="chapter " data-level="1.3.3" data-path="IntelliSense.html">
             
                 <a href="IntelliSense.html">
             
@@ -195,20 +182,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="register-model.html">
-            
-                <a href="register-model.html">
-            
-                    
-                    模型加载卸载的时机
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.6" data-path="test.html">
+        <li class="chapter " data-level="1.5" data-path="test.html">
             
                 <a href="test.html">
             
@@ -221,7 +195,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" >
+        <li class="chapter " data-level="1.6" >
             
                 <span>
             
@@ -285,8 +259,8 @@
 </code></pre><h2 id="&#x4F7F;&#x7528;typescript&#x521D;&#x59CB;&#x5316;&#x9879;&#x76EE;">&#x4F7F;&#x7528;TypeScript&#x521D;&#x59CB;&#x5316;&#x9879;&#x76EE;</h2>
 <pre class="language-"><code>create-react-app my-app --scripts-version=react-scripts-ts
 </code></pre><h2 id="&#x5B89;&#x88C5;resa">&#x5B89;&#x88C5;resa</h2>
-<pre class="language-"><code>npm install resa resa-class-model --save
-yarn add resa resa-class-model
+<pre class="language-"><code>npm install resa --save
+yarn add resa
 </code></pre><h2 id="&#x5728;tsconfigjson&#x4E2D;&#x5F00;&#x542F;&#x652F;&#x6301;decorator">&#x5728;tsconfig.json&#x4E2D;&#x5F00;&#x542F;&#x652F;&#x6301;Decorator</h2>
 <pre class="language-"><code>{
   &quot;compilerOptions&quot;: {
@@ -296,7 +270,7 @@ yarn add resa resa-class-model
 </code></pre><h2 id="&#x5B9A;&#x4E49;&#x6A21;&#x578B;">&#x5B9A;&#x4E49;&#x6A21;&#x578B;</h2>
 <p>src&#x76EE;&#x5F55;&#x4E2D;&#x6DFB;&#x52A0;&#x6587;&#x4EF6;AppModel.ts</p>
 <pre class="language-"><code>// AppModel.ts
-import { Model, reducer, init, effect } from &apos;resa-class-model&apos;;
+import { Model, reducer, init, effect } from &apos;resa&apos;;
 import { delay } from &apos;redux-saga&apos;;
 
 interface AppState {
@@ -318,9 +292,9 @@ export default class AppModel extends Model<span class="token tag"><span class="
 
     @reducer() // define redux reducer: sync action handle
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count, // type check here
-        });
+        };
     }
 }
 </code></pre><h2 id="&#x521B;&#x5EFA;resa&#x5E76;&#x6CE8;&#x518C;&#x6A21;&#x578B;">&#x521B;&#x5EFA;resa&#x5E76;&#x6CE8;&#x518C;&#x6A21;&#x578B;</h2>
@@ -334,7 +308,6 @@ import &apos;./index.css&apos;;
 import AppModel from &apos;./AppModel&apos;;
 
 const app = createResa();
-app.registerModel(new AppModel());
 
 ReactDOM.render(
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Provider</span> <span class="token attr-name">resa</span><span class="token attr-value"><span class="token punctuation">=</span>{app}</span><span class="token punctuation">&gt;</span></span>
@@ -346,45 +319,36 @@ ReactDOM.render(
 <p>&#x4FEE;&#x6539;App.jsx&#x6587;&#x4EF6;</p>
 <pre class="language-"><code>import * as React from &apos;react&apos;;
 import AppModel from &apos;./AppModel&apos;;
-import { connect } from &apos;resa&apos;;
-import { wapper } from &apos;resa-class-model&apos;;
+import { connect, wapper } from &apos;resa&apos;;
 
-interface InjectedProps {
-  count: number;
-  appModel: AppModel; // annotation type, will inject by connect
-}
-
-interface AppProps extends InjectedProps {
+interface AppProps {
+    appModel: AppModel; // &#x7C7B;&#x578B;&#x68C0;&#x67E5;, subscribe&#x51FD;&#x6570;&#x4F1A;&#x6CE8;&#x5165;
 }
 
 class App extends React.Component<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AppProps</span><span class="token punctuation">&gt;</span></span> {
-  render() {
-    return (
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">className</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>App<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>{this.props.count}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
-        {/* add and addAsync have been transformed to action creaters,
-            you just call them with arguments(type check payload)
-        */}
-        &lt;button onClick={() =&gt; this.props.appModel.add(1)}&gt;+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* type check here */}
-        &lt;button onClick={() =&gt; this.props.appModel.addAsync(2)}&gt;async<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* type check here */}
-        &lt;button
-          onClick={
-            () =&gt; wapper(this.props.appModel.addAsync(2)).then(() =&gt; { alert(&apos;callback&apos;); })}
-        &gt;promise
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
-    );
-  }
+    render() {
+        return (
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">className</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>App<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>{this.props.appModel.state.count}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+                {/* add&#x548C;addAsync&#x5DF2;&#x7ECF;&#x88AB;&#x8F6C;&#x6362;&#x6210;&#x4E86;action creaters
+                    &#x76F4;&#x63A5;&#x8C03;&#x7528;&#x5B83;&#x5C31;&#x4F1A;&#x6D3E;&#x53D1;action, &#x53C2;&#x6570;&#x76F8;&#x5F53;&#x4E8E;&#x6709;&#x7C7B;&#x578B;&#x68C0;&#x67E5;&#x7684;payload
+                */}
+                &lt;button onClick={() =&gt; this.props.appModel.add(1)}&gt;+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* &#x7C7B;&#x578B;&#x68C0;&#x67E5; */}
+                &lt;button onClick={() =&gt; this.props.appModel.addAsync(2)}&gt;async<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span> {/* &#x7C7B;&#x578B;&#x68C0;&#x67E5; */}
+                &lt;button
+                    onClick={() =&gt;
+                        wapper(this.props.appModel.addAsync(2)).then(() =&gt; {
+                            alert(&apos;callback&apos;);
+                        })
+                    }&gt;
+                    promise
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+        );
+    }
 }
 
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) =&gt; { // annotation type
-  return {
-    count: appModel.state.count
-  };
-};
-
-const NewApp = connect<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InjectedProps</span><span class="token punctuation">&gt;</span></span>(mapStateToProps, [&apos;appModel&apos;])(App); // connect model by name
-
+const NewApp = subscribe({ appModel: AppModel }, { namespace: &apos;namespace&apos; })(App);
 export default NewApp;
 </code></pre><h2 id="&#x542F;&#x52A8;&#x9879;&#x76EE;">&#x542F;&#x52A8;&#x9879;&#x76EE;</h2>
 <pre class="language-"><code>npm run start
@@ -433,7 +397,7 @@ yarn start
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"开始","level":"1.2","depth":1,"next":{"title":"核心概念","level":"1.3","depth":1,"path":"core-concept.md","ref":"./core-concept.md","articles":[{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},{"title":"使用模型","level":"1.3.2","depth":2,"path":"model-usage.md","ref":"./model-usage.md","articles":[]},{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},{"title":"智能提示","level":"1.3.4","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]}]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"get-started.md","mtime":"2018-01-06T03:37:22.586Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"开始","level":"1.2","depth":1,"next":{"title":"核心概念","level":"1.3","depth":1,"path":"core-concept.md","ref":"./core-concept.md","articles":[{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},{"title":"使用模型","level":"1.3.2","depth":2,"path":"model-usage.md","ref":"./model-usage.md","articles":[]},{"title":"智能提示","level":"1.3.3","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]}]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"get-started.md","mtime":"2018-10-12T02:55:10.152Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-12T03:42:35.223Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>

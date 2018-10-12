@@ -54,7 +54,7 @@
 
     
     
-    <link rel="prev" href="register-model.html" />
+    <link rel="prev" href="structure.html" />
     
 
     </head>
@@ -149,20 +149,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3.3" data-path="combine-model.html">
-            
-                <a href="combine-model.html">
-            
-                    
-                    连接模型
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.3.4" data-path="IntelliSense.html">
+        <li class="chapter " data-level="1.3.3" data-path="IntelliSense.html">
             
                 <a href="IntelliSense.html">
             
@@ -193,20 +180,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="register-model.html">
-            
-                <a href="register-model.html">
-            
-                    
-                    模型加载卸载的时机
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter active" data-level="1.6" data-path="test.html">
+        <li class="chapter active" data-level="1.5" data-path="test.html">
             
                 <a href="test.html">
             
@@ -219,7 +193,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" >
+        <li class="chapter " data-level="1.6" >
             
                 <span>
             
@@ -294,9 +268,9 @@ export default class AppModel extends Model<span class="token tag"><span class="
 
     @reducer()
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count
-        });
+        };
     }
 }
 </code></pre><h2 id="&#x6D4B;&#x8BD5;reducer">&#x6D4B;&#x8BD5;reducer</h2>
@@ -357,7 +331,7 @@ export default class AppModel extends Model<span class="token tag"><span class="
 
             
                 
-                <a href="register-model.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 模型加载卸载的时机">
+                <a href="structure.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 项目结构">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
@@ -369,7 +343,7 @@ export default class AppModel extends Model<span class="token tag"><span class="
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"测试","level":"1.6","depth":1,"next":{"title":"Api文档","level":"1.7","depth":1,"ref":"","articles":[]},"previous":{"title":"模型加载卸载的时机","level":"1.5","depth":1,"path":"register-model.md","ref":"./register-model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"test.md","mtime":"2018-01-07T05:50:16.956Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"测试","level":"1.5","depth":1,"next":{"title":"Api文档","level":"1.6","depth":1,"ref":"","articles":[]},"previous":{"title":"项目结构","level":"1.4","depth":1,"path":"structure.md","ref":"./structure.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"test.md","mtime":"2018-10-12T03:00:43.533Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-12T03:42:35.223Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>

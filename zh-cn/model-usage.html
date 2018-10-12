@@ -53,7 +53,7 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="combine-model.html" />
+    <link rel="next" href="IntelliSense.html" />
     
     
     <link rel="prev" href="model.html" />
@@ -151,20 +151,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3.3" data-path="combine-model.html">
-            
-                <a href="combine-model.html">
-            
-                    
-                    连接模型
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.3.4" data-path="IntelliSense.html">
+        <li class="chapter " data-level="1.3.3" data-path="IntelliSense.html">
             
                 <a href="IntelliSense.html">
             
@@ -195,20 +182,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="register-model.html">
-            
-                <a href="register-model.html">
-            
-                    
-                    模型加载卸载的时机
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.6" data-path="test.html">
+        <li class="chapter " data-level="1.5" data-path="test.html">
             
                 <a href="test.html">
             
@@ -221,7 +195,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7" >
+        <li class="chapter " data-level="1.6" >
             
                 <span>
             
@@ -287,17 +261,22 @@
 <p>&#x8C03;&#x7528;registerModel&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4F20;&#x5165;&#x65B0;&#x5EFA;&#x7684;&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x3002;</p>
 <pre class="language-"><code>import AppModel from &apos;./AppModel&apos;;
 const resa = createResa();
-resa.registerModel(new AppModel());
-</code></pre><p><strong>&#x6A21;&#x578B;&#x4E0D;&#x80FD;&#x91CD;&#x590D;&#x6CE8;&#x518C;</strong></p>
-<h2 id="&#x6A21;&#x578B;&#x5378;&#x8F7D;">&#x6A21;&#x578B;&#x5378;&#x8F7D;</h2>
-<p>&#x8C03;&#x7528;unRegisterModel&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4F20;&#x5165;&#x65B0;&#x5EFA;&#x7684;&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x3002;</p>
-<pre class="language-"><code>import AppModel from &apos;./AppModel&apos;;
-resa.unRegisterModel(new AppModel());
-</code></pre><p><strong>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x6CE8;&#x610F;&#x4E8B;&#x9879;</strong></p>
-<ul>
-<li>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x4F1A;&#x505C;&#x6B62;&#x6240;&#x6709;&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;effect&#x3002;</li>
-<li>&#x5378;&#x8F7D;&#x6A21;&#x578B;&#x4E0D;&#x4F1A;&#x6E05;&#x9664;state&#x6570;&#x636E;&#xFF0C;&#x7528;&#x6237;&#x53EF;&#x4EE5;&#x5728;&#x5378;&#x8F7D;&#x524D;&#x8C03;&#x7528;reducer&#x4E3B;&#x52A8;&#x6E05;&#x9664;&#x6570;&#x636E;&#x3002;</li>
-</ul>
+resa.register(new AppModel());
+</code></pre><p>&#x6216;&#x8005;&#x4F60;&#x53EF;&#x4EE5;&#x5C06;&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x5728;namespace&#x4E2D;&#xFF1A;</p>
+<pre class="language-"><code>resa.register(new AppModel(), &apos;namespace&apos;);
+</code></pre><p>&#x5B83;&#x4EEC;&#x7684;&#x533A;&#x522B;&#x662F;&#x6570;&#x636E;&#x5728;redux state&#x4E2D;&#x7684;&#x5C42;&#x7EA7;&#x4E0D;&#x540C;&#xFF0C;&#x4E0D;&#x7528;namespace&#xFF0C;&#x6A21;&#x578B;&#x7684;&#x6570;&#x636E;&#x5728;&#x6839;&#x8282;&#x70B9;&#xFF1B;&#x4F7F;&#x7528;namespace&#xFF0C;&#x6A21;&#x578B;&#x7684;&#x6570;&#x636E;&#x5728;namespace&#x4E2D;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x540C;&#x65F6;&#x4F7F;&#x7528;&#x4E0A;&#x8FF0;&#x4E24;&#x4E2A;&#x65B9;&#x5F0F;&#x6CE8;&#x518C;appModel&#xFF0C;&#x90A3;&#x4E48;redux&#x7684;&#x6570;&#x636E;&#x5F62;&#x72B6;&#x5982;&#x4E0B;&#xFF1A;</p>
+<pre class="language-"><code>{
+  appModel: {
+    count: 0
+  },
+  namespace: {
+    appModel: {
+      count: 0
+    }
+  }
+}
+</code></pre><p><strong>&#x6A21;&#x578B;&#x5728;&#x540C;&#x4E00;namespace&#x4E2D;&#x4E0D;&#x80FD;&#x91CD;&#x590D;&#x6CE8;&#x518C;</strong></p>
 <h2 id="&#x6A21;&#x578B;&#x4F7F;&#x7528;">&#x6A21;&#x578B;&#x4F7F;&#x7528;</h2>
 <p>&#x8C03;&#x7528;resa&#x4E0A;&#x7684;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x6765;&#x8C03;&#x7528;&#x5BF9;&#x5E94;&#x7684;reducer&#x548C;effect&#xFF0C;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x7684;&#x540D;&#x79F0;&#x548C;&#x53C2;&#x6570;&#x548C;&#x4F60;&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x5B9A;&#x4E49;&#x7684;
 reducer&#x548C;effect&#x4E00;&#x6A21;&#x4E00;&#x6837;&#x3002;</p>
@@ -311,9 +290,9 @@ reducer&#x548C;effect&#x4E00;&#x6A21;&#x4E00;&#x6837;&#x3002;</p>
 export default class AppModel extends Model {
     @reducer()
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count,
-        });
+        };
     }
 
     @effect()
@@ -327,7 +306,7 @@ export default class AppModel extends Model {
 <p>&#x5982;&#x4F55;&#x8C03;&#x7528;&#x8FD9;&#x4E2A;reducer&#x5462;&#xFF1F;&#x4F60;&#x53EF;&#x4EE5;&#x50CF;&#x4E0B;&#x9762;&#x8FD9;&#x6837;&#xFF1A;</p>
 <pre class="language-"><code>// &#x5148;&#x6CE8;&#x518C;&#x6A21;&#x578B;
 const resa = createResa();
-resa.registerModel(new AppModel());
+resa.register(new AppModel());
 
 // &#x6839;&#x636E;&#x6A21;&#x578B;&#x540D;&#x79F0;&#x8C03;&#x7528;
 resa.models.appModel.add(1);
@@ -355,33 +334,41 @@ resa.models.appModel.add(1);
     count: 1
   },
 }
+</code></pre><p>&#x5982;&#x679C;&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x5728;namespace&#x4E2D;&#xFF0C;&#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;namespace/${&#x6A21;&#x578B;&#x540D;&#x79F0;}&#x8C03;&#x7528;&#x6A21;&#x578B;</p>
+<pre class="language-"><code>resa.register(new AppModel(), &apos;namespace&apos;);
+resa.models.[&apos;namespace/model&apos;].add(1);
 </code></pre><h2 id="&#x5728;react&#x4E2D;&#x4F7F;&#x7528;&#x6A21;&#x578B;">&#x5728;react&#x4E2D;&#x4F7F;&#x7528;&#x6A21;&#x578B;</h2>
-<p>&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;&#x4F60;&#x5728;react&#x4E2D;&#x4F7F;&#x7528;createResa&#x8FD4;&#x56DE;&#x7684;resa&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x5305;&#x88C5;&#x4E86;react-redux&#x7684;Provider&#x7EC4;&#x4EF6;&#x548C;connect&#x51FD;&#x6570;&#x3002;</p>
+<p>&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;&#x4F60;&#x5728;react&#x4E2D;&#x4F7F;&#x7528;createResa&#x8FD4;&#x56DE;&#x7684;resa&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x63D0;&#x4F9B;&#x4E86;Provider&#x7EC4;&#x4EF6;&#x548C;subscribe&#x9AD8;&#x9636;&#x51FD;&#x6570;&#x3002;</p>
 <h3 id="provider">Provider</h3>
 <p>&#x5C06;Provider&#x7EC4;&#x4EF6;&#x5305;&#x88F9;&#x4F4F;&#x5176;&#x4ED6;&#x7EC4;&#x4EF6;&#x66FF;&#x6362;&#x6389;react-redux&#x7684;Provider&#x7EC4;&#x4EF6;</p>
 <pre class="language-"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Provider</span> <span class="token attr-name">resa</span><span class="token attr-value"><span class="token punctuation">=</span>{resa}</span><span class="token punctuation">&gt;</span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>App</span> <span class="token punctuation">/&gt;</span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Provider</span><span class="token punctuation">&gt;</span></span>,
-</code></pre><h3 id="connect">connect</h3>
-<p>&#x548C;react-redux&#x7684;<a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options" target="_blank">connect&#x51FD;&#x6570;&#x7528;&#x6CD5;</a>&#x51E0;&#x4E4E;&#x4E00;&#x6A21;&#x4E00;&#x6837;&#xFF0C;&#x4E0B;&#x9762;&#x8BB2;&#x8BB2;&#x4E0D;&#x540C;&#x70B9;&#xFF1A;</p>
-<ul>
-<li>mapStateToProps&#x591A;&#x4E86;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x6240;&#x6709;&#x6A21;&#x578B;&#x7684;&#x6570;&#x7EC4;&#xFF0C;&#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x89E3;&#x6784;&#x53C2;&#x6570;&#x83B7;&#x53D6;&#x6240;&#x9700;&#x6A21;&#x578B;&#xFF0C;&#x5E76;&#x4E14;&#x901A;&#x8FC7;&#x6A21;&#x578B;&#x7684;state&#x5B57;&#x6BB5;&#x83B7;&#x53D6;&#x6A21;&#x578B;&#x72B6;&#x6001;&#x3002;<pre class="language-"><code>const mapStateToProps = ({ appModel }) =&gt; {
-  return {
-      count: appModel.state.count
-  };
-};
-</code></pre></li>
-<li>mapDispatchToProps&#x4E5F;&#x591A;&#x4E86;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x8BE5;&#x53C2;&#x6570;&#x4E5F;&#x662F;&#x6240;&#x6709;&#x6A21;&#x578B;&#x7684;&#x6570;&#x7EC4;<pre class="language-"><code>const mapDispatchToProps = ({ appModel }, dispatch) =&gt; {
-};
-</code></pre></li>
-<li>mapDispatchToProp&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6A21;&#x578B;&#x540D;&#x79F0;&#x7684;&#x6570;&#x7EC4;&#x4EE3;&#x66FF;&#xFF0C;&#x6548;&#x679C;&#x76F8;&#x5F53;&#x4E8E;&#x628A;&#x5BF9;&#x5E94;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;&#x4E86;&#x7EC4;&#x4EF6;&#x4E2D;&#x3002;<br>InjectedProps&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x63A8;&#x65AD;&#x7C7B;&#x578B;&#xFF0C;&#x8BE6;&#x89C1;<a href="IntelliSense.html">&#x667A;&#x80FD;&#x63D0;&#x793A;</a><pre class="language-"><code>interface InjectedProps {
-  appModel: AppModel;
+</code></pre><h3 id="subscribe">subscribe</h3>
+<p>subscribe&#x548C;react-redux&#x7684;<a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options" target="_blank">connect&#x51FD;&#x6570;&#x7528;&#x6CD5;</a>&#x7C7B;&#x4F3C;&#xFF0C;&#x4E0D;&#x8FC7;&#x5B83;&#x66F4;&#x5F3A;&#x5927;&#x3002;</p>
+<p>&#x4F7F;&#x7528;subscribe&#x8FDE;&#x63A5;&#x6A21;&#x578B;</p>
+<pre class="language-"><code>const NewApp = subscribe({ appModel: AppModel }, { namespace: &apos;namespace&apos; })(App);
+</code></pre><p>subscribe&#x51FD;&#x6570;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;mapper&#xFF0C;&#x4E0A;&#x8FF0;&#x7684;&#x4EE3;&#x7801;&#x8868;&#x793A;&#x5C06;AppModel&#x8FD9;&#x4E2A;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;App&#x7684;props&#x4E2D;&#xFF0C;&#x6CE8;&#x5165;&#x5230;props&#x7684;&#x5C5E;&#x6027;&#x540D;&#x79F0;&#x4E3A;appModel&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;config&#x5BF9;&#x8C61;&#xFF0C;&#x5176;&#x4E2D;namespace&#x8868;&#x793A;&#x6CE8;&#x518C;&#x7684;&#x65F6;&#x5019;&#x6CE8;&#x518C;&#x5728;&#x67D0;&#x4E2A;namespace&#x4E2D;&#x3002;</p>
+<h4 id="&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x7684;&#x65F6;&#x673A;">&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x7684;&#x65F6;&#x673A;</h4>
+<p>subscribe&#x51FD;&#x6570;&#x751F;&#x6210;&#x7684;&#x9AD8;&#x9636;&#x7EC4;&#x4EF6;&#x4F1A;&#x76D1;&#x542C;&#x7EC4;&#x4EF6;&#x5BF9;state&#x7684;&#x4F7F;&#x7528;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x4F7F;&#x7528;&#x4E86;state&#x7684;&#x67D0;&#x4E00;&#x4E2A;&#x5C5E;&#x6027;&#xFF0C;&#x90A3;&#x4E48;&#x5F53;&#x8FD9;&#x4E2A;&#x5C5E;&#x6027;&#x53D8;&#x5316;&#x7684;&#x65F6;&#x5019;&#x5C31;&#x4F1A;&#x66F4;&#x65B0;&#x7EC4;&#x4EF6;&#xFF08;&#x7EC4;&#x4EF6;&#x4E0D;&#x80FD;&#x662F;PureCompnent&#xFF09;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x8981;&#x5341;&#x5206;&#x6CE8;&#x610F;&#xFF0C;&#x4E3A;&#x4E86;&#x4FDD;&#x8BC1;&#x6027;&#x80FD;&#xFF08;&#x6682;&#x65F6;&#x4F7F;&#x7528;defineProperty&#x5B9E;&#x73B0;&#xFF0C;&#x5982;&#x679C;&#x7528;Proxy&#x5B9E;&#x73B0;&#x5C31;&#x6CA1;&#x6709;&#x6027;&#x80FD;&#x95EE;&#x9898;&#xFF09;&#xFF0C;subscribe&#x53EA;&#x4F1A;&#x76D1;&#x542C;state&#x7684;&#x7B2C;&#x4E00;&#x5C42;&#x5C5E;&#x6027;&#x3002;</p>
+<p>&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;&#x5047;&#x8BBE;state&#x7684;&#x5F62;&#x72B6;&#x5982;&#x4E0B;&#xFF1A;</p>
+<pre class="language-"><code>{
+    a: &apos;aa&apos;;
+    b: {
+        c: &apos;cc&apos;,
+    }
 }
-connect<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InjectedProps</span><span class="token punctuation">&gt;</span></span>(mapStateToProps, [&apos;appModel&apos;])(App);
-</code></pre>&#x4F60;&#x53EF;&#x4EE5;&#x5728;&#x7EC4;&#x4EF6;&#x7684;props&#x4E0A;&#x76F4;&#x63A5;&#x83B7;&#x53D6;&#x6A21;&#x578B;&#x5E76;&#x6D3E;&#x53D1;Action&#x3002;<pre class="language-"><code>this.props.appModel.add(1);
-</code></pre></li>
-</ul>
-
+</code></pre><p>&#x5982;&#x679C;&#x7EC4;&#x4EF6;&#x4F7F;&#x7528;&#x4E86;a&#x5C5E;&#x6027;&#xFF0C;&#x90A3;&#x4E48;a&#x88AB;&#x4FEE;&#x6539;&#x65F6;&#xFF0C;&#x7EC4;&#x4EF6;&#x4F1A;&#x83B7;&#x5F97;&#x66F4;&#x65B0;&#x3002;&#x5982;&#x679C;&#x7EC4;&#x4EF6;&#x4F7F;&#x7528;&#x4E86;c&#x5C5E;&#x6027;&#xFF0C;c&#x88AB;&#x4FEE;&#x6539;&#x65F6;&#xFF0C;&#x7EC4;&#x4EF6;&#x4E0D;&#x4F1A;&#x88AB;&#x66F4;&#x65B0;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x8FD9;&#x91CC;&#x8981;&#x6C42;&#x4FEE;&#x6539;state&#x65F6;&#xFF0C;&#x91C7;&#x7528;immutable&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x63A8;&#x8350;&#x4F7F;&#x7528;<a href="https://github.com/mweststrate/immer" target="_blank">immer</a>&#xFF0C;&#x4E0B;&#x9762;&#x662F;&#x63A8;&#x8350;&#x7684;&#x4FEE;&#x6539;&#x5C5E;&#x6027;c&#x7684;&#x65B9;&#x5F0F;&#xFF1A;</p>
+<pre class="language-"><code>@reducer()
+add(count: number) {
+    return {
+        b: produce(this.state.b, draftState =&gt; {
+            b.c = &apos;ccc&apos;;
+        })
+    });
+}
+</code></pre>
                                 
                                 </section>
                             
@@ -413,7 +400,7 @@ connect<span class="token tag"><span class="token tag"><span class="token punctu
                 </a>
                 
                 
-                <a href="combine-model.html" class="navigation navigation-next " aria-label="Next page: 连接模型">
+                <a href="IntelliSense.html" class="navigation navigation-next " aria-label="Next page: 智能提示">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -424,7 +411,7 @@ connect<span class="token tag"><span class="token tag"><span class="token punctu
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"连接模型","level":"1.3.3","depth":2,"path":"combine-model.md","ref":"./combine-model.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2018-01-07T03:42:55.493Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-07T05:54:41.950Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"智能提示","level":"1.3.3","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2018-10-12T03:31:11.105Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-12T03:42:35.223Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
