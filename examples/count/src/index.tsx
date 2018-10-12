@@ -8,7 +8,7 @@ import './index.css';
 import AppModel from './AppModel';
 
 const app = createResa();
-app.register(new AppModel(), 'xx');
+app.register(new AppModel());
 
 ReactDOM.render(
   <Provider resa={app}>

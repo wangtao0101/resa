@@ -165,7 +165,7 @@ export default function subscribe(modelMap, config?: Config) {
                 const { theme, forwardedRef, ...rest } = this.props;
                 return (
                     <ThemeContext.Provider value={this.theme}>
-                        <WrappedComponent ref={forwardedRef} {...rest} {...this.getModels()} />;
+                        <WrappedComponent ref={forwardedRef} {...rest} {...this.getModels()} />
                     </ThemeContext.Provider>
                 );
             }
