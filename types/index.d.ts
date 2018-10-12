@@ -238,7 +238,7 @@ declare module 'resa' {
         store: Redux.Store<T>;
         runSaga<A, S>(iterator: Iterator<any>): Saga.Task;
         models: any;
-        register(model: any, namespace: string): void;
+        register(model: any, namespace?: string): void;
         /**
          * @deprecated since version 4.0
          */
