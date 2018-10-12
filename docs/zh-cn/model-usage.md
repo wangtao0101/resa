@@ -158,7 +158,7 @@ subscribe函数生成的高阶组件会监听组件对state的使用，如果你
 add() {
     return {
         b: produce(this.state.b, draftState => {
-            b.c = 'ccc';
+            draftState.c = 'ccc';
         })
     });
 }

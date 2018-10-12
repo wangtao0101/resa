@@ -110,6 +110,7 @@ declare module 'resa' {
      * @param mapDispatchToProps
      * @param mergeProps
      * @param options
+     * @deprecated since version 4.0
      */
     export interface Connect {
         (): ReactRedux.InferableComponentEnhancer<ReactRedux.DispatchProp<any>>;
@@ -228,13 +229,23 @@ declare module 'resa' {
         ): ReactRedux.InferableComponentEnhancerWithProps<TMergedProps, TOwnProps>;
     }
 
+    /**
+     * @deprecated since version 4.0
+     */
     export const connect: Connect;
 
     export interface Resa<T> {
         store: Redux.Store<T>;
         runSaga<A, S>(iterator: Iterator<any>): Saga.Task;
         models: any;
+        register(model: any, namespace: string): void;
+        /**
+         * @deprecated since version 4.0
+         */
         registerModel(model: any): void;
+        /**
+         * @deprecated since version 4.0
+         */
         unRegisterModel(model: any): void;
     }
 
@@ -247,5 +258,8 @@ declare module 'resa' {
 
     interface CombinedModel extends Model {}
 
+    /**
+     * @deprecated since version 4.0
+     */
     export function combineModel(name: string, models: Array<Model>, state?: any): CombinedModel;
 }
