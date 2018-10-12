@@ -7,7 +7,7 @@ const resa = createResa();
 createResa会初始化redux store，支持用户传入额外的reducer和middleware。
 
 ## 模型注册
-调用registerModel函数，并传入新建的模型对象。
+调用register函数，并传入新建的模型对象。
 ```
 import AppModel from './AppModel';
 const resa = createResa();
@@ -35,7 +35,7 @@ resa.register(new AppModel(), 'namespace');
 }
 ```
 
-**模型在同一namespace中不能重复注册**
+**模型在同一namespace中不能重复注册，但是可以在不同的namespace中注册**
 
 ## 模型使用
 调用resa上的Action创建函数来调用对应的reducer和effect，Action创建函数的名称和参数和你在模型中定义的
@@ -139,7 +139,7 @@ const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App
 subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数是一个config对象，其中namespace表示注册的时候注册在某个namespace中。
 
 #### 组件更新的时机
-subscribe函数生成的高阶组件会监听组件对state的使用，如果你使用了state的某一个属性，那么当这个属性变化的时候就会更新组件（组件不能是PureCompnent）。
+subscribe函数生成的高阶组件会监听组件对state的使用，如果你使用了state的某一个属性，那么当这个属性变化的时候就会更新组件（组件不能是PureComponent）。
 
 这里要十分注意，为了保证性能（暂时使用defineProperty实现，如果用Proxy实现就没有性能问题），subscribe只会监听state的第一层属性。
 
@@ -155,7 +155,7 @@ subscribe函数生成的高阶组件会监听组件对state的使用，如果你
 如果组件使用了a属性，那么a被修改时，组件会获得更新。如果组件使用了c属性，c被修改时，组件不会被更新。因此，这里要求修改state时，采用immutable的方式，推荐使用[immer](https://github.com/mweststrate/immer)，下面是推荐的修改属性c的方式：
 ```
 @reducer()
-add(count: number) {
+add() {
     return {
         b: produce(this.state.b, draftState => {
             b.c = 'ccc';

@@ -37,9 +37,12 @@ effect中内置reducer：this.fulfilled获得类型检查
 
 ### 调用Action创建函数获得类型检测
 ```
-// 获得模型，也可以在组件中通过connect注入获得模型
-const appModel = resa.models.appModel;
-appModel.addAsync(1); // 函数参数获得类型检查
+// subscribe注入的模型通过类型标注获取智能提示
+interface Props {
+  count: number;
+  appModel: AppModel;
+}
+props.appModel.addAsync(1); // 函数参数获得类型检查
 ```
 
 ### subscribe函数返回的组件获得JSX的参数检查
