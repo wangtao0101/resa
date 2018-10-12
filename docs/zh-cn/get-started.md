@@ -12,8 +12,8 @@ create-react-app my-app --scripts-version=react-scripts-ts
 
 ## 安装resa
 ```
-npm install resa resa-class-model --save
-yarn add resa resa-class-model
+npm install resa --save
+yarn add resa
 ```
 
 ## 在tsconfig.json中开启支持Decorator
@@ -29,7 +29,7 @@ yarn add resa resa-class-model
 src目录中添加文件AppModel.ts
 ```
 // AppModel.ts
-import { Model, reducer, init, effect } from 'resa-class-model';
+import { Model, reducer, init, effect } from 'resa';
 import { delay } from 'redux-saga';
 
 interface AppState {
@@ -51,9 +51,9 @@ export default class AppModel extends Model<AppState> {
 
     @reducer() // define redux reducer: sync action handle
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count, // type check here
-        });
+        };
     }
 }
 
@@ -71,7 +71,6 @@ import './index.css';
 import AppModel from './AppModel';
 
 const app = createResa();
-app.registerModel(new AppModel());
 
 ReactDOM.render(
   <Provider resa={app}>
@@ -86,47 +85,37 @@ ReactDOM.render(
 ```
 import * as React from 'react';
 import AppModel from './AppModel';
-import { connect } from 'resa';
-import { wapper } from 'resa-class-model';
+import { connect, wapper } from 'resa';
 
-interface InjectedProps {
-  count: number;
-  appModel: AppModel; // annotation type, will inject by connect
-}
-
-interface AppProps extends InjectedProps {
+interface AppProps {
+    appModel: AppModel; // 类型检查, subscribe函数会注入
 }
 
 class App extends React.Component<AppProps> {
-  render() {
-    return (
-      <div className="App">
-        <h1>{this.props.count}</h1>
-        {/* add and addAsync have been transformed to action creaters,
-            you just call them with arguments(type check payload)
-        */}
-        <button onClick={() => this.props.appModel.add(1)}>+</button> {/* type check here */}
-        <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* type check here */}
-        <button
-          onClick={
-            () => wapper(this.props.appModel.addAsync(2)).then(() => { alert('callback'); })}
-        >promise
-        </button>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="App">
+                <h1>{this.props.appModel.state.count}</h1>
+                {/* add和addAsync已经被转换成了action creaters
+                    直接调用它就会派发action, 参数相当于有类型检查的payload
+                */}
+                <button onClick={() => this.props.appModel.add(1)}>+</button> {/* 类型检查 */}
+                <button onClick={() => this.props.appModel.addAsync(2)}>async</button> {/* 类型检查 */}
+                <button
+                    onClick={() =>
+                        wapper(this.props.appModel.addAsync(2)).then(() => {
+                            alert('callback');
+                        })
+                    }>
+                    promise
+                </button>
+            </div>
+        );
+    }
 }
 
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) => { // annotation type
-  return {
-    count: appModel.state.count
-  };
-};
-
-const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App); // connect model by name
-
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
 export default NewApp;
-
 ```
 
 ## 启动项目

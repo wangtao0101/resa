@@ -20,8 +20,8 @@ export default class AppModel extends Model<AppState> {
 
     @reducer() // define redux reducer: sync action handle
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count, // type check here
-        });
+        };
     }
 }

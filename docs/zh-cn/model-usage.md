@@ -11,17 +11,17 @@ createResa会初始化redux store，支持用户传入额外的reducer和middlew
 ```
 import AppModel from './AppModel';
 const resa = createResa();
-resa.registerModel(new AppModel());
+resa.register(new AppModel());
 ```
 
 或者你可以将模型注册在namespace中：
 ```
-resa.registerModel(new AppModel(), 'namespace');
+resa.register(new AppModel(), 'namespace');
 ```
 
 它们的区别是数据在redux state中的层级不同，不用namespace，模型的数据在根节点；使用namespace，模型的数据在namespace中。
 
-如果同时使用上述两个方式注册appModel，那么redux的数据如下：
+如果同时使用上述两个方式注册appModel，那么redux的数据形状如下：
 ```
 {
   appModel: {
@@ -52,9 +52,9 @@ reducer和effect一模一样。
 export default class AppModel extends Model {
     @reducer()
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count,
-        });
+        };
     }
 
     @effect()
@@ -71,7 +71,7 @@ export default class AppModel extends Model {
 ```
 // 先注册模型
 const resa = createResa();
-resa.registerModel(new AppModel());
+resa.register(new AppModel());
 
 // 根据模型名称调用
 resa.models.appModel.add(1);
@@ -113,7 +113,7 @@ this.fulfilled会派发一个Action用来调用内置reducer，格式如下：
 
 如果模型注册在namespace中，你可以使用namespace/${模型名称}调用模型
 ```
-resa.registerModel(new AppModel(), 'namespace');
+resa.register(new AppModel(), 'namespace');
 resa.models.['namespace/model'].add(1);
 ```
 
@@ -129,31 +129,37 @@ resa.models.['namespace/model'].add(1);
 ```
 
 ### subscribe
-和react-redux的[connect函数用法](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options)几乎一模一样，下面讲讲不同点：
+subscribe和react-redux的[connect函数用法](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options)类似，不过它更强大。
 
-* mapStateToProps多了第一个参数，该参数是所有模型的数组，你可以使用解构参数获取所需模型，并且通过模型的state字段获取模型状态。
+使用subscribe连接模型
 ```
-const mapStateToProps = ({ appModel }) => {
-    return {
-        count: appModel.state.count
-    };
-};
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
 ```
-* mapDispatchToProps也多了第一个参数，该参数也是所有模型的数组
+
+subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数是一个config对象，其中namespace表示注册的时候注册在某个namespace中。
+
+#### 组件更新的时机
+subscribe函数生成的高阶组件会监听组件对state的使用，如果你使用了state的某一个属性，那么当这个属性变化的时候就会更新组件（组件不能是PureCompnent）。
+
+这里要十分注意，为了保证性能（暂时使用defineProperty实现，如果用Proxy实现就没有性能问题），subscribe只会监听state的第一层属性。
+
+举个例子，假设state的形状如下：
 ```
-const mapDispatchToProps = ({ appModel }, dispatch) => {
-};
-```
-* mapDispatchToProp可以使用模型名称的数组代替，效果相当于把对应模型注入到了组件中。  
-InjectedProps可以帮助推断类型，详见[智能提示](./IntelliSense.md)
-```
-interface InjectedProps {
-    appModel: AppModel;
+{
+    a: 'aa';
+    b: {
+        c: 'cc',
+    }
 }
-connect<InjectedProps>(mapStateToProps, ['appModel'])(App);
 ```
-你可以在组件的props上直接获取模型并派发Action。
+如果组件使用了a属性，那么a被修改时，组件会获得更新。如果组件使用了c属性，c被修改时，组件不会被更新。因此，这里要求修改state时，采用immutable的方式，推荐使用[immer](https://github.com/mweststrate/immer)，下面是推荐的修改属性c的方式：
 ```
-this.props.appModel.add(1);
+@reducer()
+add(count: number) {
+    return {
+        b: produce(this.state.b, draftState => {
+            b.c = 'ccc';
+        })
+    });
+}
 ```
-

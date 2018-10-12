@@ -42,7 +42,7 @@ yarn add resa
 定义模型
 ```
 // AppModel.ts
-import { Model, reducer, init, effect } from 'resa-class-model';
+import { Model, reducer, init, effect } from 'resa';
 import { delay } from 'redux-saga';
 
 interface AppState {
@@ -64,9 +64,9 @@ export default class AppModel extends Model<AppState> {
 
     @reducer() // 定义reducer: 同步的action处理函数
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count, // 类型检查
-        });
+        };
     }
 }
 ```

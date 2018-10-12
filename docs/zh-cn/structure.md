@@ -1,10 +1,9 @@
 # 项目结构
 
 resa并不限制应用的项目结构，但是为了应用维护和调试，我们可以尽量遵循一定的规则：
-* 使用combineModel组合同一层级的model
+* 使用namespace组合同一层级的model
 ```
-models
-    ├── index.js   # 组合A模块和B模块
+namespace
     ├── A.js       # A模块
     └── B.js       # B模块
 ```
@@ -12,22 +11,20 @@ models
 假设你设计的redux store结构如下：
 ```
 └── resa
-    └── model1
+    └── namespace1
             ├── A = {...}
             └── B = {...}
-    └── model2
+    └── namespace2
             ├── C = {...}
             └── D = {...}
 ```
 那么模型的文件结构可以如下：
 ```
 └── resa
-    └── model1
-            ├── index.js # 组合模块
+    └── namespace1
             ├── A.js
             └── B.js
-    └── model2
-            ├── index.js # 组合模块
+    └── namespace2
             ├── C.js
             └── D.js
 ```

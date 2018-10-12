@@ -51,9 +51,9 @@ class MyModel extends Model<MyModelState>{
 
     @reducer()
     ful() {
-        return this.fulfilled({
+        return {
             count: 0,
-        });
+        };
     }
 }
 

@@ -29,18 +29,8 @@ effect中内置reducer：this.fulfilled获得类型检查
 ```
 @effect()
 * addAsync(count: number) {
-    return this.fulfilled({
+    this.fulfilled({
         count: this.state.count + count // 获得类型检查
-    });
-}
-```
-
-reducer中的帮助函数this.fulfilled获得类型检查
-```
-@reducer()
-add(count: number) {
-    return this.fulfilled({
-        count: this.state.count + count, // 获得类型检查
     });
 }
 ```
@@ -52,29 +42,16 @@ const appModel = resa.models.appModel;
 appModel.addAsync(1); // 函数参数获得类型检查
 ```
 
-### connect函数返回的组件获得JSX的参数检查
-react-redux的connect函数返回的组件本身支持JSX参数检查（去除connect带给组件的参数），但是由于resa的connect函数支持传入字符串数组，因此破坏了react-redux定义的connect函数类型。
-
-为了获取JSX参数检查的效果，resa支持传递给connect一个泛型类型，该泛型类型直接反映了connect函数会给组件注入哪些参数，connect函数返回的组件去除了这些参数，以此实现JSX的参数检查。
-
-下面展示使用connect时组件定义的方式。
-
+### subscribe函数返回的组件获得JSX的参数检查
 首先定义注入的Props。
 ```
-interface InjectedProps {
+interface Props {
   count: number;
   appModel: AppModel;
 }
 ```
 
-再定义组件的Props，继承注入的Props。
-```
-interface AppProps extends InjectedProps {
-    length: number;
-}
-```
-
-再定义组件。
+定义组件。
 ```
 class App extends React.Component<AppProps> {
   render() {
@@ -89,13 +66,7 @@ class App extends React.Component<AppProps> {
 
 最后连接组件。
 ```
-const mapStateToProps = ({ appModel }: { appModel: AppModel }) => {
-  return {
-    count: appModel.state.count
-  };
-};
-
-const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App);
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
 ```
 
 使用NewApp组件时会获得JSX类型检查。
@@ -110,10 +81,6 @@ const NewApp = connect<InjectedProps>(mapStateToProps, ['appModel'])(App);
 *注意：在reducer函数中虽然可以提示effect函数，但是实际上不能调用。*
 
 ![](../image/modelhelp.png)
-
-mapStateToProps中通过手动类型标注获得智能提示
-
-![](../image/mapstate.png)
 
 在组件中调用Action创建函数获得智能提示
 

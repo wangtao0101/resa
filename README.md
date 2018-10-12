@@ -42,7 +42,7 @@ We hava integrated redux-devtool in online-vscode, you can click **Open in New W
 Define model
 ```
 // AppModel.ts
-import { Model, reducer, init, effect } from 'resa-class-model';
+import { Model, reducer, init, effect } from 'resa';
 import { delay } from 'redux-saga';
 
 interface AppState {
@@ -64,9 +64,9 @@ export default class AppModel extends Model<AppState> {
 
     @reducer() // define redux reducer: sync action handle
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count, // type check here
-        });
+        };
     }
 }
 

@@ -21,7 +21,7 @@ add() {
     }
 })
 export default class AppModel extends Model {
-
+}
 ```
 
 ### reducer
@@ -42,22 +42,10 @@ add(count: number) {
     };
 }
 ```
-在reducer中，我们提供了一个内置的帮助函数this.fulfilled，这个帮助函数可以简化Object.assign的使用，并且提供类型检查。
-```
-@reducer()
-add(count: number) {
-    return this.fulfilled({
-        count: this.state.count + count,
-    });
-}
-```
-this.fulfilled使用Object.assign合并对象：
-```
-Object.assign({}, state, payload)
-```
+在reducer中，直接返回修改的对象即可，无需像redux的reducer那样要返回所有state，resa会处理合并。
 
 ### effect
-effect就是[redux-saga](https://github.com/redux-saga/redux-saga)的saga函数，在resa中，effect就是异步处理函数。经过saga的加持，effect可以随心所欲的发起请求、控制异步操作。effect不能直接修改状态，只能通过调用reducer修改状态。resa内部提供了一个内置的reducer: this.fulfilled，这样你就不用为每个reffect都创建一个reducer。
+effect就是[redux-saga](https://github.com/redux-saga/redux-saga)的saga函数，在resa中，effect就是异步处理函数。经过saga的加持，effect可以随心所欲的发起请求、控制异步操作。effect不能直接修改状态，只能通过调用reducer修改状态。resa内部提供了一个内置的reducer: this.fulfilled，这样你就不用为每个effect都创建一个reducer。
 ```
 @effect()
 * addAsync(count: number) {
@@ -65,14 +53,12 @@ effect就是[redux-saga](https://github.com/redux-saga/redux-saga)的saga函数�
 
     this.add(count); // 调用我们定义reducer
     // or 调用内置的reducer
-    return this.fulfilled({
+    this.fulfilled({
         count: this.state.count + count.00001
     });
 }
 ```
-effect中的this.fulfilled合并对象的原则和reducer中的相同。
-
-**注意：effect中的this.fulfilled和reducer中的this.fulfilled虽然名称是一样的，但是他们本质上是不同的，请不要混淆他们。在reducer中它只是一个帮助函数，而在effect中它会派发一个Action，并调用内置reducer。**
+this.fulfilled是一个内置的reducer，参数为修改的对象。
 
 effect的默认[saga Helper](https://redux-saga.js.org/docs/api/index.html#saga-helpers)为takeEvery, 可以传递参数给effect修改默认的saga Helper，目前支持四种：takeEvery、takeLatest、throttle（effect第二个参数为时间ms）、takeFirst。
 ```

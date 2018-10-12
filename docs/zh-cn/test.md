@@ -17,9 +17,9 @@ export default class AppModel extends Model<AppState> {
 
     @reducer()
     add(count: number) {
-        return this.fulfilled({
+        return {
             count: this.state.count + count
-        });
+        };
     }
 }
 ```
