@@ -133,13 +133,14 @@ subscribe和react-redux的[connect函数用法](https://github.com/reactjs/react
 
 使用subscribe连接模型
 ```
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace', dependence: [] })(App);
 ```
 
-subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数是一个config对象，其中namespace表示注册的时候注册在某个namespace中。
+subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数是一个config对象，其中namespace表示注册的时候注册在某个namespace中, dependence表示state的某个属性如果变化会导致组件更新。
 
 #### 组件更新的时机
 subscribe函数生成的高阶组件会监听组件对state的使用，如果你使用了state的某一个属性，那么当这个属性变化的时候就会更新组件（组件不能是PureComponent）。
+如果某个属性在回调函数中才会被使用，这时需要显式的告诉subscribe哪个属性变化后组件会更新。
 
 这里要十分注意，为了保证性能（暂时使用defineProperty实现，如果用Proxy实现就没有性能问题），subscribe只会监听state的第一层属性。
 

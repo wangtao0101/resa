@@ -80,6 +80,7 @@ declare module 'resa' {
 
     interface Config {
         namespace?: string;
+        dependence?: string[];
     }
 
     interface Subscribe {

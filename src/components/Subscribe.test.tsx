@@ -89,6 +89,21 @@ describe('Subscribe', () => {
         expect(container.render).toBeCalledTimes(1);
     });
 
+    it('should call render if state.length in dependence changed', async () => {
+        const app = createResa();
+        const SubscribeChild = subscribe({ myModel: MyModel }, { dependence: ['length'] })(Child);
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <SubscribeChild />
+            </Provider>,
+        );
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        container.render = jest.fn();
+        app.models.model.add();
+        app.models.model.ss();
+        expect(container.render).toBeCalledTimes(2);
+    });
+
     it('should notify nested sub only changed state', async () => {
         const app = createResa();
 

@@ -32,11 +32,13 @@ function checkModelType(model, modelTypeName) {
 
 interface Config {
     namespace?: string;
+    dependence?: string[];
 }
 
 export default function subscribe(modelMap, config?: Config) {
     const {
         namespace = '',
+        dependence = [],
     } = config || {};
     return function wrapWithSubscribe(WrappedComponent) {
         class Subscribe extends React.PureComponent<SubscribeProps, any> {
@@ -90,9 +92,13 @@ export default function subscribe(modelMap, config?: Config) {
                     if (model == null) {
                         this.resa.register(instance, namespace);
                     }
+                    const depandenceMap = {};
+                    dependence.map(dp => {
+                        depandenceMap[dp] = true;
+                    })
                     this.modelMetaMap[key] = {
                         name,
-                        depandenceMap: {},
+                        depandenceMap,
                         observableModel: null,
                         state: null,
                     };
