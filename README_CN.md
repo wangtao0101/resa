@@ -121,7 +121,7 @@ ReactDOM.render(
   document.getElementById('root') as HTMLElement
 );
 ```
-所以你喜欢这样简洁的代码吗 ?
+所以你喜欢这样简洁的代码吗?
 
 ## What is resa？
 resa = a simple way to use redux and redux-saga
