@@ -91,7 +91,7 @@ describe('Subscribe', () => {
 
     it('should call render if state.length in dependence changed', async () => {
         const app = createResa();
-        const SubscribeChild = subscribe({ myModel: MyModel }, { dependence: ['length'] })(Child);
+        const SubscribeChild = subscribe({ myModel: MyModel }, ['length'])(Child);
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <SubscribeChild />
@@ -180,7 +180,7 @@ describe('Subscribe', () => {
                 name: 'model',
                 state: {},
             })
-            class SameModel extends Model<any> {}
+            class SameModel extends Model<any> { }
 
             const app: any = createResa();
             const SubscribeChild = subscribe({ myModel: MyModel, sameModel: SameModel })(Child);
@@ -198,7 +198,7 @@ describe('Subscribe', () => {
                 name: 'model',
                 state: 0,
             })
-            class SameModel extends Model<any> {}
+            class SameModel extends Model<any> { }
             const app: any = createResa();
 
             const SubscribeChild = subscribe({ sameModel: SameModel })(Child);
@@ -225,10 +225,60 @@ describe('Subscribe', () => {
 
         expect(ref.current).toEqual(container);
     });
+});
 
+
+@init<MyModelState>({
+    name: 'model',
+    namespace: 'namespace',
+    state: {
+        count: 0,
+    },
+})
+class NamespaceModel extends Model<MyModelState> {
+    @effect()
+    *add() {
+        this.fulfilled({
+            count: this.state.count + 1,
+        });
+    }
+}
+
+@init<MyModelState>({
+    name: 'model1',
+    namespace: 'namespace1',
+    state: {
+        count: 0,
+    },
+})
+class NamespaceModel1 extends Model<MyModelState> {
+    @effect()
+    *add() {
+        this.fulfilled({
+            count: this.state.count + 1,
+        });
+    }
+}
+
+@init<MyModelState>({
+    name: 'model1',
+    state: {
+        count: 0,
+    },
+})
+class ConnectedModel extends Model<MyModelState> {
+    @effect()
+    *add() {
+        this.fulfilled({
+            count: this.state.count + 1,
+        });
+    }
+}
+
+describe('Subscribe namespace', () => {
     it('put model in namespace', () => {
         const app = createResa();
-        const SubscribeChild = subscribe({ myModel: MyModel }, { namespace: 'namespace'})(Child);
+        const SubscribeChild = subscribe({ myModel: NamespaceModel })(Child);
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <SubscribeChild />
@@ -237,7 +287,48 @@ describe('Subscribe', () => {
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         container.render = jest.fn();
         app.models['namespace/model'].add();
-        app.models['namespace/model'].ss();
         expect(container.render).toBeCalledTimes(1);
     });
-});
+
+    it('subscrbe two model in different namespace', () => {
+        const app = createResa();
+        class Child extends React.Component<any, any> {
+            render() {
+                return <div>{this.props.myModel.state.count}{this.props.myModel1.state.count}</div>;
+            }
+        }
+        const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: NamespaceModel1 })(Child);
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <SubscribeChild />
+            </Provider>,
+        );
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        container.render = jest.fn();
+        app.models['namespace/model'].add();
+        app.models['namespace1/model1'].add();
+        expect(container.render).toBeCalledTimes(2);
+    });
+
+    it('subscribe connected model', () => {
+        const app = createResa();
+        app.registerModel(new ConnectedModel());
+
+        class Child extends React.Component<any, any> {
+            render() {
+                return <div>{this.props.myModel.state.count}{this.props.myModel1.state.count}</div>;
+            }
+        }
+        const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: ConnectedModel })(Child);
+        const tree = TestUtils.renderIntoDocument(
+            <Provider store={app.store} resa={app}>
+                <SubscribeChild />
+            </Provider>,
+        );
+        const container = TestUtils.findRenderedComponentWithType(tree, Child);
+        container.render = jest.fn();
+        app.models['namespace/model'].add();
+        app.models.model1.add();
+        expect(container.render).toBeCalledTimes(2);
+    });
+})

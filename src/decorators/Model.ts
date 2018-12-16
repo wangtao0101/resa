@@ -19,6 +19,12 @@ export default class Model<S = any> {
             writable: false,
             configurable: false,
         })
+        Object.defineProperty(this, 'namespace', {
+            value: this.constructor['__namespace__'],
+            enumerable: true,
+            writable: false,
+            configurable: false,
+        })
         Object.defineProperty(this, 'state', {
             value: clone(this.constructor['__state__']),
             enumerable: true,

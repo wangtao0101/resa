@@ -15,8 +15,8 @@ declare module 'resa' {
 
     export function reducer(pure?: boolean) : MethodDecorator;
 
-    export function init<S = any>({ name, state }
-        : { name?: string, state: S}) : ClassDecorator;
+    export function init<S = any>({ name, namespace, state }
+        : { name?: string, namespace?: string, state: S}) : ClassDecorator;
 
     export function wapper(cb: IterableIterator<any>): Promise<any>;
 
@@ -78,15 +78,10 @@ declare module 'resa' {
         [key: string]: Model<any> | ModelType;
     }
 
-    interface Config {
-        namespace?: string;
-        dependence?: string[];
-    }
-
     interface Subscribe {
         <T>(
             mapContainerToProps: T,
-            config?: Config,
+            dependences?: string[],
         ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
     }
 

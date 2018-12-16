@@ -5,7 +5,7 @@ import createResa from 'resa';
 
 describe('Model test', () => {
     test('default Model', () => {
-        @init({ state: 0})
+        @init({ namespace: 'aa', state: 0})
         class A extends Model{
             @effect()
             * add() {
@@ -19,6 +19,7 @@ describe('Model test', () => {
         }
         const B = new A();
         expect(B['name']).toEqual('A');
+        expect(B['namespace']).toEqual('aa');
         expect(Object.prototype.toString.call(B['effects'].add[0])).toEqual('[object Function]')
         expect(B['effects'].add[1]).toEqual('takeEvery');
         expect(B['reducers'].minus(1)).toEqual(0);

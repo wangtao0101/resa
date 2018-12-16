@@ -7,6 +7,7 @@ describe('init decorator', () => {
         }
         expect(A['__name__']).toEqual('A');
         expect(A['__state__']).toEqual({});
+        expect(A['__namespace__']).toEqual('');
     });
 
     test('name parameter', () => {
@@ -15,6 +16,15 @@ describe('init decorator', () => {
         }
         expect(A['__name__']).toEqual('ccc');
         expect(A['__state__']).toEqual({});
+    });
+
+    test('namespace parameter', () => {
+        @init({ name: 'ccc', namespace: 'aa', state : {} })
+        class A extends Model{
+        }
+        expect(A['__name__']).toEqual('ccc');
+        expect(A['__state__']).toEqual({});
+        expect(A['__namespace__']).toEqual('aa');
     });
 
     test('state parameter', () => {
