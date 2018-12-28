@@ -276,7 +276,7 @@ resa.register(new AppModel());
     }
   }
 }
-</code></pre><p><strong>&#x6A21;&#x578B;&#x5728;&#x540C;&#x4E00;namespace&#x4E2D;&#x4E0D;&#x80FD;&#x91CD;&#x590D;&#x6CE8;&#x518C;&#xFF0C;&#x4F46;&#x662F;&#x53EF;&#x4EE5;&#x5728;&#x4E0D;&#x540C;&#x7684;namespace&#x4E2D;&#x6CE8;&#x518C;</strong></p>
+</code></pre><p><strong>&#x6A21;&#x578B;&#x5728;&#x540C;&#x4E00;namespace&#x4E2D;&#x4E0D;&#x80FD;&#x91CD;&#x590D;&#x6CE8;&#x518C;</strong></p>
 <h2 id="&#x6A21;&#x578B;&#x4F7F;&#x7528;">&#x6A21;&#x578B;&#x4F7F;&#x7528;</h2>
 <p>&#x8C03;&#x7528;resa&#x4E0A;&#x7684;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x6765;&#x8C03;&#x7528;&#x5BF9;&#x5E94;&#x7684;reducer&#x548C;effect&#xFF0C;Action&#x521B;&#x5EFA;&#x51FD;&#x6570;&#x7684;&#x540D;&#x79F0;&#x548C;&#x53C2;&#x6570;&#x548C;&#x4F60;&#x5728;&#x6A21;&#x578B;&#x4E2D;&#x5B9A;&#x4E49;&#x7684;
 reducer&#x548C;effect&#x4E00;&#x6A21;&#x4E00;&#x6837;&#x3002;</p>
@@ -335,7 +335,14 @@ resa.models.appModel.add(1);
   },
 }
 </code></pre><p>&#x5982;&#x679C;&#x6A21;&#x578B;&#x6CE8;&#x518C;&#x5728;namespace&#x4E2D;&#xFF0C;&#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;namespace/${&#x6A21;&#x578B;&#x540D;&#x79F0;}&#x8C03;&#x7528;&#x6A21;&#x578B;</p>
-<pre class="language-"><code>resa.register(new AppModel(), &apos;namespace&apos;);
+<pre class="language-"><code>@init({
+    name: &apos;appModel&apos;,
+    namespace: &apos;namespace&apos;,
+    state: {
+        count: 0
+    }
+})
+</code></pre><pre class="language-"><code>resa.register(new AppModel());
 resa.models.[&apos;namespace/model&apos;].add(1);
 </code></pre><h2 id="&#x5728;react&#x4E2D;&#x4F7F;&#x7528;&#x6A21;&#x578B;">&#x5728;react&#x4E2D;&#x4F7F;&#x7528;&#x6A21;&#x578B;</h2>
 <p>&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;&#x4F60;&#x5728;react&#x4E2D;&#x4F7F;&#x7528;createResa&#x8FD4;&#x56DE;&#x7684;resa&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x63D0;&#x4F9B;&#x4E86;Provider&#x7EC4;&#x4EF6;&#x548C;subscribe&#x9AD8;&#x9636;&#x51FD;&#x6570;&#x3002;</p>
@@ -347,8 +354,8 @@ resa.models.[&apos;namespace/model&apos;].add(1);
 </code></pre><h3 id="subscribe">subscribe</h3>
 <p>subscribe&#x548C;react-redux&#x7684;<a href="https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options" target="_blank">connect&#x51FD;&#x6570;&#x7528;&#x6CD5;</a>&#x7C7B;&#x4F3C;&#xFF0C;&#x4E0D;&#x8FC7;&#x5B83;&#x66F4;&#x5F3A;&#x5927;&#x3002;</p>
 <p>&#x4F7F;&#x7528;subscribe&#x8FDE;&#x63A5;&#x6A21;&#x578B;</p>
-<pre class="language-"><code>const NewApp = subscribe({ appModel: AppModel }, { namespace: &apos;namespace&apos;, dependence: [] })(App);
-</code></pre><p>subscribe&#x51FD;&#x6570;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;mapper&#xFF0C;&#x4E0A;&#x8FF0;&#x7684;&#x4EE3;&#x7801;&#x8868;&#x793A;&#x5C06;AppModel&#x8FD9;&#x4E2A;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;App&#x7684;props&#x4E2D;&#xFF0C;&#x6CE8;&#x5165;&#x5230;props&#x7684;&#x5C5E;&#x6027;&#x540D;&#x79F0;&#x4E3A;appModel&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;config&#x5BF9;&#x8C61;&#xFF0C;&#x5176;&#x4E2D;namespace&#x8868;&#x793A;&#x6CE8;&#x518C;&#x7684;&#x65F6;&#x5019;&#x6CE8;&#x518C;&#x5728;&#x67D0;&#x4E2A;namespace&#x4E2D;, dependence&#x8868;&#x793A;state&#x7684;&#x67D0;&#x4E2A;&#x5C5E;&#x6027;&#x5982;&#x679C;&#x53D8;&#x5316;&#x4F1A;&#x5BFC;&#x81F4;&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x3002;</p>
+<pre class="language-"><code>const NewApp = subscribe({ appModel: AppModel }, [])(App);
+</code></pre><p>subscribe&#x51FD;&#x6570;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;mapper&#xFF0C;&#x4E0A;&#x8FF0;&#x7684;&#x4EE3;&#x7801;&#x8868;&#x793A;&#x5C06;AppModel&#x8FD9;&#x4E2A;&#x6A21;&#x578B;&#x6CE8;&#x5165;&#x5230;App&#x7684;props&#x4E2D;&#xFF0C;&#x6CE8;&#x5165;&#x5230;props&#x7684;&#x5C5E;&#x6027;&#x540D;&#x79F0;&#x4E3A;appModel&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;dependence&#x8868;&#x793A;state&#x7684;&#x67D0;&#x4E2A;&#x5C5E;&#x6027;&#x5982;&#x679C;&#x53D8;&#x5316;&#x4F1A;&#x5BFC;&#x81F4;&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x3002;</p>
 <h4 id="&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x7684;&#x65F6;&#x673A;">&#x7EC4;&#x4EF6;&#x66F4;&#x65B0;&#x7684;&#x65F6;&#x673A;</h4>
 <p>subscribe&#x51FD;&#x6570;&#x751F;&#x6210;&#x7684;&#x9AD8;&#x9636;&#x7EC4;&#x4EF6;&#x4F1A;&#x76D1;&#x542C;&#x7EC4;&#x4EF6;&#x5BF9;state&#x7684;&#x4F7F;&#x7528;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x4F7F;&#x7528;&#x4E86;state&#x7684;&#x67D0;&#x4E00;&#x4E2A;&#x5C5E;&#x6027;&#xFF0C;&#x90A3;&#x4E48;&#x5F53;&#x8FD9;&#x4E2A;&#x5C5E;&#x6027;&#x53D8;&#x5316;&#x7684;&#x65F6;&#x5019;&#x5C31;&#x4F1A;&#x66F4;&#x65B0;&#x7EC4;&#x4EF6;&#xFF08;&#x7EC4;&#x4EF6;&#x4E0D;&#x80FD;&#x662F;PureComponent&#xFF09;&#x3002;
 &#x5982;&#x679C;&#x67D0;&#x4E2A;&#x5C5E;&#x6027;&#x5728;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E2D;&#x624D;&#x4F1A;&#x88AB;&#x4F7F;&#x7528;&#xFF0C;&#x8FD9;&#x65F6;&#x9700;&#x8981;&#x663E;&#x5F0F;&#x7684;&#x544A;&#x8BC9;subscribe&#x54EA;&#x4E2A;&#x5C5E;&#x6027;&#x53D8;&#x5316;&#x540E;&#x7EC4;&#x4EF6;&#x4F1A;&#x66F4;&#x65B0;&#x3002;</p>
@@ -412,7 +419,7 @@ add() {
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"智能提示","level":"1.3.3","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2018-11-16T06:09:55.458Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-11-16T06:12:20.611Z"},"basePath":".","book":{"language":"zh-cn"}});
+            gitbook.page.hasChanged({"page":{"title":"使用模型","level":"1.3.2","depth":2,"next":{"title":"智能提示","level":"1.3.3","depth":2,"path":"IntelliSense.md","ref":"./IntelliSense.md","articles":[]},"previous":{"title":"定义模型","level":"1.3.1","depth":2,"path":"model.md","ref":"./model.md","articles":[]},"dir":"ltr"},"config":{"plugins":["prism","-fontsettings","-highlight","github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/wangtao0101/resa"},"prism":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":false,"twitter":false,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Resa","language":"zh-cn","links":{"sharing":{"facebook":false,"twitter":false}},"gitbook":"*"},"file":{"path":"model-usage.md","mtime":"2018-12-28T05:27:30.576Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-12-28T05:58:24.182Z"},"basePath":".","book":{"language":"zh-cn"}});
         });
     </script>
 </div>
