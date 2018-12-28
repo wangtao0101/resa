@@ -388,11 +388,12 @@ export default function createResa(options?: Options) {
      * register for 4.0, support config namespace in subscribe
      * @param model
      */
-    function register(model, namespace = '') {
+    function register(model, newNamespace) {
         // @ts-ignore
         const app = this;
         const store = app.store;
         const name = model.name;
+        const namespace = newNamespace || model.namespace;
 
         if (process.env.NODE_ENV !== 'production') {
             checkModel(model, app, namespace);

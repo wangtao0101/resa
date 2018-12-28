@@ -35,7 +35,7 @@ resa.register(new AppModel(), 'namespace');
 }
 ```
 
-**模型在同一namespace中不能重复注册，但是可以在不同的namespace中注册**
+**模型在同一namespace中不能重复注册**
 
 ## 模型使用
 调用resa上的Action创建函数来调用对应的reducer和effect，Action创建函数的名称和参数和你在模型中定义的
@@ -113,7 +113,16 @@ this.fulfilled会派发一个Action用来调用内置reducer，格式如下：
 
 如果模型注册在namespace中，你可以使用namespace/${模型名称}调用模型
 ```
-resa.register(new AppModel(), 'namespace');
+@init({
+    name: 'appModel',
+    namespace: 'namespace',
+    state: {
+        count: 0
+    }
+})
+```
+```
+resa.register(new AppModel());
 resa.models.['namespace/model'].add(1);
 ```
 
@@ -133,10 +142,10 @@ subscribe和react-redux的[connect函数用法](https://github.com/reactjs/react
 
 使用subscribe连接模型
 ```
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace', dependence: [] })(App);
+const NewApp = subscribe({ appModel: AppModel }, [])(App);
 ```
 
-subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数是一个config对象，其中namespace表示注册的时候注册在某个namespace中, dependence表示state的某个属性如果变化会导致组件更新。
+subscribe函数的第一个参数是一个mapper，上述的代码表示将AppModel这个模型注入到App的props中，注入到props的属性名称为appModel，第二个参数dependence表示state的某个属性如果变化会导致组件更新。
 
 #### 组件更新的时机
 subscribe函数生成的高阶组件会监听组件对state的使用，如果你使用了state的某一个属性，那么当这个属性变化的时候就会更新组件（组件不能是PureComponent）。

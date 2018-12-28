@@ -51,6 +51,7 @@ interface AppState {
 
 @init<AppState>({
     name: 'appModel',
+    namespace: 'namespace',
     state: {
         count: 0 // type check here
     }
@@ -105,7 +106,7 @@ class App extends React.Component<AppProps> {
     }
 }
 
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+const NewApp = subscribe({ appModel: AppModel })(App);
 export default NewApp;
 ```
 wapper with Provider like react-redux

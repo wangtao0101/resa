@@ -51,6 +51,7 @@ interface AppState {
 
 @init<AppState>({
     name: 'appModel',
+    namespace: 'namespace',
     state: {
         count: 0 // 类型检查
     }
@@ -104,7 +105,7 @@ class App extends React.Component<AppProps> {
     }
 }
 
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+const NewApp = subscribe({ appModel: AppModel })(App);
 export default NewApp;
 ```
 使用Provider包裹应用，就像react-redux
