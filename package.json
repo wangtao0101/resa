@@ -55,11 +55,11 @@
     "gh-pages": "^1.1.0",
     "jest": "^23.6.0",
     "nyc": "^11.0.3",
-    "react": "16.4.0",
-    "react-dom": "16.4.0",
-    "react-test-renderer": "16.4.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-test-renderer": "^16.7.0",
     "rimraf": "^2.6.2",
-    "ts-jest": "^23.1.4",
+    "ts-jest": "^23.10.5",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"
   },
@@ -68,8 +68,7 @@
       "^.+\\.(ts|tsx)$": "ts-jest"
     },
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
-      "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
+      "<rootDir>/src/**/*.test.ts?(x)"
     ],
     "moduleFileExtensions": [
       "tsx",
