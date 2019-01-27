@@ -49,6 +49,9 @@ export default function subscribe(modelMap, dependences: string[] = []) {
                 this.subscriptionKey = `${this.storeKey}Subscription`;
                 this.resa = props.theme[this.resaKey];
                 this.modelMetaMap = {};
+                /**
+                 * register must befere subscriptions, so current component can ingore the update by redux replaceReducer.
+                 */
                 this.tryRegister();
                 this.updateObservable();
                 this.initSubscription();
