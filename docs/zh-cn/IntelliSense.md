@@ -13,6 +13,7 @@ init注解支持泛型传入模型的state类型，这样初始化的state会获
 ```
 @init<AppState>({
     name: 'appModel',
+    namespace: 'namespace',
     state: {
         count: 0 // 获得类型检查
     }
@@ -69,7 +70,7 @@ class App extends React.Component<AppProps> {
 
 最后连接组件。
 ```
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+const NewApp = subscribe({ appModel: AppModel })(App);
 ```
 
 使用NewApp组件时会获得JSX类型检查。

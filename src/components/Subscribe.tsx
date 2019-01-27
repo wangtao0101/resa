@@ -21,12 +21,12 @@ interface SubscribeProps {
 }
 
 
-function checkModelType(model, modelTypeName) {
-    const instanceCon = modelTypeName[model.name];
+function checkModelType(model, name, modelTypeName) {
+    const instanceCon = modelTypeName[name];
     if (instanceCon == null) {
-        modelTypeName[model.name] = model.constructor;
+        modelTypeName[name] = model.constructor;
     } else {
-        invariant(instanceCon === model.constructor, `Different Model should not use the same model name, Please check name: ${model.name}`);
+        invariant(instanceCon === model.constructor, `Different Model should not use the same model name, Please check name: ${name}`);
     }
 }
 
@@ -71,18 +71,18 @@ export default function subscribe(modelMap, dependences: string[] = []) {
                 Object.keys(modelMap).map(key => {
                     const modelItem = modelMap[key];
                     const instance = new modelItem();
+                    const namespace = instance.namespace;
+                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}` ;
+                    const model = models[name];
 
                     if (process.env.NODE_ENV !== 'production') {
-                        checkModelType(instance, this.resa.modelTypeName);
+                        checkModelType(instance, name, this.resa.modelTypeName);
 
                         invariant(Object.prototype.toString.call(instance.state) === '[object Object]', 'The shape of state must be an object');
                     }
 
-                    const namespace = instance.namespace;
-                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}` ;
-                    const model = models[name];
                     if (model == null) {
-                        this.resa.register(instance, namespace);
+                        this.resa.register(instance);
                     }
                     const depandenceMap = {};
                     dependences.map((dp: string) => {

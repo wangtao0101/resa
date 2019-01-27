@@ -676,7 +676,7 @@ describe('new register', () => {
         });
     });
 
-    test('register tow model in same namespace', () => {
+    test('register two model in same namespace', () => {
         const app: any = createResa();
         app.register(new MyModel(), 'namespace');
         app.register(new SecondModel(), 'namespace');
