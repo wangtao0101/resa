@@ -82,7 +82,13 @@ declare module 'resa' {
         <T>(
             mapContainerToProps: T,
             dependences?: string[],
+            options?: ExtraOptions,
         ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
+    }
+
+
+    interface ExtraOptions {
+        forwardRef: boolean;
     }
 
     export const subscribe: Subscribe;
@@ -200,28 +206,28 @@ declare module 'resa' {
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
             mapDispatchToProps: null | undefined,
             mergeProps: null | undefined,
-            options: ReactRedux.Options<TStateProps, TOwnProps>
+            options: ExtraOptions,
         ): ReactRedux.InferableComponentEnhancerWithProps<ReactRedux.DispatchProp<any> & TStateProps, TOwnProps>;
 
         <no_state = {}, TDispatchProps = {}, TOwnProps = {}>(
             mapStateToProps: null | undefined,
             mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>,
             mergeProps: null | undefined,
-            options: ReactRedux.Options<no_state, TOwnProps>
+            options: ExtraOptions,
         ): ReactRedux.InferableComponentEnhancerWithProps<TDispatchProps, TOwnProps>;
 
         <TStateProps = {}, TDispatchProps = {}, TOwnProps = {}, State = {}>(
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
             mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>,
             mergeProps: null | undefined,
-            options: ReactRedux.Options<TStateProps, TOwnProps>
+            options: ExtraOptions,
         ): ReactRedux.InferableComponentEnhancerWithProps<TStateProps & TDispatchProps, TOwnProps>;
 
         <TStateProps = {}, TDispatchProps = {}, TOwnProps = {}, TMergedProps = {}, State = {}>(
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
             mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>,
             mergeProps: ReactRedux.MergeProps<TStateProps, TDispatchProps, TOwnProps, TMergedProps>,
-            options: ReactRedux.Options<TStateProps, TOwnProps, TMergedProps>
+            options: ExtraOptions,
         ): ReactRedux.InferableComponentEnhancerWithProps<TMergedProps, TOwnProps>;
     }
 
