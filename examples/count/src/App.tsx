@@ -31,5 +31,5 @@ class App extends React.Component<AppProps> {
     }
 }
 
-const NewApp = subscribe({ appModel: AppModel }, { namespace: 'namespace' })(App);
+const NewApp = subscribe({ appModel: AppModel })(App);
 export default NewApp;

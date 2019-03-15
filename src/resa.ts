@@ -292,7 +292,9 @@ export default function createResa(options?: Options) {
 
             invariant(
                 app.store.matrixReducers[model.name] == null,
-                `name of model should be different of exist model name or exist namespace, please check model name: ${model.name}`,
+                `name of model should be different of exist model name or exist namespace, please check model name: ${
+                    model.name
+                }`,
             );
         }
 
@@ -492,14 +494,21 @@ export default function createResa(options?: Options) {
      */
     let finalMiddlewares: any = middlewares.concat(sagaMiddleware, reduxSagaMiddleware);
 
-    // @ts-ignore
-    if (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__) {
-        // redux dev tool extension for chrome
-        finalMiddlewares = compose(
-            applyMiddleware(...finalMiddlewares),
-            // @ts-ignore
-            window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions),
-        );
+    if (process.env.NODE_ENV !== 'production') {
+        // @ts-ignore
+        if (window.__REDUX_DEVTOOLS_EXTENSION__) {
+            // redux dev tool extension for chrome
+            finalMiddlewares = compose(
+                applyMiddleware(...finalMiddlewares),
+                // @ts-ignore
+                window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions),
+            );
+        } else {
+            // remote redux dev tool
+            const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools;
+            const composeEnhancers = composeWithDevTools(reduxDevToolOptions);
+            finalMiddlewares = composeEnhancers(applyMiddleware(...finalMiddlewares));
+        }
     } else {
         finalMiddlewares = applyMiddleware(...finalMiddlewares);
     }

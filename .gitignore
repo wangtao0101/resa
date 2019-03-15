@@ -9,3 +9,4 @@ docs/_book
 yarn-error.log
 
 examples/count/package-lock.json
+examples/count/build

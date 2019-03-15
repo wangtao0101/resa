@@ -7,6 +7,7 @@ interface AppState {
 
 @init<AppState>({
     name: 'appModel',
+    namespace: 'namespace',
     state: {
         count: 0 // type check here
     }
