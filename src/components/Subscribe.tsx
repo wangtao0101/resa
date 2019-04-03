@@ -20,17 +20,23 @@ interface SubscribeProps {
     forwardedRef: any;
 }
 
+interface ExtraOptions {
+    forwardRef?: any;
+}
 
 function checkModelType(model, name, modelTypeName) {
     const instanceCon = modelTypeName[name];
     if (instanceCon == null) {
         modelTypeName[name] = model.constructor;
     } else {
-        invariant(instanceCon === model.constructor, `Different Model should not use the same model name, Please check name: ${name}`);
+        invariant(
+            instanceCon === model.constructor,
+            `Different Model should not use the same model name, Please check name: ${name}`,
+        );
     }
 }
 
-export default function subscribe(modelMap, dependences: string[] = []) {
+export default function subscribe(modelMap, dependences: string[] = [], extraOptions: ExtraOptions = {}) {
     return function wrapWithSubscribe(WrappedComponent) {
         class Subscribe extends React.PureComponent<SubscribeProps, any> {
             resa: any;
@@ -75,13 +81,16 @@ export default function subscribe(modelMap, dependences: string[] = []) {
                     const modelItem = modelMap[key];
                     const instance = new modelItem();
                     const namespace = instance.namespace;
-                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}` ;
+                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}`;
                     const model = models[name];
 
                     if (process.env.NODE_ENV !== 'production') {
                         checkModelType(instance, name, this.resa.modelTypeName);
 
-                        invariant(Object.prototype.toString.call(instance.state) === '[object Object]', 'The shape of state must be an object');
+                        invariant(
+                            Object.prototype.toString.call(instance.state) === '[object Object]',
+                            'The shape of state must be an object',
+                        );
                     }
 
                     if (model == null) {
@@ -90,7 +99,7 @@ export default function subscribe(modelMap, dependences: string[] = []) {
                     const depandenceMap = {};
                     dependences.map((dp: string) => {
                         depandenceMap[dp] = true;
-                    })
+                    });
                     this.modelMetaMap[key] = {
                         name,
                         depandenceMap,
@@ -118,6 +127,12 @@ export default function subscribe(modelMap, dependences: string[] = []) {
 
             componentDidMount() {
                 this.subscription.trySubscribe();
+            }
+
+            componentWillUnmount() {
+                if (this.subscription) this.subscription.tryUnsubscribe();
+                this.subscription = null;
+                this.notifyNestedSubs = () => {};
             }
 
             calculateShouldUpdate = () => {
@@ -180,10 +195,16 @@ export default function subscribe(modelMap, dependences: string[] = []) {
         // @ts-ignore
         const TargetComponent = hoistNonReactStatic(Subscribe, WrappedComponent);
 
-        return React.forwardRef((props: any, ref: any) => (
-            <ThemeContext.Consumer>
-                {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
-            </ThemeContext.Consumer>
-        ));
+        if (extraOptions.forwardRef) {
+            return React.forwardRef((props: any, ref: any) => (
+                <ThemeContext.Consumer>
+                    {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+                </ThemeContext.Consumer>
+            ));
+        }
+
+        return (props: any) => (
+            <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
+        );
     };
 }

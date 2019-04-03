@@ -7,13 +7,13 @@ const model = {
     name: 'model',
     state: {},
     effects: {
-        * add(payload) {
+        *add(payload) {
             // @ts-ignore
             this.fulfilled(payload);
             yield 1;
         },
 
-        * minus(payload) {
+        *minus(payload) {
             // @ts-ignore
             this.reject(payload);
             yield 1;
@@ -25,13 +25,13 @@ const model1 = {
     name: 'model1',
     state: {},
     effects: {
-        * add(payload) {
+        *add(payload) {
             // @ts-ignore
             this.fulfilled(payload);
             yield 1;
         },
 
-        * minus(payload) {
+        *minus(payload) {
             // @ts-ignore
             this.reject(payload);
             yield 1;
@@ -39,7 +39,8 @@ const model1 = {
     },
 };
 
-class Child extends React.Component { // eslint-disable-line
+class Child extends React.Component {
+    // eslint-disable-line
     render() {
         return <div />;
     }
@@ -53,18 +54,21 @@ describe('Connect', () => {
             a: 'a',
         });
 
-        const func = () => { };
+        const func = () => {};
 
         const mapDispatchToProps = (_app, _dispatch) => ({
             func,
         });
 
-        const ConnectedChild = connect(mapStateToProps, mapDispatchToProps)(Child);
+        const ConnectedChild = connect(
+            mapStateToProps,
+            mapDispatchToProps,
+        )(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild />
-            </Provider>
+            </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
@@ -77,7 +81,8 @@ describe('Connect', () => {
         app.registerModel(model, 'model');
         app.models.model.add({ a: 'a' });
 
-        const mapStateToProps = ({ model }, state, ownProps) => ({ // eslint-disable-line
+        const mapStateToProps = ({ model }, state, ownProps) => ({
+            // eslint-disable-line
             a: state.model.a,
             ownProps,
         });
@@ -88,12 +93,12 @@ describe('Connect', () => {
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild c={'c'} />
-            </Provider>
+            </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-        expect(container.props.ownProps).toEqual({ c: 'c', forwardedRef: null, theme: expect.anything() });
+        expect(container.props.ownProps).toEqual({ c: 'c', theme: expect.anything() });
     });
 
     test('mapDispatchToProps can get models and dispatch', () => {
@@ -105,12 +110,15 @@ describe('Connect', () => {
             }),
         });
 
-        const ConnectedChild = connect(null, mapDispatchToProps)(Child);
+        const ConnectedChild = connect(
+            null,
+            mapDispatchToProps,
+        )(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild />
-            </Provider>
+            </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
@@ -123,14 +131,19 @@ describe('Connect', () => {
     test('get wapperInstance using React.createRef()', () => {
         const app = createResa();
 
-        const ConnectedChild = connect(null, null, null)(Child);
+        const ConnectedChild = connect(
+            null,
+            null,
+            null,
+            { forwardRef: true },
+        )(Child);
 
         const ref = React.createRef();
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild ref={ref} c={'c'} />
-            </Provider>
+            </Provider>,
         );
 
         const child = TestUtils.findRenderedComponentWithType(tree, Child);
@@ -140,7 +153,12 @@ describe('Connect', () => {
     test('should use React.createRef()', () => {
         const app = createResa();
 
-        const ConnectedChild = connect(null, null, null)(Child);
+        const ConnectedChild = connect(
+            null,
+            null,
+            null,
+            { forwardRef: true },
+        )(Child);
 
         const ref = () => {};
 
@@ -148,7 +166,7 @@ describe('Connect', () => {
             TestUtils.renderIntoDocument(
                 <Provider store={app.store} resa={app}>
                     <ConnectedChild ref={ref} />
-                </Provider>
+                </Provider>,
             );
         }).toThrow('You must use React.createRef() to create ref.');
     });
@@ -157,7 +175,8 @@ describe('Connect', () => {
         const app = createResa();
         app.registerModel(model, 'model');
         app.registerModel(model1, 'model1');
-        const mapDispatchToProps = ({ model, model1 }, dispatch) => ({ // eslint-disable-line
+        const mapDispatchToProps = ({ model, model1 }, dispatch) => ({
+            // eslint-disable-line
             func: () => ({
                 dispatch,
                 model,
@@ -166,12 +185,15 @@ describe('Connect', () => {
         });
 
         // @ts-ignore
-        const ConnectedChild = connect(null, mapDispatchToProps)(Child, 'model', 'model1');
+        const ConnectedChild = connect(
+            null,
+            mapDispatchToProps,
+        )(Child, 'model', 'model1');
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild />
-            </Provider>
+            </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
@@ -183,7 +205,6 @@ describe('Connect', () => {
     });
 });
 
-
 describe('connectModel', () => {
     test('conncet model success', () => {
         const app = createResa();
@@ -193,12 +214,15 @@ describe('connectModel', () => {
             a: 'a',
         });
 
-        const ConnectedChild = connect(mapStateToProps, ['model'])(Child);
+        const ConnectedChild = connect(
+            mapStateToProps,
+            ['model'],
+        )(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <ConnectedChild />
-            </Provider>
+            </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
@@ -217,7 +241,7 @@ describe('connectModel', () => {
         TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
                 <DecoratorChildAny ref={ref} />
-            </Provider>
+            </Provider>,
         );
 
         // @ts-ignore

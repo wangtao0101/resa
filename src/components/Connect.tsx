@@ -4,14 +4,13 @@ import * as hoistNonReactStatic from 'hoist-non-react-statics';
 import * as invariant from 'invariant';
 import { storeShape, subscriptionShape, resaShape, ThemeContext } from './Provider';
 
-interface extraOptions {
-    storeKey: any;
-    withRef: any;
+interface ExtraOptions {
+    forwardRef?: any;
 }
 
 export default function createConnect() {
-    return (mapStateToProps, mapDispatchToProps, mergeProps = null, extraOptions = {}) => {
-        const storeKey = (extraOptions as extraOptions).storeKey || 'store';
+    return (mapStateToProps, mapDispatchToProps, mergeProps = null, extraOptions: ExtraOptions = {}) => {
+        const storeKey = 'store';
         const resaKey = `${storeKey}Resa`;
         const subscriptionKey = `${storeKey}Subscription`;
 
@@ -27,8 +26,8 @@ export default function createConnect() {
                 wrappedInstance: null;
                 static WrappedComponent: any;
                 static displayName: string;
-                static childContextTypes: { [x: string]: any;[x: number]: any; };
-                static contextTypes: { [x: string]: any;[x: number]: any; };
+                static childContextTypes: { [x: string]: any; [x: number]: any };
+                static contextTypes: { [x: string]: any; [x: number]: any };
                 ConnectedComponent: any;
                 constructor(props, context) {
                     super(props, context);
@@ -58,13 +57,16 @@ export default function createConnect() {
                         return dispatch => mapDispatchToProps(this.resa.models, dispatch);
                     })();
 
-                    // add withRef for all use case, user can use React.createRef() to get ref
-                    (extraOptions as extraOptions).withRef = true;
+                    // transform forwardRef to widthRef for react-redux v5
+                    const reduxExtraOptions = {
+                        withRef: extraOptions.forwardRef || false,
+                    };
+
                     this.ConnectedComponent = reactReduxConnect(
                         newMapStateToProps,
                         newMapDispatchToProps,
                         mergeProps,
-                        extraOptions,
+                        reduxExtraOptions,
                     )(WrappedComponent);
                 }
 
@@ -108,11 +110,17 @@ export default function createConnect() {
             // @ts-ignore
             const TargetComponent = hoistNonReactStatic(Connect, WrappedComponent);
 
-            return React.forwardRef((props: any, ref: any) => (
-                <ThemeContext.Consumer>
-                    {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
-                </ThemeContext.Consumer>
-            ));
+            if (extraOptions.forwardRef) {
+                return React.forwardRef((props: any, ref: any) => (
+                    <ThemeContext.Consumer>
+                        {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+                    </ThemeContext.Consumer>
+                ));
+            }
+
+            return (props: any) => (
+                <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
+            );
         };
     };
 }

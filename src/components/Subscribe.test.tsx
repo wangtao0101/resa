@@ -180,7 +180,7 @@ describe('Subscribe', () => {
                 name: 'model',
                 state: {},
             })
-            class SameModel extends Model<any> { }
+            class SameModel extends Model<any> {}
 
             const app: any = createResa();
             const SubscribeChild = subscribe({ myModel: MyModel, sameModel: SameModel })(Child);
@@ -198,7 +198,7 @@ describe('Subscribe', () => {
                 name: 'model',
                 state: 0,
             })
-            class SameModel extends Model<any> { }
+            class SameModel extends Model<any> {}
             const app: any = createResa();
 
             const SubscribeChild = subscribe({ sameModel: SameModel })(Child);
@@ -212,7 +212,7 @@ describe('Subscribe', () => {
 
     it('get ref using React.createRef()', () => {
         const app = createResa();
-        const SubscribeChild = subscribe({ myModel: MyModel })(Child);
+        const SubscribeChild = subscribe({ myModel: MyModel }, [], { forwardRef: true })(Child);
 
         const ref = React.createRef();
 
@@ -226,7 +226,6 @@ describe('Subscribe', () => {
         expect(ref.current).toEqual(container);
     });
 });
-
 
 @init<MyModelState>({
     name: 'model',
@@ -294,7 +293,12 @@ describe('Subscribe namespace', () => {
         const app = createResa();
         class Child extends React.Component<any, any> {
             render() {
-                return <div>{this.props.myModel.state.count}{this.props.myModel1.state.count}</div>;
+                return (
+                    <div>
+                        {this.props.myModel.state.count}
+                        {this.props.myModel1.state.count}
+                    </div>
+                );
             }
         }
         const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: NamespaceModel1 })(Child);
@@ -316,7 +320,12 @@ describe('Subscribe namespace', () => {
 
         class Child extends React.Component<any, any> {
             render() {
-                return <div>{this.props.myModel.state.count}{this.props.myModel1.state.count}</div>;
+                return (
+                    <div>
+                        {this.props.myModel.state.count}
+                        {this.props.myModel1.state.count}
+                    </div>
+                );
             }
         }
         const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: ConnectedModel })(Child);
@@ -331,4 +340,4 @@ describe('Subscribe namespace', () => {
         app.models.model1.add();
         expect(container.render).toBeCalledTimes(2);
     });
-})
+});

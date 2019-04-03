@@ -6,7 +6,12 @@ const mapStateToProps = (_app, _state) => ({
 });
 
 // @ts-ignore
-@connect(mapStateToProps, ['model'], null)
+@connect(
+    mapStateToProps,
+    ['model'],
+    null,
+    { forwardRef: true },
+)
 export default class DecoratorChild extends React.Component<any, any> {
     render() {
         return <div />;
