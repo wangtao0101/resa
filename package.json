@@ -15,7 +15,8 @@
     "coveralls": "npm run coverage && npm run report",
     "prepublish": "npm run test && npm run build",
     "docs": "cd docs && gitbook install && gitbook serve",
-    "deploy": "cd docs && gitbook install && gitbook build && gh-pages -d _book"
+    "deploy": "cd docs && gitbook install && gitbook build && gh-pages -d _book",
+    "pb": "npm publish --registry=https://registry.npmjs.org/"
   },
   "repository": {
     "type": "git",
