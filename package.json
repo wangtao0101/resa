@@ -1,6 +1,6 @@
 {
   "name": "resa",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.",
   "main": "lib/index.js",
   "typings": "types/index.d.ts",
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/wangtao0101/resa#readme",
   "peerDependencies": {
-    "react": "^16.3.0-0"
+    "react": "^16.6.0"
   },
   "dependencies": {
     "@types/react-redux": "^5.0.14",
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
+    "@types/react": "^16.8.13",
     "coveralls": "^2.13.1",
     "cross-env": "^4.0.0",
     "enzyme": "^3.3.0",

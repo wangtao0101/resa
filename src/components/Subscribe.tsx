@@ -203,8 +203,8 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
             ));
         }
 
-        return (props: any) => (
+        return React.memo((props: any) => (
             <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
-        );
+        ));
     };
 }
