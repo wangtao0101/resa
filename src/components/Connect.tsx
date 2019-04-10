@@ -2,7 +2,6 @@ import * as React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
 import * as hoistNonReactStatic from 'hoist-non-react-statics';
 import * as invariant from 'invariant';
-import { storeShape, subscriptionShape, resaShape, ThemeContext } from './Provider';
 
 interface ExtraOptions {
     forwardRef?: any;
@@ -13,12 +12,6 @@ export default function createConnect() {
         const storeKey = 'store';
         const resaKey = `${storeKey}Resa`;
         const subscriptionKey = `${storeKey}Subscription`;
-
-        const contextTypes = {
-            [storeKey]: storeShape.isRequired,
-            [subscriptionKey]: subscriptionShape,
-            [resaKey]: resaShape.isRequired,
-        };
 
         return function wrapWithConnect(WrappedComponent) {
             class Connect extends React.Component<any, any> {
@@ -105,22 +98,20 @@ export default function createConnect() {
 
             const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
             Connect.displayName = `ResaConnect(${wrappedComponentName})`;
-            Connect.childContextTypes = contextTypes;
-            Connect.contextTypes = contextTypes;
             // @ts-ignore
             const TargetComponent = hoistNonReactStatic(Connect, WrappedComponent);
 
-            if (extraOptions.forwardRef) {
-                return React.forwardRef((props: any, ref: any) => (
-                    <ThemeContext.Consumer>
-                        {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
-                    </ThemeContext.Consumer>
-                ));
-            }
+            // if (extraOptions.forwardRef) {
+            //     return React.forwardRef((props: any, ref: any) => (
+            //         <ThemeContext.Consumer>
+            //             {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+            //         </ThemeContext.Consumer>
+            //     ));
+            // }
 
-            return (props: any) => (
-                <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
-            );
+            // return (props: any) => (
+            //     <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
+            // );
         };
     };
 }

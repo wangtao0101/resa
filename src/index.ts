@@ -1,4 +1,4 @@
-import createResa from './resa';
+import createResa from './createResa';
 import Provider from './components/Provider';
 import createConnect from './components/Connect';
 import subscribe from './components/Subscribe';

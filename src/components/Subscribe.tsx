@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as hoistNonReactStatic from 'hoist-non-react-statics';
-import { ThemeContext } from './Provider';
 import Subscription from 'react-redux/lib/utils/Subscription';
 import createObservable from '../utils/createObservable';
 import * as invariant from 'invariant';
@@ -177,14 +176,14 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                 return returnMap;
             };
 
-            render() {
-                const { theme, forwardedRef, ...rest } = this.props;
-                return (
-                    <ThemeContext.Provider value={this.theme}>
-                        <WrappedComponent ref={forwardedRef} {...rest} {...this.getModels()} />
-                    </ThemeContext.Provider>
-                );
-            }
+            // render() {
+            //     const { theme, forwardedRef, ...rest } = this.props;
+            //     return (
+            //         <ThemeContext.Provider value={this.theme}>
+            //             <WrappedComponent ref={forwardedRef} {...rest} {...this.getModels()} />
+            //         </ThemeContext.Provider>
+            //     );
+            // }
         }
 
         // @ts-ignore
@@ -195,16 +194,16 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
         // @ts-ignore
         const TargetComponent = hoistNonReactStatic(Subscribe, WrappedComponent);
 
-        if (extraOptions.forwardRef) {
-            return React.forwardRef((props: any, ref: any) => (
-                <ThemeContext.Consumer>
-                    {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
-                </ThemeContext.Consumer>
-            ));
-        }
+        // if (extraOptions.forwardRef) {
+        //     return React.forwardRef((props: any, ref: any) => (
+        //         <ThemeContext.Consumer>
+        //             {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
+        //         </ThemeContext.Consumer>
+        //     ));
+        // }
 
-        return React.memo((props: any) => (
-            <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
-        ));
+        // return React.memo((props: any) => (
+        //     <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
+        // ));
     };
 }

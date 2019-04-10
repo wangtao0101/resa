@@ -1,8 +1,8 @@
 import * as Immutable from 'immutable';
 import { delay } from 'redux-saga';
 import { call } from 'redux-saga/effects';
-import createResa from './resa';
-import { init, Model, effect } from 'resa';
+import createResa from './createResa';
+import { init, Model, effect } from './decorators';
 
 function myReducer(state = {}, _action) {
     return state;

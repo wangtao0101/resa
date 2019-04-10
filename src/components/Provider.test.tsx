@@ -1,37 +1,41 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import * as TestUtils from 'react-dom/test-utils';
-import createResa, { Provider } from 'resa';
+import { ResaContext } from './Context';
+import * as rtl from 'react-testing-library';
+import createResa from '../createResa';
+import Provider from './Provider';
 
 describe('Provider', () => {
-    const createChild = (storeKey = 'store') => {
-        const resaKey = `${storeKey}Resa`;
+    afterEach(() => rtl.cleanup());
+
+    const createChild = () => {
         class Child extends React.Component {
-            static contextTypes: { [x: string]: PropTypes.Validator<object>; };
             render() {
-                return <div />;
+                return (
+                    <ResaContext.Consumer>
+                        {({ store }) => {
+                            return <div data-testid="store">{store.getState().toString()}</div>;
+                        }}
+                    </ResaContext.Consumer>
+                );
             }
         }
-
-        Child.contextTypes = {
-            [storeKey]: PropTypes.object.isRequired,
-            [resaKey]: PropTypes.object.isRequired,
-        };
-
         return Child;
     };
     const Child = createChild();
 
-    test('should add resa to the child context', () => {
+    test('pass store and store.resa to redux provider', () => {
         const app = createResa();
-        const tree = TestUtils.renderIntoDocument(
-            <Provider resa={app}>
-                <Child />
-            </Provider>
-        );
 
-        const child = TestUtils.findRenderedComponentWithType(tree, Child);
-        expect(child.context.store).toBe(app.store);
-        expect(child.context.storeResa).toBe(app);
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        expect(() =>
+            rtl.render(
+                <Provider resa={app}>
+                    <Child />
+                </Provider>,
+            ),
+        ).not.toThrow();
+
+        spy.mockRestore();
     });
 });
