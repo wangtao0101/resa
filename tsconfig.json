@@ -17,6 +17,9 @@
       "noImplicitAny": false,
       "sourceMap": true,
       "baseUrl": ".",
+      "paths": {
+        "resa": ["src/index.ts"]
+      },
       "jsx": "react"
     },
     "include": [

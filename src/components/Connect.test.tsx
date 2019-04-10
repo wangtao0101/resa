@@ -66,7 +66,7 @@ describe('Connect', () => {
         )(Child);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild />
             </Provider>,
         );
@@ -82,7 +82,6 @@ describe('Connect', () => {
         app.models.model.add({ a: 'a' });
 
         const mapStateToProps = ({ model }, state, ownProps) => ({
-            // eslint-disable-line
             a: state.model.a,
             ownProps,
         });
@@ -91,14 +90,14 @@ describe('Connect', () => {
         const ConnectedChild = connect(mapStateToProps)(Child);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild c={'c'} />
             </Provider>,
         );
 
         const container = TestUtils.findRenderedComponentWithType(tree, Child);
         expect(container.props.a).toEqual('a');
-        expect(container.props.ownProps).toEqual({ c: 'c', theme: expect.anything() });
+        expect(container.props.ownProps).toEqual({ c: 'c' });
     });
 
     test('mapDispatchToProps can get models and dispatch', () => {
@@ -116,7 +115,7 @@ describe('Connect', () => {
         )(Child);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild />
             </Provider>,
         );
@@ -128,7 +127,7 @@ describe('Connect', () => {
         });
     });
 
-    test('get wapperInstance using React.createRef()', () => {
+    test.only('get wapperInstance using React.createRef()', () => {
         const app = createResa();
 
         const ConnectedChild = connect(
@@ -141,7 +140,7 @@ describe('Connect', () => {
         const ref = React.createRef();
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild ref={ref} c={'c'} />
             </Provider>,
         );
@@ -164,7 +163,7 @@ describe('Connect', () => {
 
         expect(() => {
             TestUtils.renderIntoDocument(
-                <Provider store={app.store} resa={app}>
+                <Provider resa={app}>
                     <ConnectedChild ref={ref} />
                 </Provider>,
             );
@@ -191,7 +190,7 @@ describe('Connect', () => {
         )(Child);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild />
             </Provider>,
         );
@@ -220,7 +219,7 @@ describe('connectModel', () => {
         )(Child);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <ConnectedChild />
             </Provider>,
         );
@@ -239,7 +238,7 @@ describe('connectModel', () => {
         const DecoratorChildAny: any = DecoratorChild;
 
         TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <DecoratorChildAny ref={ref} />
             </Provider>,
         );
