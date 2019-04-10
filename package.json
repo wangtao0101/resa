@@ -40,7 +40,7 @@
     "clone": "^2.1.1",
     "immutable": "^3.8.2 || ^4.0.0-rc.1",
     "invariant": "^2.2.2",
-    "react-redux": "^5.0.0",
+    "react-redux": "^7.0.1",
     "redux": "^2.0.0 || ^3.0.0",
     "redux-actions": "^2.0.0",
     "redux-immutable": "^4.0.0",
