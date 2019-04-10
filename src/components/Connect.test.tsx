@@ -188,7 +188,7 @@ describe('Connect', () => {
         const ConnectedChild = connect(
             null,
             mapDispatchToProps,
-        )(Child, 'model', 'model1');
+        )(Child);
 
         const tree = TestUtils.renderIntoDocument(
             <Provider store={app.store} resa={app}>
