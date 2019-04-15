@@ -9,16 +9,11 @@ interface ExtraOptions {
 }
 
 export default function createConnect() {
-    return (
-        mapStateToProps,
-        mapDispatchToProps,
-        mergeProps = null,
-        extraOptions: ExtraOptions,
-    ) => {
+    return (mapStateToProps, mapDispatchToProps, mergeProps = null, extraOptions: ExtraOptions = {}) => {
         const reactReduxExtraOptions = {
             context: ResaContext,
             ...extraOptions,
-        }
+        };
 
         return function wrapWithConnect(WrappedComponent) {
             function ConnectFunction(props) {
@@ -50,17 +45,22 @@ export default function createConnect() {
                 }, []);
 
                 const ConnectedComponent = React.useMemo(() => {
-                    return reactReduxConnect(newMapStateToProps, newMapDispatchToProps, mergeProps, reactReduxExtraOptions)(
-                        WrappedComponent,
-                    );
-                }, []);
+                    return reactReduxConnect(
+                        newMapStateToProps,
+                        newMapDispatchToProps,
+                        mergeProps,
+                        reactReduxExtraOptions,
+                    )(WrappedComponent);
+                }, [reactReduxExtraOptions.forwardRef, reactReduxExtraOptions.context]);
 
-                return <ConnectedComponent {...props} />;
+                const { forwardedRef, ...rest } = props;
+
+                return <ConnectedComponent {...rest} ref={forwardedRef} />;
             }
 
             ConnectFunction.WrappedComponent = WrappedComponent;
             const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-            const displayName = `ResaConnect(${wrappedComponentName})`
+            const displayName = `ResaConnect(${wrappedComponentName})`;
             ConnectFunction.displayName = displayName;
 
             if (reactReduxExtraOptions.forwardRef) {
