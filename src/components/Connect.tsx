@@ -51,7 +51,7 @@ export default function createConnect() {
                         mergeProps,
                         reactReduxExtraOptions,
                     )(WrappedComponent);
-                }, [reactReduxExtraOptions.forwardRef, reactReduxExtraOptions.context]);
+                }, [reactReduxExtraOptions.forwardRef, reactReduxExtraOptions.context, mergeProps]);
 
                 const { forwardedRef, ...rest } = props;
 

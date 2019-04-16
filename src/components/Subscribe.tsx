@@ -3,6 +3,8 @@ import * as hoistNonReactStatic from 'hoist-non-react-statics';
 import Subscription from 'react-redux/lib/utils/Subscription';
 import createObservable from '../utils/createObservable';
 import * as invariant from 'invariant';
+import { useCallback, useMemo, useLayoutEffect, useRef, useReducer } from 'react';
+import ResaContext from './Context';
 
 /**
  * model meta info
@@ -15,12 +17,12 @@ interface ModelMeta {
 }
 
 interface SubscribeProps {
-    theme: any;
     forwardedRef: any;
 }
 
 interface ExtraOptions {
     forwardRef?: any;
+    context?: any;
 }
 
 function checkModelType(model, name, modelTypeName) {
@@ -35,83 +37,63 @@ function checkModelType(model, name, modelTypeName) {
     }
 }
 
+function storeStateUpdatesReducer(state) {
+    const [updateCount] = state;
+    return [updateCount + 1];
+}
+
+const initStateUpdates = () => [0];
+
+const EMPTY_ARRAY = [];
+
 export default function subscribe(modelMap, dependences: string[] = [], extraOptions: ExtraOptions = {}) {
     return function wrapWithSubscribe(WrappedComponent) {
-        class Subscribe extends React.PureComponent<SubscribeProps, any> {
-            resa: any;
-            modelMetaMap: { [x: string]: ModelMeta };
-            resaKey: string;
-            subscriptionKey: string;
-            subscription: any;
-            notifyNestedSubs: any;
-            storeKey: any;
-            theme: { [x: string]: any; [x: number]: any; storeKey: any };
+        const Context = extraOptions.context || ResaContext;
 
-            constructor(props) {
-                super(props);
-                this.storeKey = props.theme.storeKey;
-                this.resaKey = `${this.storeKey}Resa`;
-                this.subscriptionKey = `${this.storeKey}Subscription`;
-                this.resa = props.theme[this.resaKey];
-                this.modelMetaMap = {};
-                /**
-                 * register must befere subscriptions, so current component can ingore the update by redux replaceReducer.
-                 */
-                this.tryRegister();
-                this.updateObservable();
-                this.initSubscription();
-                this.theme = {
-                    [this.storeKey]: this.resa.store,
-                    [this.subscriptionKey]: this.subscription,
-                    [this.resaKey]: this.resa,
-                    storeKey: this.props.theme.storeKey,
+        function Subscribe(props: SubscribeProps) {
+            const contextValue: any = React.useContext(Context);
+            const store = contextValue.store;
+            const resa = store.resa;
+
+            const modelMetaMap = useRef({});
+            const modelMapChildProps = useRef({});
+            const isInit = useRef(true);
+
+            const prevCountRef = useRef({});
+            useLayoutEffect(() => {
+                prevCountRef.current = props;
+            });
+
+            const [forwardedRef, wrapperProps] = useMemo(() => {
+                const { forwardedRef, ...wrapperProps } = props;
+                return [forwardedRef, wrapperProps];
+            }, [props]);
+
+            const [subscription, notifyNestedSubs] = useMemo(() => {
+                const subscription = new Subscription(store, contextValue.subscription);
+
+                const notifyNestedSubs = subscription.notifyNestedSubs.bind(subscription);
+                return [subscription, notifyNestedSubs];
+            }, [store, , contextValue]);
+
+            const overriddenContextValue = useMemo(() => {
+                return {
+                    ...contextValue,
+                    subscription,
                 };
-            }
+            }, [contextValue, subscription]);
 
-            initSubscription() {
-                const parentSub = this.props.theme[this.subscriptionKey];
-                this.subscription = new Subscription(this.resa.store, parentSub, this.onStateChange.bind(this));
-                this.notifyNestedSubs = this.subscription.notifyNestedSubs.bind(this.subscription);
-            }
+            const [[previousStateUpdateResult], forceComponentUpdateDispatch] = useReducer(
+                storeStateUpdatesReducer,
+                EMPTY_ARRAY,
+                initStateUpdates,
+            );
 
-            tryRegister = () => {
-                const models = this.resa.models;
-                Object.keys(modelMap).map(key => {
-                    const modelItem = modelMap[key];
-                    const instance = new modelItem();
-                    const namespace = instance.namespace;
-                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}`;
-                    const model = models[name];
-
-                    if (process.env.NODE_ENV !== 'production') {
-                        checkModelType(instance, name, this.resa.modelTypeName);
-
-                        invariant(
-                            Object.prototype.toString.call(instance.state) === '[object Object]',
-                            'The shape of state must be an object',
-                        );
-                    }
-
-                    if (model == null) {
-                        this.resa.register(instance);
-                    }
-                    const depandenceMap = {};
-                    dependences.map((dp: string) => {
-                        depandenceMap[dp] = true;
-                    });
-                    this.modelMetaMap[key] = {
-                        name,
-                        depandenceMap,
-                        observableModel: null,
-                        state: null,
-                    };
-                });
-            };
-
-            updateObservable = () => {
-                const models = this.resa.models;
-                Object.keys(this.modelMetaMap).map(key => {
-                    const modelMeta = this.modelMetaMap[key];
+            const updateObservable = useCallback(() => {
+                const models = resa.models;
+                const returnMap = {};
+                Object.keys(modelMetaMap.current).map(key => {
+                    const modelMeta = modelMetaMap.current[key];
                     const model = models[modelMeta.name];
                     const state = model.state;
                     // state is immutable
@@ -120,24 +102,59 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                         modelMeta.observableModel = Object.assign({}, model, {
                             state: createObservable(state, modelMeta.depandenceMap),
                         });
+
+                        returnMap[key] = modelMeta.observableModel;
                     }
                 });
-            };
 
-            componentDidMount() {
-                this.subscription.trySubscribe();
+                modelMapChildProps.current = returnMap;
+            }, []);
+
+            const tryRegister = useCallback(() => {
+                const models = resa.models;
+                Object.keys(modelMap).map(key => {
+                    const modelItem = modelMap[key];
+                    const instance = new modelItem();
+                    const namespace = instance.namespace;
+                    const name = namespace === '' ? instance.name : `${namespace}/${instance.name}`;
+                    const model = models[name];
+
+                    if (process.env.NODE_ENV !== 'production') {
+                        checkModelType(instance, name, resa.modelTypeName);
+
+                        invariant(
+                            Object.prototype.toString.call(instance.state) === '[object Object]',
+                            'The shape of state must be an object',
+                        );
+                    }
+
+                    if (model == null) {
+                        resa.register(instance);
+                    }
+                    const depandenceMap = {};
+                    dependences.map((dp: string) => {
+                        depandenceMap[dp] = true;
+                    });
+                    modelMetaMap.current[key] = {
+                        name,
+                        depandenceMap,
+                        observableModel: null,
+                        state: null,
+                    };
+                });
+
+                updateObservable();
+                isInit.current = false;
+            }, []);
+
+            if (isInit.current) {
+                tryRegister();
             }
 
-            componentWillUnmount() {
-                if (this.subscription) this.subscription.tryUnsubscribe();
-                this.subscription = null;
-                this.notifyNestedSubs = () => {};
-            }
-
-            calculateShouldUpdate = () => {
-                const models = this.resa.models;
-                return Object.keys(this.modelMetaMap).some(key => {
-                    const modelMeta = this.modelMetaMap[key];
+            const calculateShouldUpdate = useCallback(() => {
+                const models = resa.models;
+                return Object.keys(modelMetaMap.current).some(key => {
+                    const modelMeta = modelMetaMap.current[key];
                     const model = models[modelMeta.name];
                     const state = model.state;
                     const prevState = modelMeta.state;
@@ -149,61 +166,76 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                         return false;
                     });
                 });
-            };
+            }, []);
 
-            onStateChange = () => {
-                const shouldUpdate = this.calculateShouldUpdate();
-                if (shouldUpdate) {
-                    this.componentDidUpdate = this.notifyNestedSubsOnComponentDidUpdate;
-                    // should updateObservable after call calculateShouldUpdate
-                    this.updateObservable();
-                    this.forceUpdate();
-                } else {
-                    this.notifyNestedSubs();
+            const childPropsFromStoreUpdate = useRef(false);
+
+            useLayoutEffect(() => {
+                // If the render was from a store update, clear out that reference and cascade the subscriber update
+                if (childPropsFromStoreUpdate.current) {
+                    childPropsFromStoreUpdate.current = false;
+                    notifyNestedSubs();
                 }
-            };
+            });
 
-            notifyNestedSubsOnComponentDidUpdate() {
-                this.componentDidUpdate = undefined;
-                this.notifyNestedSubs();
-            }
+            useLayoutEffect(() => {
+                let didUnsubscribe = false;
 
-            getModels = () => {
-                const returnMap = {};
-                Object.keys(this.modelMetaMap).map(key => {
-                    returnMap[key] = this.modelMetaMap[key].observableModel;
-                });
-                return returnMap;
-            };
+                const onStateChange = () => {
+                    if (didUnsubscribe) {
+                        return;
+                    }
 
-            // render() {
-            //     const { theme, forwardedRef, ...rest } = this.props;
-            //     return (
-            //         <ThemeContext.Provider value={this.theme}>
-            //             <WrappedComponent ref={forwardedRef} {...rest} {...this.getModels()} />
-            //         </ThemeContext.Provider>
-            //     );
-            // }
+                    const shouldUpdate = calculateShouldUpdate();
+                    if (shouldUpdate) {
+                        updateObservable();
+                        childPropsFromStoreUpdate.current = true;
+
+                        forceComponentUpdateDispatch({
+                            type: 'STORE_UPDATED',
+                        });
+                    } else {
+                        notifyNestedSubs();
+                    }
+                };
+
+                subscription.onStateChange = onStateChange;
+                subscription.trySubscribe();
+
+                return () => {
+                    didUnsubscribe = true;
+                    subscription.tryUnsubscribe();
+                };
+            }, [store, subscription]);
+
+            const renderChild = useMemo(() => {
+                return (
+                    <Context.Provider value={overriddenContextValue}>
+                        <WrappedComponent ref={forwardedRef} {...wrapperProps} {...modelMapChildProps.current} />
+                    </Context.Provider>
+                );
+            }, [forwardedRef, wrapperProps, modelMapChildProps.current]);
+
+            return renderChild;
         }
 
         // @ts-ignore
         Subscribe.WrappedComponent = WrappedComponent;
         const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+        const displayName = `ResaSubscribe(${wrappedComponentName})`;
         // @ts-ignore
-        Subscribe.displayName = `ResaSubscribe(${wrappedComponentName})`;
-        // @ts-ignore
-        const TargetComponent = hoistNonReactStatic(Subscribe, WrappedComponent);
+        Subscribe.displayName = displayName;
 
-        // if (extraOptions.forwardRef) {
-        //     return React.forwardRef((props: any, ref: any) => (
-        //         <ThemeContext.Consumer>
-        //             {theme => <TargetComponent {...props} forwardedRef={ref} theme={theme} />}
-        //         </ThemeContext.Consumer>
-        //     ));
-        // }
+        if (extraOptions.forwardRef) {
+            const forwarded: any = React.forwardRef(function forwardConnectRef(props, ref) {
+                return <Subscribe {...props} forwardedRef={ref} />;
+            });
 
-        // return React.memo((props: any) => (
-        //     <ThemeContext.Consumer>{theme => <TargetComponent {...props} theme={theme} />}</ThemeContext.Consumer>
-        // ));
+            forwarded.displayName = displayName;
+            forwarded.WrappedComponent = WrappedComponent;
+            return hoistNonReactStatic(forwarded, WrappedComponent);
+        }
+
+        return hoistNonReactStatic(Subscribe, WrappedComponent);
     };
 }

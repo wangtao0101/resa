@@ -66,7 +66,7 @@ describe('Subscribe', () => {
         }
         const SubscribeChild = subscribe({ myModel: MyModel })(TempChild);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild k="k" />
             </Provider>,
         );
@@ -78,7 +78,7 @@ describe('Subscribe', () => {
         const app = createResa();
         const SubscribeChild = subscribe({ myModel: MyModel })(Child);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild />
             </Provider>,
         );
@@ -93,7 +93,7 @@ describe('Subscribe', () => {
         const app = createResa();
         const SubscribeChild = subscribe({ myModel: MyModel }, ['length'])(Child);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild />
             </Provider>,
         );
@@ -104,7 +104,7 @@ describe('Subscribe', () => {
         expect(container.render).toBeCalledTimes(2);
     });
 
-    it('should notify nested sub only changed state', async () => {
+    it.only('should notify nested sub only changed state', async () => {
         const app = createResa();
 
         class SencondChild extends React.Component<any, any> {
@@ -119,7 +119,7 @@ describe('Subscribe', () => {
                 return (
                     <div>
                         {this.props.myModel.state.count}
-                        <SubscribeSencondChild />
+                        <SubscribeSencondChild ll="asdf" />
                     </div>
                 );
             }
@@ -128,7 +128,7 @@ describe('Subscribe', () => {
         const SubscribeFirstChild = subscribe({ myModel: MyModel })(FirstChild);
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeFirstChild />
             </Provider>,
         );
@@ -163,7 +163,7 @@ describe('Subscribe', () => {
             }
         }
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <Father />
             </Provider>,
         );
@@ -185,7 +185,7 @@ describe('Subscribe', () => {
             const app: any = createResa();
             const SubscribeChild = subscribe({ myModel: MyModel, sameModel: SameModel })(Child);
             TestUtils.renderIntoDocument(
-                <Provider store={app.store} resa={app}>
+                <Provider resa={app}>
                     <SubscribeChild />
                 </Provider>,
             );
@@ -203,7 +203,7 @@ describe('Subscribe', () => {
 
             const SubscribeChild = subscribe({ sameModel: SameModel })(Child);
             TestUtils.renderIntoDocument(
-                <Provider store={app.store} resa={app}>
+                <Provider resa={app}>
                     <SubscribeChild />
                 </Provider>,
             );
@@ -217,7 +217,7 @@ describe('Subscribe', () => {
         const ref = React.createRef();
 
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild ref={ref} />
             </Provider>,
         );
@@ -279,7 +279,7 @@ describe('Subscribe namespace', () => {
         const app = createResa();
         const SubscribeChild = subscribe({ myModel: NamespaceModel })(Child);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild />
             </Provider>,
         );
@@ -303,7 +303,7 @@ describe('Subscribe namespace', () => {
         }
         const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: NamespaceModel1 })(Child);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild />
             </Provider>,
         );
@@ -330,7 +330,7 @@ describe('Subscribe namespace', () => {
         }
         const SubscribeChild = subscribe({ myModel: NamespaceModel, myModel1: ConnectedModel })(Child);
         const tree = TestUtils.renderIntoDocument(
-            <Provider store={app.store} resa={app}>
+            <Provider resa={app}>
                 <SubscribeChild />
             </Provider>,
         );
