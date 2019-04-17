@@ -50,7 +50,7 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
     return function wrapWithSubscribe(WrappedComponent) {
         const Context = extraOptions.context || ResaContext;
 
-        function Subscribe(props: SubscribeProps) {
+        const Subscribe = React.memo(function(props: SubscribeProps) {
             const contextValue: any = React.useContext(Context);
             const store = contextValue.store;
             const resa = store.resa;
@@ -58,11 +58,6 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
             const modelMetaMap = useRef({});
             const modelMapChildProps = useRef({});
             const isInit = useRef(true);
-
-            const prevCountRef = useRef({});
-            useLayoutEffect(() => {
-                prevCountRef.current = props;
-            });
 
             const [forwardedRef, wrapperProps] = useMemo(() => {
                 const { forwardedRef, ...wrapperProps } = props;
@@ -93,7 +88,7 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                 const models = resa.models;
                 const returnMap = {};
                 Object.keys(modelMetaMap.current).map(key => {
-                    const modelMeta = modelMetaMap.current[key];
+                    const modelMeta: ModelMeta = modelMetaMap.current[key];
                     const model = models[modelMeta.name];
                     const state = model.state;
                     // state is immutable
@@ -217,7 +212,7 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
             }, [forwardedRef, wrapperProps, modelMapChildProps.current]);
 
             return renderChild;
-        }
+        });
 
         // @ts-ignore
         Subscribe.WrappedComponent = WrappedComponent;

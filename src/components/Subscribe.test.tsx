@@ -104,7 +104,7 @@ describe('Subscribe', () => {
         expect(container.render).toBeCalledTimes(2);
     });
 
-    it.only('should notify nested sub only changed state', async () => {
+    it('should notify nested sub only changed state', async () => {
         const app = createResa();
 
         class SencondChild extends React.Component<any, any> {
@@ -112,6 +112,7 @@ describe('Subscribe', () => {
                 return <div>{this.props.secondModel.state.count}</div>;
             }
         }
+
         const SubscribeSencondChild = subscribe({ myModel: MyModel, secondModel: SecondModel })(SencondChild);
 
         class FirstChild extends React.Component<any, any> {

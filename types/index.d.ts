@@ -1,22 +1,28 @@
 import * as React from 'react';
 import * as Redux from 'redux';
 import * as ReactRedux from 'react-redux';
-import * as Saga from "redux-saga";
+import * as Saga from 'redux-saga';
 
 declare module 'resa' {
-
     export class Model<S = any> {
-        protected models: any
+        protected models: any;
         state: S;
         fulfilled(payload?: S | Partial<S>): S;
     }
 
-    export function effect(name?: string , mn?: number) : MethodDecorator;
+    export function effect(name?: string, mn?: number): MethodDecorator;
 
-    export function reducer(pure?: boolean) : MethodDecorator;
+    export function reducer(pure?: boolean): MethodDecorator;
 
-    export function init<S = any>({ name, namespace, state }
-        : { name?: string, namespace?: string, state: S}) : ClassDecorator;
+    export function init<S = any>({
+        name,
+        namespace,
+        state,
+    }: {
+        name?: string;
+        namespace?: string;
+        state: S;
+    }): ClassDecorator;
 
     export function wapper(cb: IterableIterator<any>): Promise<any>;
 
@@ -29,8 +35,26 @@ declare module 'resa' {
 
     export default function createResa(options?: Options): Resa<any>;
 
-    export interface ModelMap<T extends Model>{
+    export interface ModelMap<T extends Model> {
         [key: string]: T;
+    }
+
+    export interface Action<T = any> {
+        type: T;
+    }
+
+    /**
+     * An Action type which accepts any other properties.
+     * This is mainly for the use of the `Reducer` type.
+     * This is not part of `Action` itself to prevent users who are extending `Action.
+     */
+    export interface AnyAction extends Action {
+        // Allows any extra properties to be defined in an action.
+        [extraProps: string]: any;
+    }
+
+    export interface Dispatch<A extends Action = AnyAction> {
+        <T extends A>(action: T): T;
     }
 
     interface MapStateToProps<TStateProps, TOwnProps> {
@@ -41,20 +65,30 @@ declare module 'resa' {
         (models: ModelMap<any>, initialState: any, ownProps: TOwnProps): MapStateToProps<TStateProps, TOwnProps>;
     }
 
-    type MapStateToPropsParam<TStateProps, TOwnProps> = MapStateToPropsFactory<TStateProps, TOwnProps> | MapStateToProps<TStateProps, TOwnProps> | null | undefined;
+    type MapStateToPropsParam<TStateProps, TOwnProps> =
+        | MapStateToPropsFactory<TStateProps, TOwnProps>
+        | MapStateToProps<TStateProps, TOwnProps>
+        | null
+        | undefined;
 
     interface MapDispatchToPropsFunction<TDispatchProps, TOwnProps> {
-        (models: ModelMap<any>, dispatch: ReactRedux.Dispatch<any>, ownProps: TOwnProps): TDispatchProps;
+        (models: ModelMap<any>, dispatch: Dispatch<any>, ownProps: TOwnProps): TDispatchProps;
     }
 
     type MapDispatchToProps<TDispatchProps, TOwnProps> =
-        MapDispatchToPropsFunction<TDispatchProps, TOwnProps> | TDispatchProps;
+        | MapDispatchToPropsFunction<TDispatchProps, TOwnProps>
+        | TDispatchProps;
 
     interface MapDispatchToPropsFactory<TDispatchProps, TOwnProps> {
-        (models: ModelMap<any>, dispatch: ReactRedux.Dispatch<any>, ownProps: TOwnProps): MapDispatchToProps<TDispatchProps, TOwnProps>;
+        (models: ModelMap<any>, dispatch: Dispatch<any>, ownProps: TOwnProps): MapDispatchToProps<
+            TDispatchProps,
+            TOwnProps
+        >;
     }
 
-    type MapDispatchToPropsParam<TDispatchProps, TOwnProps> = MapDispatchToPropsFactory<TDispatchProps, TOwnProps> | MapDispatchToProps<TDispatchProps, TOwnProps>;
+    type MapDispatchToPropsParam<TDispatchProps, TOwnProps> =
+        | MapDispatchToPropsFactory<TDispatchProps, TOwnProps>
+        | MapDispatchToProps<TDispatchProps, TOwnProps>;
 
     type GetInstanceType<T> = T extends new (...args: any[]) => infer R ? R : any;
 
@@ -63,15 +97,15 @@ declare module 'resa' {
     type SubscribeType<T> = { [P in keyof T]: GetInstanceConditional<T[P]> };
 
     interface ModelType {
-        new(...args: any[]): Model;
+        new (...args: any[]): Model;
     }
 
-    type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+    type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
     interface InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> {
-        <P extends TInjectedProps>(
-            component: React.ComponentType<P>
-        ): React.ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & {WrappedComponent: React.ComponentType<P>}
+        <P extends TInjectedProps>(component: React.ComponentType<P>): React.ComponentClass<
+            Omit<P, keyof TInjectedProps> & TNeedsProps
+        > & { WrappedComponent: React.ComponentType<P> };
     }
 
     interface SubscribeModel {
@@ -86,9 +120,9 @@ declare module 'resa' {
         ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
     }
 
-
     interface ExtraOptions {
-        forwardRef: boolean;
+        forwardRef?: boolean;
+        context?: any;
     }
 
     export const subscribe: Subscribe;
@@ -146,36 +180,35 @@ declare module 'resa' {
             mapStateToProps: null | undefined,
             mapDispatchToProps: Array<string>,
             mergeProps: null | undefined,
-            options: ReactRedux.Options<no_state, TOwnProps>
+            options: ReactRedux.Options<no_state, TOwnProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TInjectedProps, {}>;
 
         <TInjectedProps = {}, TStateProps = {}, TDispatchProps = {}, TOwnProps = {}, State = {}>(
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
             mapDispatchToProps: Array<string>,
             mergeProps: null | undefined,
-            options: ReactRedux.Options<TStateProps, TOwnProps>
+            options: ReactRedux.Options<TStateProps, TOwnProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TInjectedProps, {}>;
 
         <TInjectedProps = {}, TStateProps = {}, TDispatchProps = {}, TOwnProps = {}, TMergedProps = {}, State = {}>(
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
             mapDispatchToProps: Array<string>,
             mergeProps: ReactRedux.MergeProps<TStateProps, TDispatchProps, TOwnProps, TMergedProps>,
-            options: ReactRedux.Options<TStateProps, TOwnProps, TMergedProps>
+            options: ReactRedux.Options<TStateProps, TOwnProps, TMergedProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TInjectedProps, {}>;
 
-
         <TStateProps = {}, no_dispatch = {}, TOwnProps = {}, State = {}>(
-            mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>
+            mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TStateProps & ReactRedux.DispatchProp<any>, TOwnProps>;
 
         <no_state = {}, TDispatchProps = {}, TOwnProps = {}>(
             mapStateToProps: null | undefined,
-            mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>
+            mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TDispatchProps, TOwnProps>;
 
         <TStateProps = {}, TDispatchProps = {}, TOwnProps = {}, State = {}>(
             mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps>,
-            mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>
+            mapDispatchToProps: MapDispatchToPropsParam<TDispatchProps, TOwnProps>,
         ): ReactRedux.InferableComponentEnhancerWithProps<TStateProps & TDispatchProps, TOwnProps>;
 
         <TStateProps = {}, no_dispatch = {}, TOwnProps = {}, TMergedProps = {}, State = {}>(
@@ -256,7 +289,7 @@ declare module 'resa' {
         children?: React.ReactNode;
     }
 
-    export class Provider extends React.Component<ProviderProps, {}> { }
+    export class Provider extends React.Component<ProviderProps, {}> {}
 
     interface CombinedModel extends Model {}
 
