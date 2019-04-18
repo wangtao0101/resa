@@ -1,6 +1,6 @@
 {
   "name": "resa",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0",
   "description": "A simple framework based on redux, redux-saga, redux-action which can reduce the amount of code by almost 50%.",
   "main": "lib/index.js",
   "typings": "types/index.d.ts",
