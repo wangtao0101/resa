@@ -97,9 +97,8 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                         modelMeta.observableModel = Object.assign({}, model, {
                             state: createObservable(state, modelMeta.depandenceMap),
                         });
-
-                        returnMap[key] = modelMeta.observableModel;
                     }
+                    returnMap[key] = modelMeta.observableModel;
                 });
 
                 modelMapChildProps.current = returnMap;
