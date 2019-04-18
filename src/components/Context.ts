@@ -1,5 +1,5 @@
-import * as React from 'react';
+import { ReactReduxContext } from 'react-redux';
 
-export const ResaContext = React.createContext<any>(null)
+export const ResaContext = ReactReduxContext;
 
 export default ResaContext;
