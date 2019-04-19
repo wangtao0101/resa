@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect as reactReduxConnect } from 'react-redux';
-import * as hoistNonReactStatic from 'hoist-non-react-statics';
 import { ResaContext } from './Context';
+import { forwardComponent } from '../utils/help';
 
 interface ExtraOptions {
     forwardRef?: any;
@@ -58,22 +58,7 @@ export default function createConnect() {
                 return <ConnectedComponent {...rest} ref={forwardedRef} />;
             }
 
-            ConnectFunction.WrappedComponent = WrappedComponent;
-            const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-            const displayName = `ResaConnect(${wrappedComponentName})`;
-            ConnectFunction.displayName = displayName;
-
-            if (reactReduxExtraOptions.forwardRef) {
-                const forwarded: any = React.forwardRef(function forwardConnectRef(props, ref) {
-                    return <ConnectFunction {...props} forwardedRef={ref} />;
-                });
-
-                forwarded.displayName = displayName;
-                forwarded.WrappedComponent = WrappedComponent;
-                return hoistNonReactStatic(forwarded, WrappedComponent);
-            }
-
-            return hoistNonReactStatic(ConnectFunction, WrappedComponent);
+            return forwardComponent(extraOptions.forwardRef, ConnectFunction, WrappedComponent, 'ResaConnect');
         };
     };
 }

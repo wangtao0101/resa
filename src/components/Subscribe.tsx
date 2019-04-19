@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as hoistNonReactStatic from 'hoist-non-react-statics';
 import Subscription from 'react-redux/lib/utils/Subscription';
 import createObservable from '../utils/createObservable';
 import * as invariant from 'invariant';
 import { useCallback, useMemo, useLayoutEffect, useRef, useReducer } from 'react';
 import ResaContext from './Context';
+import { forwardComponent } from '../utils/help';
 
 /**
  * model meta info
@@ -213,23 +213,6 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
             return renderChild;
         });
 
-        // @ts-ignore
-        Subscribe.WrappedComponent = WrappedComponent;
-        const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-        const displayName = `ResaSubscribe(${wrappedComponentName})`;
-        // @ts-ignore
-        Subscribe.displayName = displayName;
-
-        if (extraOptions.forwardRef) {
-            const forwarded: any = React.forwardRef(function forwardConnectRef(props, ref) {
-                return <Subscribe {...props} forwardedRef={ref} />;
-            });
-
-            forwarded.displayName = displayName;
-            forwarded.WrappedComponent = WrappedComponent;
-            return hoistNonReactStatic(forwarded, WrappedComponent);
-        }
-
-        return hoistNonReactStatic(Subscribe, WrappedComponent);
+        return forwardComponent(extraOptions.forwardRef, Subscribe, WrappedComponent, 'ResaSubscribe');
     };
 }

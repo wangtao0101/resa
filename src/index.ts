@@ -9,6 +9,7 @@ import effect from './decorators/effect';
 import reducer from './decorators/reducer';
 import wapper from './decorators/wapper';
 import init from './decorators/init';
+import ResaHookWrap from './decorators/ResaHookWrap';
 
 const connect = createConnect();
 
@@ -22,5 +23,6 @@ export {
     effect,
     reducer,
     wapper,
-    init
+    init,
+    ResaHookWrap,
 };
