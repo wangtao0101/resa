@@ -3,6 +3,7 @@ import Provider from './components/Provider';
 import createConnect from './components/Connect';
 import subscribe from './components/Subscribe';
 import combineModel from './utils/combineModel';
+import useResa from './components/useResa';
 
 import Model from './decorators/Model';
 import effect from './decorators/effect';
@@ -25,4 +26,5 @@ export {
     wapper,
     init,
     ResaHookWrap,
+    useResa,
 };
