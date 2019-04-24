@@ -1,10 +1,9 @@
 import * as React from 'react';
 import Subscription from 'react-redux/lib/utils/Subscription';
 import createObservable from '../utils/createObservable';
-import * as invariant from 'invariant';
 import { useCallback, useMemo, useLayoutEffect, useRef, useReducer } from 'react';
 import ResaContext from './Context';
-import { forwardComponent } from '../utils/help';
+import { forwardComponent, checkModelType } from '../utils/help';
 
 /**
  * model meta info
@@ -24,27 +23,6 @@ interface ExtraOptions {
     forwardRef?: any;
     context?: any;
 }
-
-function checkModelType(model, name, modelTypeName) {
-    const instanceCon = modelTypeName[name];
-    if (instanceCon == null) {
-        modelTypeName[name] = model.constructor;
-    } else {
-        invariant(
-            instanceCon === model.constructor,
-            `Different Model should not use the same model name, Please check name: ${name}`,
-        );
-    }
-}
-
-function storeStateUpdatesReducer(state) {
-    const [updateCount] = state;
-    return [updateCount + 1];
-}
-
-const initStateUpdates = () => [0];
-
-const EMPTY_ARRAY = [];
 
 export default function subscribe(modelMap, dependences: string[] = [], extraOptions: ExtraOptions = {}) {
     return function wrapWithSubscribe(WrappedComponent) {
@@ -78,11 +56,7 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                 };
             }, [contextValue, subscription]);
 
-            const [[previousStateUpdateResult], forceComponentUpdateDispatch] = useReducer(
-                storeStateUpdatesReducer,
-                EMPTY_ARRAY,
-                initStateUpdates,
-            );
+            const [, forceRender] = useReducer(s => s + 1, 0);
 
             const updateObservable = useCallback(() => {
                 const models = resa.models;
@@ -115,11 +89,6 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
 
                     if (process.env.NODE_ENV !== 'production') {
                         checkModelType(instance, name, resa.modelTypeName);
-
-                        invariant(
-                            Object.prototype.toString.call(instance.state) === '[object Object]',
-                            'The shape of state must be an object',
-                        );
                     }
 
                     if (model == null) {
@@ -185,9 +154,7 @@ export default function subscribe(modelMap, dependences: string[] = [], extraOpt
                         updateObservable();
                         childPropsFromStoreUpdate.current = true;
 
-                        forceComponentUpdateDispatch({
-                            type: 'STORE_UPDATED',
-                        });
+                        forceRender({});
                     } else {
                         notifyNestedSubs();
                     }

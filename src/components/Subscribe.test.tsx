@@ -176,6 +176,8 @@ describe('Subscribe', () => {
     });
 
     it('should throw two same model name error', () => {
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
         expect(() => {
             @init<any>({
                 name: 'model',
@@ -191,9 +193,13 @@ describe('Subscribe', () => {
                 </Provider>,
             );
         }).toThrow(/Different Model should not use the same model name, Please check name: model/);
+
+        spy.mockRestore();
     });
 
     it('should throw The shape of state must be an object', () => {
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
         expect(() => {
             @init<any>({
                 name: 'model',
@@ -209,6 +215,8 @@ describe('Subscribe', () => {
                 </Provider>,
             );
         }).toThrow(/The shape of state must be an object/);
+
+        spy.mockRestore();
     });
 
     it('get ref using React.createRef()', () => {

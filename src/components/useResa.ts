@@ -1,7 +1,9 @@
 import * as React from 'react';
+import Subscription from 'react-redux/lib/utils/Subscription';
 import ResaContext from './Context';
 import { useMemo, useRef, useCallback, useLayoutEffect, useReducer } from 'react';
 import createObservable from '../utils/createObservable';
+import { checkModelType } from '../utils/help';
 
 interface ModelMeta {
     depandenceMap: {};
@@ -9,15 +11,6 @@ interface ModelMeta {
     name: string;
     state: any;
 }
-
-function storeStateUpdatesReducer(state) {
-    const [updateCount] = state;
-    return [updateCount + 1];
-}
-
-const initStateUpdates = () => [0];
-
-const EMPTY_ARRAY = [];
 
 export default function useResa(models: any[] = [], dependences: string[] = [], Context = ResaContext) {
     const contextValue: any = React.useContext(Context);
@@ -27,18 +20,13 @@ export default function useResa(models: any[] = [], dependences: string[] = [], 
 
     const store = contextValue.store;
     const resa = store.resa;
-    const subscription = contextValue.subscription;
 
-    const [[previousStateUpdateResult], forceComponentUpdateDispatch] = useReducer(
-        storeStateUpdatesReducer,
-        EMPTY_ARRAY,
-        initStateUpdates,
-    );
+    const [, forceRender] = useReducer(s => s + 1, 0);
 
-    const [notifyNestedSubs] = useMemo(() => {
-        const notifyNestedSubs = subscription.notifyNestedSubs.bind(subscription);
-        return [notifyNestedSubs];
-    }, [store, contextValue]);
+    const subscription = useMemo(() => new Subscription(store, contextValue.subscription), [
+        store,
+        contextValue.subscription,
+    ]);
 
     const updateObservable = useCallback(() => {
         const models = resa.models;
@@ -66,6 +54,10 @@ export default function useResa(models: any[] = [], dependences: string[] = [], 
             const namespace = instance.namespace;
             const name = namespace === '' ? instance.name : `${namespace}/${instance.name}`;
             const model = resaModels[name];
+
+            if (process.env.NODE_ENV !== 'production') {
+                checkModelType(instance, name, resa.modelTypeName);
+            }
 
             if (model == null) {
                 resa.register(instance);
@@ -106,34 +98,13 @@ export default function useResa(models: any[] = [], dependences: string[] = [], 
         });
     }, []);
 
-    const childPropsFromStoreUpdate = useRef(false);
-
     useLayoutEffect(() => {
-        // If the render was from a store update, clear out that reference and cascade the subscriber update
-        if (childPropsFromStoreUpdate.current) {
-            childPropsFromStoreUpdate.current = false;
-            notifyNestedSubs();
-        }
-    });
-
-    useLayoutEffect(() => {
-        let didUnsubscribe = false;
-
         const onStateChange = () => {
-            if (didUnsubscribe) {
-                return;
-            }
-
             const shouldUpdate = calculateShouldUpdate();
             if (shouldUpdate) {
                 updateObservable();
-                childPropsFromStoreUpdate.current = true;
 
-                forceComponentUpdateDispatch({
-                    type: 'STORE_UPDATED',
-                });
-            } else {
-                notifyNestedSubs();
+                forceRender({});
             }
         };
 
@@ -141,7 +112,6 @@ export default function useResa(models: any[] = [], dependences: string[] = [], 
         subscription.trySubscribe();
 
         return () => {
-            didUnsubscribe = true;
             subscription.tryUnsubscribe();
         };
     }, [store, subscription]);
