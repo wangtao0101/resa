@@ -94,7 +94,7 @@ declare module 'resa' {
 
     type GetInstanceConditional<T> = T extends Model ? T : GetInstanceType<T>;
 
-    type SubscribeType<T> = { [P in keyof T]: GetInstanceConditional<T[P]> };
+    type MapToModel<T> =    { [P in keyof T]: GetInstanceConditional<T[P]> };
 
     interface ModelType {
         new (...args: any[]): Model;
@@ -117,13 +117,19 @@ declare module 'resa' {
             mapContainerToProps: T,
             dependences?: string[],
             options?: ExtraOptions,
-        ): InferableComponentEnhancerWithProps<SubscribeType<T>, {}>;
+        ): InferableComponentEnhancerWithProps<MapToModel<T>, {}>;
     }
 
     interface ExtraOptions {
         forwardRef?: boolean;
         context?: any;
     }
+
+    interface UseResa {
+        <T extends Array<M>, M extends new () => InstanceType<typeof Model>>(models: T, dependences?: string[], context?: any): MapToModel<T>;
+    }
+
+    export const useResa: UseResa;
 
     export const subscribe: Subscribe;
 
