@@ -41,13 +41,14 @@ const payloadDecode = payload => {
 export interface Options {
     reducers?: Redux.ReducersMapObject;
     reduxDevToolOptions?: Object;
+    remoteReduxDevtools?: boolean;
     errorHandle?: (error: Error) => void;
     middlewares?: Array<Redux.Middleware>;
     initialState?: any;
 }
 
 export default function createResa(options?: Options) {
-    const { reducers = {}, errorHandle = noop, reduxDevToolOptions = {}, initialState = {}, middlewares = [] } =
+    const { reducers = {}, errorHandle = noop, reduxDevToolOptions = {}, initialState = {}, middlewares = [], remoteReduxDevtools = false } =
         options || {};
 
     function resaReducer(state = {}, _action) {
@@ -504,10 +505,14 @@ export default function createResa(options?: Options) {
                 window.__REDUX_DEVTOOLS_EXTENSION__(reduxDevToolOptions),
             );
         } else {
-            // remote redux dev tool
-            const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools;
-            const composeEnhancers = composeWithDevTools(reduxDevToolOptions);
-            finalMiddlewares = composeEnhancers(applyMiddleware(...finalMiddlewares));
+            if (remoteReduxDevtools) {
+                // remote redux dev tool
+                const composeWithDevTools = require('remote-redux-devtools').composeWithDevTools;
+                const composeEnhancers = composeWithDevTools(reduxDevToolOptions);
+                finalMiddlewares = composeEnhancers(applyMiddleware(...finalMiddlewares));
+            } else {
+                finalMiddlewares = applyMiddleware(...finalMiddlewares);
+            }
         }
     } else {
         finalMiddlewares = applyMiddleware(...finalMiddlewares);

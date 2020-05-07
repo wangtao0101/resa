@@ -29,8 +29,10 @@ declare module 'resa' {
     export interface Options {
         reducers?: Redux.ReducersMapObject;
         reduxDevToolOptions?: Object;
+        remoteReduxDevtools?: boolean;
         errorHandle?: (error: Error) => void;
         middlewares?: Array<Redux.Middleware>;
+        initialState?: any;
     }
 
     export default function createResa(options?: Options): Resa<any>;
